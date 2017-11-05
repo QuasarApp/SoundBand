@@ -2,6 +2,7 @@
 #define SONG_H
 class QString;
 class QByteArray;
+//class Sync;
 namespace syncLib {
 
 class SongHeader
@@ -22,8 +23,10 @@ private:
 public:
     Song();
     Song(const SongHeader& from);
+    void clear();
     ~Song();
-};
 
+    friend class Sync;
+};
 }
 #endif // SONG_H

@@ -7,12 +7,12 @@ class Song;
 class Sync
 {
 private:
-    bool save(Song song);
+    bool save(const Song &song);
 public:
     bool Play(QString url) const;
     void Pause() const;
     void stop() const;
-    void jump() const;
+    void jump(const int seek) const;
     Sync();
     ~Sync();
 };

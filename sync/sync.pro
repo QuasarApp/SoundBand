@@ -25,11 +25,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         sync.cpp \
-    song.cpp
+    song.cpp \
+    node.cpp
 
 HEADERS += \
         sync.h \
-    song.h
+    song.h \
+    node.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

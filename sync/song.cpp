@@ -35,6 +35,10 @@ syncLib::Song::Song(const SongHeader& from)
     this->size = from.size;
 }
 
+syncLib::Song::clear(){
+    source.clear();
+}
+
 syncLib::Song::~Song(){
     source.clear();
 }

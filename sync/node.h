@@ -7,6 +7,13 @@ namespace syncLib {
 
 class package
 {
+    /*parse map */
+
+/*
+ * 1 byle - type
+ * 4 byte - size of data of package (it avelable if type is t_sync or t_song)
+ * data
+*/
     enum TypePackage{
          t_void = 0x0,
          t_close = 0x1,
@@ -16,6 +23,7 @@ class package
     };
 private:
     TypePackage type;
+    unsigned int size;
     Song source;
     unsigned int playTime;
     unsigned int playPoint;

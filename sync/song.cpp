@@ -2,6 +2,8 @@
 #include <QString>
 #include <QByteArray>
 
+#include "config.h"
+
 syncLib::SongHeader::SongHeader()
 {
     this->id = 0;

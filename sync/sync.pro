@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += network multimedia
+QT       += network multimedia sql
 
 QT       -= gui
 
@@ -31,7 +31,8 @@ SOURCES += \
 HEADERS += \
         sync.h \
     song.h \
-    node.h
+    node.h \
+    config.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

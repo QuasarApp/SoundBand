@@ -2,6 +2,9 @@
 #include <QTcpSocket>
 #include "song.h"
 #include <QDataStream>
+
+#include "config.h"
+
 syncLib::package::package(){
     type = syncLib::package::t_void;
     source.clear();
@@ -142,6 +145,24 @@ void syncLib::Node::disconnectClient(QTcpSocket *c){
     c->getSource()->close();
     clients.removeOne(c);
     delete c;
+}
+
+bool syncLib::Node::addNode(const QString &node,int port){
+
+    QTcpSocket *temp = new QTcpSocket;
+    if(temp->bind(node,port) && temp->open(QIODevice::ReadWrite)){
+        clients.append(temp);
+        return true;
+    }
+    return false;
+}
+
+bool syncLib::Node::addNode(QTcpSocket *node){
+    if(node->isOpen()){
+        clients.append(node);
+        return true;
+    }
+    return false;
 }
 
 syncLib::Node::~Node(){

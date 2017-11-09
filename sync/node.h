@@ -53,6 +53,8 @@ public:
     void WriteAll(const QByteArray&);
     void disconnectClient(QTcpSocket*);
     QList<QTcpSocket*>* getClients();
+    bool addNode(const QString &node, int port = DEDAULT_PORT);
+    bool addNode(QTcpSocket* node);
     ~EServer();
 signals:
     void Error(QString);

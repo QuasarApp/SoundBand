@@ -3,7 +3,6 @@
 class QString;
 class QByteArray;
 class QDataStream;
-//class Sync;
 namespace syncLib {
 
 class SongHeader

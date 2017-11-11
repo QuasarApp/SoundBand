@@ -2,9 +2,17 @@
 #define NODE_H
 #include <QTcpServer>
 class Song;
+class Syncer;
 namespace syncLib {
 
-
+/**
+ * @brief The package class. Package for translite media data on network
+ *
+ * parse map:
+ * 1 byle - type
+ * 4 byte - size of data of package (it avelable if type is t_sync or t_song)
+ * data
+ */
 class package
 {
     /*parse map */
@@ -14,6 +22,14 @@ class package
  * 4 byte - size of data of package (it avelable if type is t_sync or t_song)
  * data
 */
+    /**
+     * @brief The TypePackage enum
+     * t_void - this package empty and not valid.
+     * t_close - the information about close channel.
+     * t_sync - the infomation about sync playning media file on network.
+     * t_song - the package with this type is necessary for translite media data on network.
+     * t_stop - the package with type 'stop' necessary for stoping playning media files.
+     */
     enum TypePackage{
          t_void = 0x0,
          t_close = 0x1,
@@ -25,15 +41,21 @@ private:
     TypePackage type;
     unsigned int size;
     Song source;
-    unsigned int playTime;
-    unsigned int playPoint;
+    Syncer playdata;
 public:
     package();
     package(const QByteArray& array);
     ~package();
+    /**
+     * @brief getSong
+     * @return Song
+     */
     const Song& getSong() const;
-    unsigned int getPlayTime() const;
-    unsigned int getPlayPoint() const;
+    /**
+     * @brief getPlayTime
+     * @return time of playning media data
+     */
+    Syncer getPlayData() const;
     unsigned char getType() const;
     bool isValid() const;
     QByteArray parseTo() const;

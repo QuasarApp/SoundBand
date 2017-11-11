@@ -3,8 +3,29 @@
 class QString;
 class QByteArray;
 class QDataStream;
+class time_t;
 namespace syncLib {
 
+/**
+ * @brief The Syncer struct
+ *
+ */
+struct Syncer
+{
+    /**
+     * @brief seek - wher is play media file
+     */
+    unsigned int seek;
+    /**
+     * @brief run when is play media file
+     */
+    time_t run;
+};
+
+/**
+ * @brief The SongHeader class sound header with media information
+ * (id,size and name)
+ */
 class SongHeader
 {
 public:
@@ -19,7 +40,10 @@ public:
     friend QDataStream& operator << (QDataStream& stream, const SongHeader& song);
     friend QDataStream& operator >> (QDataStream& stream, SongHeader& song);
 };
-
+/**
+ * @brief The Song class
+ * into this calss added mediadata of playable media file.
+ */
 class Song : public SongHeader{
 private:
     QByteArray source;

@@ -8,8 +8,8 @@
 syncLib::package::package(){
     type = syncLib::package::t_void;
     source.clear();
-    playTime = 0;
-    playPoint = 0;
+    playdata.run = 0;
+    playdata.seek = 0;
     size = 0;
 }
 syncLib::package::package(const QByteArray &array):
@@ -20,12 +20,8 @@ const Song& syncLib::package::getSong(){
     return source;
 }
 
-unsigned int syncLib::package::getPlayTime(){
-    return playTime;
-}
-
-unsigned int syncLib::package::getPlayPoint(){
-    return playPoint;
+Syncer syncLib::package::getPlayData(){
+    return playdata;
 }
 
 syncLib::package::TypePackage syncLib::package::getType(){
@@ -39,7 +35,7 @@ bool syncLib::package::isValid(){
     case package::t_close:
         return true;
     case package::t_sync:
-        return playTime > 0 && playPoint > 0;
+        return Syncer.run > 0 && Syncer.seek > 0;
     case package::t_song:
         return source.size > 0;
     case package::t_stop:
@@ -66,8 +62,8 @@ QByteArray syncLib::package::parseTo(){
         case package::t_sync:
             stream << int();
             stream << (unsigned char)(type);
-            stream << playTime;
-            stream << playPoint;
+            stream << playdata.run;
+            stream << playdata.seek;
             stream.device()->seek(0);
             stream << temp.size();
             break;
@@ -100,8 +96,8 @@ bool syncLib::package::parseFrom(const QByteArray &array){
     case package::t_close:
         return true;
     case package::t_sync:
-        stream >> playTime;
-        stream >> playPoint;
+        stream >> playdata.run;
+        stream >> playdata.seek;
         return isValid();
     case package::t_song:
         stream >> source;
@@ -138,11 +134,11 @@ void syncLib::Node::readData(QTcpSocket *c){
 }
 void syncLib::Node::WriteAll(const QByteArray &data){
     for(QTcpSocket*i:clients){
-        i->Write(data);
+        i->write(data);
     }
 }
 void syncLib::Node::disconnectClient(QTcpSocket *c){
-    c->getSource()->close();
+    c->close();
     clients.removeOne(c);
     delete c;
 }
@@ -167,7 +163,7 @@ bool syncLib::Node::addNode(QTcpSocket *node){
 
 syncLib::Node::~Node(){
     for(QTcpSocket *i:clients){
-        i->getSource()->abort();
+        i->abort();
         delete i;
     }
     this->close();

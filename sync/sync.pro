@@ -32,7 +32,8 @@ HEADERS += \
         sync.h \
     song.h \
     node.h \
-    config.h
+    config.h \
+    exaptions.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

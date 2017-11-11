@@ -5,6 +5,7 @@
 #include <QSqlQuery>
 #include "song.h"
 #include "node.h"
+#include "exaptions.h"
 
 #include "config.h"
 
@@ -17,6 +18,9 @@ namespace syncLib{
 Sync::Sync(){
     node = new Node();
     player = new QMediaPlayer(nullptr,QMediaPlayer::LowLatency);
+    if(!player->isAvailable()){
+        throw MediaException();
+    }
 }
 
 void Sync::initDB(){
@@ -44,6 +48,12 @@ bool Sync::save(const Song &song){
     qyery->bindValue(":data",song.source);
 
     return qyery->exec();
+}
+
+bool Sync::Play(const Song& song){
+    QBuffer buffer(&song.source);
+    player->setMedia(QMediaContent(), &buffer);
+    player->play();
 }
 
 Sync::~Sync(){

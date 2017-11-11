@@ -3,7 +3,7 @@
 class QString;
 class QByteArray;
 class QDataStream;
-class time_t;
+class Time_point;
 namespace syncLib {
 
 /**
@@ -17,9 +17,9 @@ struct Syncer
      */
     unsigned int seek;
     /**
-     * @brief run when is play media file
+     * @brief run when is play media file (int64)
      */
-    time_t run;
+    Time_point run;
 };
 
 /**

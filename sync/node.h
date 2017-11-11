@@ -1,6 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 #include <QTcpServer>
+#include "config.h"
 class Song;
 class Syncer;
 namespace syncLib {
@@ -71,13 +72,13 @@ private slots:
     void newConnection_();
     void readData(QTcpSocket*_client);
 public:
-    EServer();
+    Node();
     void WriteAll(const QByteArray&);
     void disconnectClient(QTcpSocket*);
     QList<QTcpSocket*>* getClients();
     bool addNode(const QString &node, int port = DEDAULT_PORT);
     bool addNode(QTcpSocket* node);
-    ~EServer();
+    ~Node();
 signals:
     void Error(QString);
     void Message(QTcpSocket*);

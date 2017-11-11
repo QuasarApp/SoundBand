@@ -3,7 +3,6 @@
 #include "song.h"
 #include <QDataStream>
 
-#include "config.h"
 
 syncLib::package::package(){
     type = syncLib::package::t_void;

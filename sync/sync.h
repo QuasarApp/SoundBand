@@ -10,6 +10,7 @@ namespace syncLib {
 class Song;
 class Node;
 class Syncer;
+
 /**
  * @brief The Sync class is main class of this library.
  * the 'sync' has supported synced playning media files on network and saving media data into local database.
@@ -26,11 +27,17 @@ private:
      */
     void initDB();
     /**
-     * @brief save media data into local database;
+     * @brief save media data into local database.
      * @param song savining media data.
-     * @return true if song saved else return false
+     * @return id of song saved on local database.
      */
-    bool save(const Song &song);
+    int save(const Song &song);
+    /**
+     * @brief fromDataBase return a song from local database by id.
+     * @param id of song saved in local database.
+     * @return song drom local database.
+     */
+    Song fromDataBase(const int id);
 public:
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
@@ -44,7 +51,7 @@ public:
      * @param url of local media file.
      * @return true if all done else false.
      */
-    bool Play(QString url) const;
+    bool Play(QString url);
     /**
      * @brief Play song from local database by id.
      * @param id_song of song.
@@ -54,16 +61,16 @@ public:
     /**
      * @brief Pause playning song.
      */
-    void Pause() const;
+    void Pause();
     /**
      * @brief stop playning song.
      */
-    void stop() const;
+    void stop();
     /**
      * @brief jump - jump to new position of playning media data.
      * @param seek - a new position of media data.
      */
-    void jump(const int seek) const;
+    void jump(const int seek);
     Sync();
     ~Sync();
 };

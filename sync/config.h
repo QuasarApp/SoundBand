@@ -12,6 +12,6 @@
 
 // network config
 #define DEDAULT_PORT                1239
-
+#define MAX_SYNC_TIME               10000 // 10 sec
 
 #endif // CONFIG_H

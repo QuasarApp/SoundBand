@@ -1,15 +1,15 @@
 #ifndef SYNC_H
 #define SYNC_H
-
-class QString;
+#include "song.h"
+#include <chrono>
 class QSqlDatabase;
 class QMediaPlayer;
 class QSqlQuery;
 namespace syncLib {
 
-class Song;
+typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
+
 class Node;
-class Syncer;
 
 /**
  * @brief The Sync class is main class of this library.
@@ -38,6 +38,17 @@ private:
      * @return song drom local database.
      */
     Song fromDataBase(const int id);
+    /**
+     * @brief now - get now time on microsecunds
+     * @return - count of microsecunds
+     */
+    microseconds now();
+    /**
+     * @brief from cast to chrono secunds
+     * @param mcrs microseconds of uint_64
+     * @return microseconds of chrono
+     */
+    Clock from(const microseconds &mcrs);
 public:
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
@@ -45,7 +56,7 @@ public:
      * @param syncdata data of synbced playning of media data.
      * @return true if all done else false.
      */
-    bool Play(const Song &song, Syncer* syncdata = nullptr);
+    bool Play(Song &song, Syncer* syncdata = nullptr);
     /**
      * @brief Play song from local media file.
      * @param url of local media file.

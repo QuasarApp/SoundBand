@@ -1,7 +1,4 @@
 #include "song.h"
-#include <QString>
-#include <QByteArray>
-
 #include "config.h"
 
 syncLib::SongHeader::SongHeader()

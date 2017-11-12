@@ -16,14 +16,6 @@
 #endif
 
 namespace syncLib{
-/**
- * @brief Clock system time on nanosecunds
- */
-typedef std::chrono::high_resolution_clock Clock;
-/**
- * @brief Time_point on nanosecunds (int64)
- */
-typedef Clock::time_point Time_point;
 
 Sync::Sync(){
     node = new Node();
@@ -63,17 +55,37 @@ int Sync::save(const Song &song){
     return qyery->value(0).toInt();
 }
 
-bool Sync::Play(const Song& song, Syncer *syncdata){
+/*
+ * information about chrono
+ * https://stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
+ */
+
+microseconds Sync::now(){
+    auto tim = std::chrono::system_clock::now();
+    auto mc = std::chrono::time_point_cast<std::chrono::microseconds>(tim);
+    auto epoh = mc.time_since_epoch();
+#ifdef QT_DEBUG
+    qDebug() << epoh.count();
+#endif
+    return epoh.count();
+}
+
+Clock Sync::from(const microseconds& mc){
+    std::chrono::duration<long> dur(mc);
+    return Clock(dur);
+}
+
+bool Sync::Play(Song& song, Syncer *syncdata){
     QBuffer buffer(&song.source);
     player->setMedia(QMediaContent(), &buffer);
     if(syncdata){
-        Time_point sync_time = syncdata->run  - Clock::now();
-        auto max_sync = Time_point(MAX_SYNC_TIME * 1000000);
-        if(sync_time > max_sync && sync_time <= 0)
+        microseconds sync_time  = syncdata->run - now();
+        if(sync_time > MAX_SYNC_TIME && sync_time <= 0)
             return false;
+        Clock run_time = from(syncdata->run);
         do {
             std::this_thread::yield();
-        } while (Clock::now() < syncdata->run);
+        } while (std::chrono::high_resolution_clock::now() < run_time);
         player->setPosition(syncdata->seek);
     }
     player->play();

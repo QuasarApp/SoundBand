@@ -1,9 +1,14 @@
 #ifndef SONG_H
 #define SONG_H
-class QString;
-class QByteArray;
-class QDataStream;
-class Time_point;
+#include <QString>
+#include <QByteArray>
+#include <QDataStream>
+
+/**
+ * @brief Time_point on nanosecunds (uint64_t)
+ */
+typedef uint64_t microseconds;
+
 namespace syncLib {
 
 /**
@@ -17,9 +22,9 @@ struct Syncer
      */
     unsigned int seek;
     /**
-     * @brief run when is play media file (int64)
+     * @brief run when is play media file (int)
      */
-    Time_point run;
+    microseconds run;
 };
 
 /**

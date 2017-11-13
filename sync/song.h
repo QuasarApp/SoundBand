@@ -3,11 +3,11 @@
 #include <QString>
 #include <QByteArray>
 #include <QDataStream>
-
+#include <config.h>
 /**
  * @brief Time_point on nanosecunds (uint64_t)
  */
-typedef uint64_t microseconds;
+typedef quint64 microseconds;
 
 namespace syncLib {
 
@@ -40,7 +40,7 @@ public:
     SongHeader();
     SongHeader& operator = (const SongHeader& right);
     bool operator == (const SongHeader& right);
-    virtual unsigned int getSize();
+    virtual unsigned int getSize()const;
     virtual ~SongHeader();
     friend QDataStream& operator << (QDataStream& stream, const SongHeader& song);
     friend QDataStream& operator >> (QDataStream& stream, SongHeader& song);

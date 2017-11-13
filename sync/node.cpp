@@ -3,38 +3,39 @@
 #include "song.h"
 #include <QDataStream>
 
+namespace syncLib{
 
-syncLib::package::package(){
-    type = syncLib::package::t_void;
+package::package(){
+    type = package::t_void;
     source.clear();
     playdata.run = 0;
     playdata.seek = 0;
     size = 0;
 }
-syncLib::package::package(const QByteArray &array):
-    syncLib::package::package(){
+package::package(const QByteArray &array):
+    package::package(){
     parseFrom(array);
 }
-const Song& syncLib::package::getSong(){
+const Song& package::getSong() const{
     return source;
 }
 
-Syncer syncLib::package::getPlayData(){
+Syncer package::getPlayData() const{
     return playdata;
 }
 
-syncLib::package::TypePackage syncLib::package::getType(){
+package::TypePackage package::getType() const{
     return type;
 }
 
-bool syncLib::package::isValid(){
+bool package::isValid() const{
     switch (type) {
     case package::t_void:
         return false;
     case package::t_close:
         return true;
     case package::t_sync:
-        return Syncer.run > 0 && Syncer.seek > 0;
+        return playdata.run > 0 && playdata.seek > 0;
     case package::t_song:
         return source.size > 0;
     case package::t_stop:
@@ -44,9 +45,9 @@ bool syncLib::package::isValid(){
     }
 }
 
-QByteArray syncLib::package::parseTo(){
+QByteArray package::parseTo(){
     QByteArray temp;
-    QDataStream stream(&temp);
+    QDataStream stream(temp);
     temp.clear();
     if(isValid()){
         switch (type) {
@@ -82,13 +83,13 @@ QByteArray syncLib::package::parseTo(){
         default:
             break;
         }
-    return temp;
     }
+    return temp;
 }
 
-bool syncLib::package::parseFrom(const QByteArray &array){
+bool package::parseFrom(const QByteArray &array){
     type = t_void;
-    QDataStream stream(&array);
+    QDataStream stream(array);
     switch (type) {
     case package::t_void:
         return false;
@@ -108,51 +109,51 @@ bool syncLib::package::parseFrom(const QByteArray &array){
     }
 }
 
-syncLib::Node::Node():QTcpServer(){
+Node::Node():QTcpServer(){
     connect(this,SIGNAL(acceptError(QAbstractSocket::SocketError)),SLOT(acceptError_(QAbstractSocket::SocketError)));
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
 }
-void syncLib::Node::acceptError_(QTcpSocket*c){
+void Node::acceptError_(QTcpSocket*c){
     c->close();
     clients.removeOne(c);
     emit ClientDisconnected(c);
     delete c;
 }
-QList<QTcpSocket*>* syncLib::Node::getClients(){
+QList<QTcpSocket*>* Node::getClients(){
     return &clients;
 }
-void syncLib::Node::newConnection_(){
+void Node::newConnection_(){
     QTcpSocket *newClient=new QTcpSocket(nextPendingConnection());
     clients.push_back(newClient);
     connect(newClient,SIGNAL(Disconnected(ETcpSocket*)),this,SLOT(acceptError_(QTcpSocket*)));
     connect(newClient,SIGNAL(Message(ETcpSocket*)),this,SLOT(readData(QTcpSocket*)));
     emit ClientConnected(newClient);
 }
-void syncLib::Node::readData(QTcpSocket *c){
+void Node::readData(QTcpSocket *c){
     emit Message(c);
 }
-void syncLib::Node::WriteAll(const QByteArray &data){
+void Node::WriteAll(const QByteArray &data){
     for(QTcpSocket*i:clients){
         i->write(data);
     }
 }
-void syncLib::Node::disconnectClient(QTcpSocket *c){
+void Node::disconnectClient(QTcpSocket *c){
     c->close();
     clients.removeOne(c);
     delete c;
 }
 
-bool syncLib::Node::addNode(const QString &node,int port){
+bool Node::addNode(const QString &node,int port){
 
     QTcpSocket *temp = new QTcpSocket;
-    if(temp->bind(node,port) && temp->open(QIODevice::ReadWrite)){
+    if(temp->bind(QHostAddress(node),port) && temp->open(QIODevice::ReadWrite)){
         clients.append(temp);
         return true;
     }
     return false;
 }
 
-bool syncLib::Node::addNode(QTcpSocket *node){
+bool Node::addNode(QTcpSocket *node){
     if(node->isOpen()){
         clients.append(node);
         return true;
@@ -160,10 +161,14 @@ bool syncLib::Node::addNode(QTcpSocket *node){
     return false;
 }
 
-syncLib::Node::~Node(){
+Node::~Node(){
     for(QTcpSocket *i:clients){
         i->abort();
         delete i;
     }
     this->close();
 }
+
+}
+
+

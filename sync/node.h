@@ -1,8 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 #include <QTcpServer>
-#include "config.h"
-class Song;
+#include <song.h>
 class Syncer;
 namespace syncLib {
 
@@ -57,9 +56,9 @@ public:
      * @return time of playning media data
      */
     Syncer getPlayData() const;
-    unsigned char getType() const;
+    TypePackage getType() const;
     bool isValid() const;
-    QByteArray parseTo() const;
+    QByteArray parseTo();
     bool parseFrom(const QByteArray& array);
 };
 

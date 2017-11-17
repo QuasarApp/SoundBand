@@ -1,6 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 #include <QTcpServer>
+#include "ETcpSocket.h"
 #include <song.h>
 class Syncer;
 namespace syncLib {
@@ -65,24 +66,24 @@ public:
 class Node:public QTcpServer{
     Q_OBJECT
 protected:
-    QList<QTcpSocket*> clients;
+    QList<ETcpSocket*> clients;
 private slots:
-    void acceptError_(QTcpSocket*);
+    void acceptError_(ETcpSocket*);
     void newConnection_();
-    void readData(QTcpSocket*_client);
+    void readData(ETcpSocket*_client);
 public:
     Node();
     void WriteAll(const QByteArray&);
-    void disconnectClient(QTcpSocket*);
-    QList<QTcpSocket*>* getClients();
+    void disconnectClient(ETcpSocket*);
+    QList<ETcpSocket*>* getClients();
     bool addNode(const QString &node, int port = DEDAULT_PORT);
-    bool addNode(QTcpSocket* node);
+    bool addNode(ETcpSocket* node);
     ~Node();
 signals:
     void Error(QString);
-    void Message(QTcpSocket*);
-    void ClientDisconnected(QTcpSocket*);
-    void ClientConnected(QTcpSocket*);
+    void Message(const package&,ETcpSocket*);
+    void ClientDisconnected(ETcpSocket*);
+    void ClientConnected(ETcpSocket*);
 };
 
 }

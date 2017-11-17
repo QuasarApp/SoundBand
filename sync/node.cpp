@@ -2,7 +2,7 @@
 #include <QTcpSocket>
 #include "song.h"
 #include <QDataStream>
-
+#include "exaptions.h"
 namespace syncLib{
 
 package::package(){
@@ -113,48 +113,57 @@ Node::Node():QTcpServer(){
     connect(this,SIGNAL(acceptError(QAbstractSocket::SocketError)),SLOT(acceptError_(QAbstractSocket::SocketError)));
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
 }
-void Node::acceptError_(QTcpSocket*c){
-    c->close();
+void Node::acceptError_(ETcpSocket*c){
+    c->getSource()->close();
     clients.removeOne(c);
     emit ClientDisconnected(c);
     delete c;
 }
-QList<QTcpSocket*>* Node::getClients(){
+QList<ETcpSocket*>* Node::getClients(){
     return &clients;
 }
 void Node::newConnection_(){
-    QTcpSocket *newClient=new QTcpSocket(nextPendingConnection());
+    ETcpSocket *newClient=new ETcpSocket(nextPendingConnection());
     clients.push_back(newClient);
-    connect(newClient,SIGNAL(Disconnected(ETcpSocket*)),this,SLOT(acceptError_(QTcpSocket*)));
-    connect(newClient,SIGNAL(Message(ETcpSocket*)),this,SLOT(readData(QTcpSocket*)));
+    connect(newClient,SIGNAL(Disconnected(ETcpSocket*)),this,SLOT(acceptError_(ETcpSocket*)));
+    connect(newClient,SIGNAL(Message(ETcpSocket*)),this,SLOT(readData(ETcpSocket*)));
     emit ClientConnected(newClient);
 }
-void Node::readData(QTcpSocket *c){
-    emit Message(c);
+void Node::readData(ETcpSocket *c){
+    package _package;
+    _package.parseFrom(*c->topStack());
+    emit Message(_package,c);
 }
 void Node::WriteAll(const QByteArray &data){
-    for(QTcpSocket*i:clients){
-        i->write(data);
+    for(ETcpSocket*i:clients){
+        i->getSource()->write(data);
     }
 }
-void Node::disconnectClient(QTcpSocket *c){
-    c->close();
+void Node::disconnectClient(ETcpSocket *c){
+    c->getSource()->close();
     clients.removeOne(c);
     delete c;
 }
 
 bool Node::addNode(const QString &node,int port){
+    ETcpSocket *temp;
 
-    QTcpSocket *temp = new QTcpSocket;
-    if(temp->bind(QHostAddress(node),port) && temp->open(QIODevice::ReadWrite)){
-        clients.append(temp);
-        return true;
+    try{
+        temp = new ETcpSocket(node,port);
+    }catch(addNodeExaption  &e){
+#ifdef QT_DEBUG
+        qDebug() << e.what();
+#endif
+        return false;
     }
-    return false;
+
+    clients.push_back(temp);
+    return true;
+
 }
 
-bool Node::addNode(QTcpSocket *node){
-    if(node->isOpen()){
+bool Node::addNode(ETcpSocket *node){
+    if(node->getSource()->isOpen()){
         clients.append(node);
         return true;
     }
@@ -162,8 +171,8 @@ bool Node::addNode(QTcpSocket *node){
 }
 
 Node::~Node(){
-    for(QTcpSocket *i:clients){
-        i->abort();
+    for(ETcpSocket *i:clients){
+        i->getSource()->close();
         delete i;
     }
     this->close();

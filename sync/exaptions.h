@@ -15,4 +15,12 @@ public:
     }
 };
 
+class addNodeExaption:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("Address not available");
+    }
+};
+
 #endif // EXAPTIONS_H

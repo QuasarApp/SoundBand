@@ -26,14 +26,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         sync.cpp \
     song.cpp \
-    node.cpp
+    node.cpp \
+    ETcpSocket.cpp
 
 HEADERS += \
         sync.h \
     song.h \
     node.h \
     config.h \
-    exaptions.h
+    exaptions.h \
+    ETcpSocket.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

@@ -1,6 +1,7 @@
 #ifndef SYNC_H
 #define SYNC_H
 #include "song.h"
+#include "node.h"
 #include <chrono>
 class QSqlDatabase;
 class QMediaPlayer;
@@ -21,11 +22,20 @@ private:
     Node *node;
     QSqlDatabase *db;
     QMediaPlayer *player;
+    QList<SongHeader>* playList;
     QSqlQuery *qyery;
+    bool fbroadcaster;
     /**
      * @brief initDB initialize local database of song
      */
     void initDB();
+    /**
+     * @brief load song of database;
+     * @brief song -
+     * @brief result - the resulting value;
+     * @return true if everything's done
+     */
+    bool load(const SongHeader &song, Song &result);
     /**
      * @brief save media data into local database.
      * @param song savining media data.
@@ -42,14 +52,28 @@ private:
      * @brief now - get now time on microsecunds
      * @return - count of microsecunds
      */
-    microseconds now();
+    milliseconds now();
     /**
      * @brief from cast to chrono secunds
      * @param mcrs microseconds of uint_64
      * @return microseconds of chrono
      */
-    Clock from(const microseconds &mcrs);
+    Clock from(const milliseconds &mcrs);
+    /**
+     * @brief createPackage - Create a package that shows current state of the node
+     * @param type - Type of an answer
+     * @param pac - the resulting value
+     * @return true if everything's done
+     */
+    bool createPackage(TypePackage type ,package& pac);
 public:
+    /**
+     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
+     * @param header of song
+     * @param syncdata data of synbced playning of media data.
+     * @return true if all done else false.
+     */
+    bool Play(SongHeader &header,  Syncer* syncdata = nullptr);
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param song playning media data.
@@ -68,7 +92,7 @@ public:
      * @param id_song of song.
      * @return true if all done else false.
      */
-    bool Play(int id_song);
+    bool Play(int id_song, Syncer* syncdata = nullptr);
     /**
      * @brief Pause playning song.
      */
@@ -82,6 +106,11 @@ public:
      * @param seek - a new position of media data.
      */
     void jump(const int seek);
+    /**
+     * @brief sync with server
+     * @param sync - data of sync
+     */
+    bool sync(const Syncer& sync);
     Sync();
     ~Sync();
 };

@@ -70,7 +70,7 @@ void ETcpSocket::readReady_(){
     {
         array->remove(0,sizeof(qint32));
         ReadyStack.push_back(array);
-        array=new QByteArray;
+        array=new QByteArray();
         emit Message(this);
     }else{
         emit donwload(array->size(),size);
@@ -93,8 +93,9 @@ QTcpSocket* ETcpSocket::getSource()const{
 }
 
 void ETcpSocket::nextItem(){
-    if(ReadyStack.size())
+    if( ReadyStack.size()){
         ReadyStack.pop_front();
+    }
 }
 
 int ETcpSocket::sizeDescriptPackege(){

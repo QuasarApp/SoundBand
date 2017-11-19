@@ -4,6 +4,27 @@
 #include <QTcpServer>
 #include <QList>
 #include <QDataStream>
+
+/**
+ * @brief The ETcpSocket class
+ * example :
+ * ETcpSocket *tcp;
+ * try{
+ *  tcp = new ETcpSocket(addres,port);
+ * }catch(addNodeExaption e){
+ *  e.what();
+ * }
+ * QByteArray *array;
+ * while(array = tcp.getSource()){
+ *  package pkg(*array);
+ *  package ans = ansver(pkg);
+ *  tcp.Write(ans);
+ *  array->clear();
+ *  delete array;
+ *
+ * }
+ *
+ */
 class ETcpSocket:public QObject
 {
     Q_OBJECT

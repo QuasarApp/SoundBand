@@ -4,7 +4,7 @@ namespace syncLib{
 
 SongHeader::SongHeader()
 {
-    this->id = 0;
+    this->id = -1;
     this->name = "";
     this->size = 0;
 }

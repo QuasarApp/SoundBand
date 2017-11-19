@@ -6,11 +6,7 @@
 namespace syncLib{
 
 package::package(){
-    type = package::t_void;
-    source.clear();
-    playdata.run = 0;
-    playdata.seek = 0;
-    size = 0;
+    clear();
 }
 package::package(const QByteArray &array):
     package::package(){
@@ -24,25 +20,34 @@ Syncer package::getPlayData() const{
     return playdata;
 }
 
-package::TypePackage package::getType() const{
+TypePackage package::getType() const{
     return type;
 }
 
 bool package::isValid() const{
     switch (type) {
-    case package::t_void:
+    case TypePackage::t_void:
         return false;
-    case package::t_close:
+    case TypePackage::t_close:
         return true;
-    case package::t_sync:
+    case TypePackage::t_sync:
         return playdata.run > 0 && playdata.seek > 0;
-    case package::t_song:
+    case TypePackage::t_song:
         return source.size > 0;
-    case package::t_stop:
+    case TypePackage::t_song_h:
+        return header.size > 0;
+    case TypePackage::t_stop:
         return true;
     default:
         return false;
     }
+}
+
+void package::clear(){
+    type = TypePackage::t_void;
+    source.clear();
+    playdata.run = 0;
+    playdata.seek = 0;
 }
 
 QByteArray package::parseTo(){
@@ -51,15 +56,15 @@ QByteArray package::parseTo(){
     temp.clear();
     if(isValid()){
         switch (type) {
-        case package::t_void:
+        case TypePackage::t_void:
             break;
-        case package::t_close:
+        case TypePackage::t_close:
             stream << int();
             stream << (unsigned char)(type);
             stream.device()->seek(0);
             stream << temp.size();
             break;
-        case package::t_sync:
+        case TypePackage::t_sync:
             stream << int();
             stream << (unsigned char)(type);
             stream << playdata.run;
@@ -67,14 +72,21 @@ QByteArray package::parseTo(){
             stream.device()->seek(0);
             stream << temp.size();
             break;
-        case package::t_song:
+        case TypePackage::t_song:
             stream << int();
             stream << (unsigned char)(type);
             stream << source;
             stream.device()->seek(0);
             stream << temp.size();
             break;
-        case package::t_stop:
+        case TypePackage::t_song_h:
+            stream << int();
+            stream << (unsigned char)(type);
+            stream << header;
+            stream.device()->seek(0);
+            stream << temp.size();
+            break;
+        case TypePackage::t_stop:
             stream << int();
             stream << (unsigned char)(type);
             stream.device()->seek(0);
@@ -88,21 +100,24 @@ QByteArray package::parseTo(){
 }
 
 bool package::parseFrom(const QByteArray &array){
-    type = t_void;
+    type = TypePackage::t_void;
     QDataStream stream(array);
     switch (type) {
-    case package::t_void:
+    case TypePackage::t_void:
         return false;
-    case package::t_close:
+    case TypePackage::t_close:
         return true;
-    case package::t_sync:
+    case TypePackage::t_sync:
         stream >> playdata.run;
         stream >> playdata.seek;
         return isValid();
-    case package::t_song:
+    case TypePackage::t_song:
         stream >> source;
         return isValid();
-    case package::t_stop:
+    case TypePackage::t_song_h:
+        stream >> header;
+        return isValid();
+    case TypePackage::t_stop:
         return true;
     default:
         return isValid();

@@ -7,7 +7,7 @@
 /**
  * @brief Time_point on nanosecunds (uint64_t)
  */
-typedef quint64 microseconds;
+typedef quint64 milliseconds;
 
 namespace syncLib {
 
@@ -20,11 +20,11 @@ struct Syncer
     /**
      * @brief seek - wher is play media file
      */
-    unsigned int seek;
+    milliseconds seek;
     /**
      * @brief run when is play media file (int)
      */
-    microseconds run;
+    milliseconds run;
 };
 
 /**

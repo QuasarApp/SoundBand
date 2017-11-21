@@ -15,12 +15,13 @@ namespace syncLib {
  * t_stop - the package with type 'stop' necessary for stoping playning media files.
  */
 enum TypePackage{
-     t_void = 0x0,
-     t_close = 0x1,
-     t_sync = 0x2,
-     t_song_h = 0x4,
-     t_song = 0x8,
-     t_stop = 0x10
+     t_void =   0x00,
+     t_play =   0x01,
+     t_sync =   0x02,
+     t_song_h = 0x04,
+     t_song =   0x08,
+     t_close =  0x10,
+     t_stop =   0x20
 };
 
 /**

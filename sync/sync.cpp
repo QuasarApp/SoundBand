@@ -116,6 +116,8 @@ bool Sync::Play(Song& song, Syncer *syncdata){
         return false;
     }
     fbroadcaster = !bool(syncdata);
+//    if(fbroadcaster){
+//    }
     player->play();
     playList->push_front(static_cast<SongHeader>(song));
     return true;
@@ -180,10 +182,9 @@ bool Sync::sync(const Syncer &sync){
 bool Sync::createPackage(TypePackage type, package &pac){
     pac.clear();
 
-    if(type & TypePackage::t_close){
-        pac.type = type;
+    pac.type = type;
 
-    }else if(type & TypePackage::t_sync){
+    if(type & TypePackage::t_sync){
         if(!fbroadcaster)
             return false;
 
@@ -191,14 +192,18 @@ bool Sync::createPackage(TypePackage type, package &pac){
         pac.playdata.run = now() + SYNC_TIME;
         pac.playdata.seek = player->position() + SYNC_TIME;
 
-    }else if(type & TypePackage::t_song_h){
+    }
+
+    if(type & TypePackage::t_song_h){
         if(!fbroadcaster || playList->isEmpty())
             return false;
 
         pac.type = type;
         pac.header = playList->front();
 
-    }else if(type & TypePackage::t_song){
+    }
+
+    if(type & TypePackage::t_song){
         if(!fbroadcaster || playList->isEmpty())
             return false;
 
@@ -206,12 +211,8 @@ bool Sync::createPackage(TypePackage type, package &pac){
         if(!load(playList->front(), pac.source))
             return false;
 
-    }else if(type & TypePackage::t_stop){
-        pac.type = type;
-
-    }else{
-        return false;
     }
+
     return pac.isValid();
 }
 

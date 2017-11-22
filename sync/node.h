@@ -15,13 +15,15 @@ namespace syncLib {
  * t_stop - the package with type 'stop' necessary for stoping playning media files.
  */
 enum TypePackage{
-     t_void =   0x00,
-     t_play =   0x01,
-     t_sync =   0x02,
-     t_song_h = 0x04,
-     t_song =   0x08,
-     t_close =  0x10,
-     t_stop =   0x20
+     t_void         =   0x00,
+     t_play         =   0x01,
+     t_sync         =   0x02,
+     t_song_h       =   0x04,
+     t_song         =   0x08,
+     t_close        =   0x10,
+     t_stop         =   0x20,
+     t_what         =   0x40,
+     t_brodcaster   =   0x80
 };
 
 /**
@@ -87,7 +89,7 @@ public:
     ~Node();
 signals:
     void Error(QString);
-    void Message(const package&,ETcpSocket*);
+    void Message(ETcpSocket*);
     void ClientDisconnected(ETcpSocket*);
     void ClientConnected(ETcpSocket*);
 };

@@ -131,15 +131,18 @@ Node::Node():QTcpServer(){
     connect(this,SIGNAL(acceptError(QAbstractSocket::SocketError)),SLOT(acceptError_(QAbstractSocket::SocketError)));
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
 }
+
 void Node::acceptError_(ETcpSocket*c){
     c->getSource()->close();
     clients.removeOne(c);
     emit ClientDisconnected(c);
     delete c;
 }
+
 QList<ETcpSocket*>* Node::getClients(){
     return &clients;
 }
+
 void Node::newConnection_(){
     ETcpSocket *newClient=new ETcpSocket(nextPendingConnection());
     clients.push_back(newClient);
@@ -147,16 +150,17 @@ void Node::newConnection_(){
     connect(newClient,SIGNAL(Message(ETcpSocket*)),this,SLOT(readData(ETcpSocket*)));
     emit ClientConnected(newClient);
 }
+
 void Node::readData(ETcpSocket *c){
-    package _package;
-    _package.parseFrom(*c->topStack());
-    emit Message(_package,c);
+    emit Message(c);
 }
+
 void Node::WriteAll(const QByteArray &data){
     for(ETcpSocket*i:clients){
         i->getSource()->write(data);
     }
 }
+
 void Node::disconnectClient(ETcpSocket *c){
     c->getSource()->close();
     clients.removeOne(c);

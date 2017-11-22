@@ -16,15 +16,25 @@ class Node;
  * @brief The Sync class is main class of this library.
  * the 'sync' has supported synced playning media files on network and saving media data into local database.
  */
-class Sync
+class Sync : public QObject
 {
+    Q_OBJECT
 private:
     Node *node;
     QSqlDatabase *db;
     QMediaPlayer *player;
     QList<SongHeader>* playList;
     QSqlQuery *qyery;
+    QList<ETcpSocket*> servers;
     bool fbroadcaster;
+
+
+
+    /**
+     * @brief rescan - search for existing servers
+     * result saved in servers
+     */
+    void rescan(bool global = false);
     /**
      * @brief initDB initialize local database of song
      */
@@ -66,6 +76,14 @@ private:
      * @return true if everything's done
      */
     bool createPackage(TypePackage type ,package& pac);
+private slots:
+
+    /**
+     * @brief packageRender - the handler of all messages received.
+     * @param socket
+     */
+    void packageRender(ETcpSocket* socket);
+
 public:
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.

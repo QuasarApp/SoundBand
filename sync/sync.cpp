@@ -21,6 +21,8 @@ Sync::Sync(){
     if(!player->isAvailable()){
         throw MediaException();
     }
+    initDB();
+    connect(node,SIGNAL(Message(ETcpSocket*)),SLOT(packageRender(ETcpSocket*)));
 }
 
 void Sync::initDB(){
@@ -188,7 +190,6 @@ bool Sync::createPackage(TypePackage type, package &pac){
         if(!fbroadcaster)
             return false;
 
-        pac.type = type;
         pac.playdata.run = now() + SYNC_TIME;
         pac.playdata.seek = player->position() + SYNC_TIME;
 
@@ -198,7 +199,6 @@ bool Sync::createPackage(TypePackage type, package &pac){
         if(!fbroadcaster || playList->isEmpty())
             return false;
 
-        pac.type = type;
         pac.header = playList->front();
 
     }
@@ -207,19 +207,57 @@ bool Sync::createPackage(TypePackage type, package &pac){
         if(!fbroadcaster || playList->isEmpty())
             return false;
 
-        pac.type = type;
         if(!load(playList->front(), pac.source))
             return false;
 
     }
+    if(fbroadcaster)
+        pac.type = TypePackage(pac.type | t_brodcaster);
 
     return pac.isValid();
+}
+
+void Sync::packageRender(ETcpSocket *socket){
+
+    QByteArray *array;
+    while((array = socket->topStack())){
+     package pkg;
+     if(!pkg.parseFrom((*array))){
+         throw badAnswerExaption();
+     }
+//     package answer;
+
+// scaning servers
+     if(pkg.getType() & t_brodcaster && servers.indexOf(socket) == -1){
+        servers.append(socket);
+     }
+
+     if(!(pkg.getType() & t_brodcaster) && servers.indexOf(socket) != -1){
+         servers.removeOne(socket);
+     }
+
+
+//     socket.Write(ans);
+     array->clear();
+     delete array;
+
+    }
+}
+
+void Sync::rescan(bool){
+    package pac;
+    if(!createPackage(t_what,pac)){
+        throw createPackageExaption();
+        return;
+    }
+    node->WriteAll(pac.parseTo());
 }
 
 Sync::~Sync(){
     delete node;
     delete db;
     delete player;
+    servers.clear();
 }
 
 }

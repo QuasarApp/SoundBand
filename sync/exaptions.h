@@ -23,4 +23,20 @@ public:
     }
 };
 
+class createPackageExaption:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("Сould not generate network packet");
+    }
+};
+
+class badAnswerExaption:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("could not parse message nodes.");
+    }
+};
+
 #endif // EXAPTIONS_H

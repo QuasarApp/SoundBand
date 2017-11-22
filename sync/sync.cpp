@@ -23,6 +23,8 @@ Sync::Sync(){
     }
     initDB();
     connect(node,SIGNAL(Message(ETcpSocket*)),SLOT(packageRender(ETcpSocket*)));
+    connect(&deepScaner,SIGNAL(scaned(QList<ETcpSocket*>*)),SLOT(deepScaned(QList<ETcpSocket*>*)));
+
 }
 
 void Sync::initDB(){
@@ -244,13 +246,30 @@ void Sync::packageRender(ETcpSocket *socket){
     }
 }
 
-void Sync::rescan(bool){
+void Sync::rescan(bool deep){
     package pac;
     if(!createPackage(t_what,pac)){
         throw createPackageExaption();
         return;
     }
     node->WriteAll(pac.parseTo());
+
+    if(deep){
+       deepScaner.setInterval(DEEP_SCANER_INTERVAL);
+       deepScaner.scane();
+    }
+}
+
+void Sync::deepScaned(QList<ETcpSocket *> * list){
+    package pac;
+    if(!createPackage(t_what,pac)){
+        throw createPackageExaption();
+        return;
+    }
+    QByteArray array = pac.parseTo();
+    for(ETcpSocket * i: *list){
+        i->Write(array);
+    }
 }
 
 Sync::~Sync(){

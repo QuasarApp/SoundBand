@@ -2,6 +2,7 @@
 #define SYNC_H
 #include "song.h"
 #include "node.h"
+#include "LocalScanner.h"
 #include <chrono>
 class QSqlDatabase;
 class QMediaPlayer;
@@ -27,14 +28,14 @@ private:
     QSqlQuery *qyery;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
-
+    LocalScanner deepScaner;
 
 
     /**
      * @brief rescan - search for existing servers
      * result saved in servers
      */
-    void rescan(bool global = false);
+    void rescan(bool deep = false);
     /**
      * @brief initDB initialize local database of song
      */
@@ -83,6 +84,10 @@ private slots:
      * @param socket
      */
     void packageRender(ETcpSocket* socket);
+    /**
+     * @brief deepScaned scaning in local network
+     */
+    void deepScaned(QList<ETcpSocket *> *);
 
 public:
     /**

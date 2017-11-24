@@ -15,7 +15,7 @@ ETcpSocket::ETcpSocket(QTcpSocket*ptr)
 ETcpSocket::ETcpSocket(const QString& address, int port){
     source = new QTcpSocket();
     if(!source->bind(QHostAddress(address),port) || !source->open(QIODevice::ReadWrite)){
-        throw addNodeExaption();
+        throw AddNodeExaption();
     }
     init();
 }

@@ -6,6 +6,8 @@
 class Syncer;
 namespace syncLib {
 
+typedef unsigned char Type;
+
 /**
  * @brief The TypePackage enum
  * t_void - this package empty and not valid.
@@ -17,9 +19,9 @@ namespace syncLib {
 enum TypePackage{
      t_void         =   0x00,
      t_play         =   0x01,
-     t_sync         =   0x02,
-     t_song_h       =   0x04,
-     t_song         =   0x08,
+     t_song_h       =   0x02,
+     t_song         =   0x04,
+     t_sync         =   0x08,
      t_close        =   0x10,
      t_stop         =   0x20,
      t_what         =   0x40,
@@ -45,7 +47,7 @@ class package
 */
 
 private:
-    TypePackage type;
+    Type type;
     Song source;
     SongHeader header;
     Syncer playdata;
@@ -53,6 +55,11 @@ public:
     package();
     package(const QByteArray& array);
     ~package();
+    /**
+     * @brief getHeader
+     * @return Header of the song
+     */
+    const SongHeader& getHeader() const;
     /**
      * @brief getSong
      * @return Song
@@ -62,8 +69,8 @@ public:
      * @brief getPlayTime
      * @return time of playning media data
      */
-    Syncer getPlayData() const;
-    TypePackage getType() const;
+    const Syncer &getPlayData() const;
+    const Type& getType() const;
     bool isValid() const;
     void clear();
     QByteArray parseTo();

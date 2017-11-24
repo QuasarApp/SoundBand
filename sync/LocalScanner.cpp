@@ -57,7 +57,6 @@ void LocalScanner::scaned_(){
 }
 
 void LocalScanner::connected(ETcpSocket *c){
-    socets.removeOne(c);
     results.push_back(c);
 }
 

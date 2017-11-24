@@ -15,7 +15,7 @@ public:
     }
 };
 
-class addNodeExaption:public std::exception
+class AddNodeExaption:public std::exception
 {
 public:
     QString what(){
@@ -23,7 +23,7 @@ public:
     }
 };
 
-class createPackageExaption:public std::exception
+class CreatePackageExaption:public std::exception
 {
 public:
     QString what(){
@@ -31,11 +31,27 @@ public:
     }
 };
 
-class badAnswerExaption:public std::exception
+class BadAnswerExaption:public std::exception
 {
 public:
     QString what(){
         return QObject::tr("could not parse message nodes.");
+    }
+};
+
+class BrodcastConflict:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("The server received the packet from the server.");
+    }
+};
+
+class SyncError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("The playlist is empty, the player has nothing to play.");
     }
 };
 

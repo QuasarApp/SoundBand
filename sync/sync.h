@@ -76,7 +76,7 @@ private:
      * @param pac - the resulting value
      * @return true if everything's done
      */
-    bool createPackage(TypePackage type ,package& pac);
+    bool createPackage(Type type ,package& pac);
 private slots:
 
     /**
@@ -96,30 +96,30 @@ public:
      * @param syncdata data of synbced playning of media data.
      * @return true if all done else false.
      */
-    bool Play(SongHeader &header,  Syncer* syncdata = nullptr);
+    bool play(const SongHeader &header,  const Syncer *syncdata = nullptr);
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param song playning media data.
      * @param syncdata data of synbced playning of media data.
      * @return true if all done else false.
      */
-    bool Play(Song &song, Syncer* syncdata = nullptr);
+    bool play(Song &song, Syncer *syncdata = nullptr);
     /**
      * @brief Play song from local media file.
      * @param url of local media file.
      * @return true if all done else false.
      */
-    bool Play(QString url);
+    bool play(QString url);
     /**
      * @brief Play song from local database by id.
      * @param id_song of song.
      * @return true if all done else false.
      */
-    bool Play(int id_song, Syncer* syncdata = nullptr);
+    bool play(int id_song, Syncer* syncdata = nullptr);
     /**
      * @brief Pause playning song.
      */
-    void Pause();
+    void pause();
     /**
      * @brief stop playning song.
      */

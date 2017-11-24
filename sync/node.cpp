@@ -12,15 +12,20 @@ package::package(const QByteArray &array):
     package::package(){
     parseFrom(array);
 }
+
+const SongHeader& package::getHeader() const{
+    return header;
+}
+
 const Song& package::getSong() const{
     return source;
 }
 
-Syncer package::getPlayData() const{
+const Syncer& package::getPlayData() const{
     return playdata;
 }
 
-TypePackage package::getType() const{
+const Type& package::getType() const{
     return type;
 }
 
@@ -172,7 +177,7 @@ bool Node::addNode(const QString &node,int port){
 
     try{
         temp = new ETcpSocket(node,port);
-    }catch(addNodeExaption  &e){
+    }catch(AddNodeExaption  &e){
 #ifdef QT_DEBUG
         qDebug() << e.what();
 #endif

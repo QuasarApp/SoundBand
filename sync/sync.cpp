@@ -306,9 +306,7 @@ void Sync::packageRender(ETcpSocket *socket){
 
         }
 
-        array->clear();
-        delete array;
-
+        socket->nextItem();
     }
 }
 
@@ -338,6 +336,9 @@ void Sync::deepScaned(QList<ETcpSocket *> * list){
     }
 }
 
+QString Sync::getVersion(){
+    return QString(tr("Version") + "%0.%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION).arg(REVISION_VERSION);
+}
 Sync::~Sync(){
     delete node;
     delete db;

@@ -92,8 +92,12 @@ QTcpSocket* ETcpSocket::getSource()const{
     return source;
 }
 
-void ETcpSocket::nextItem(){
+void ETcpSocket::nextItem(bool free){
     if( ReadyStack.size()){
+        if(free){
+            ReadyStack.front()->clear();
+            delete ReadyStack.front();
+        }
         ReadyStack.pop_front();
     }
 }

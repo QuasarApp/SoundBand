@@ -10,12 +10,17 @@ typedef unsigned char Type;
 
 /**
  * @brief The TypePackage enum
- * t_void - this package empty and not valid.
- * t_close - the information about close channel.
- * t_sync - the infomation about sync playning media file on network.
- * t_song - the package with this type is necessary for translite media data on network.
- * t_stop - the package with type 'stop' necessary for stoping playning media files.
- */
+ * t_void         =   this package empty and not valid.
+ * t_play         =   play curent audio file.
+ * t_song_h       =   the header of playing audio file.
+ * t_song         =   the package with this type is necessary for translite media data on network.
+ * t_sync         =   the infomation about sync playning media file on network.
+ * t_close        =   the information about close channel.
+ * t_stop         =   the package with type 'stop' necessary for stoping playning media files.
+ * t_what         =   request for information about the node
+ * t_brodcaster   =   information about the node
+*/
+
 enum TypePackage{
      t_void         =   0x00,
      t_play         =   0x01,
@@ -33,18 +38,10 @@ enum TypePackage{
  *
  * parse map:
  * 1 byle - type
- * 4 byte - size of data of package (it avelable if type is t_sync or t_song)
  * data
  */
 class package
 {
-    /*parse map */
-
-/*
- * 1 byle - type
- * 4 byte - size of data of package (it avelable if type is t_sync or t_song)
- * data
-*/
 
 private:
     Type type;

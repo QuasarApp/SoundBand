@@ -3,7 +3,8 @@
 #include <QString>
 #include <QByteArray>
 #include <QDataStream>
-#include <config.h>
+#include "config.h"
+
 /**
  * @brief Time_point on nanosecunds (uint64_t)
  */
@@ -31,8 +32,8 @@ struct Syncer
  * @brief The SongHeader class sound header with media information
  * (id,size and name)
  */
-class SongHeader
-{
+class SongHeader{
+
 public:
     int id;
     QString name;
@@ -45,6 +46,7 @@ public:
     friend QDataStream& operator << (QDataStream& stream, const SongHeader& song);
     friend QDataStream& operator >> (QDataStream& stream, SongHeader& song);
 };
+
 /**
  * @brief The Song class
  * into this calss added mediadata of playable media file.

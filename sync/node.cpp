@@ -1,14 +1,14 @@
 #include "node.h"
-#include <QTcpSocket>
-#include "song.h"
-#include <QDataStream>
 #include "exaptions.h"
+
 namespace syncLib{
 
-package::package(){
+package::package()
+{
     clear();
 }
-package::package(const QByteArray &array):
+
+package::package( QByteArray &array):
     package::package(){
     parseFrom(array);
 }
@@ -80,7 +80,7 @@ void package::clear(){
 
 QByteArray package::parseTo(){
     QByteArray temp;
-    QDataStream stream(temp);
+    QDataStream stream(&temp, QIODevice::WriteOnly);
     temp.clear();
     if(isValid()){
         stream <<  static_cast<unsigned char>(type);
@@ -105,9 +105,9 @@ QByteArray package::parseTo(){
     return temp;
 }
 
-bool package::parseFrom(const QByteArray &array){
+bool package::parseFrom(QByteArray &array){
     type = TypePackage::t_void;
-    QDataStream stream(array);
+    QDataStream stream(&array, QIODevice::ReadOnly);
 
     unsigned char temp_type;
     stream >> temp_type;
@@ -132,8 +132,10 @@ bool package::parseFrom(const QByteArray &array){
     return isValid();
 }
 
+package::~package(){}
+
 Node::Node():QTcpServer(){
-    connect(this,SIGNAL(acceptError(QAbstractSocket::SocketError)),SLOT(acceptError_(QAbstractSocket::SocketError)));
+
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
 }
 

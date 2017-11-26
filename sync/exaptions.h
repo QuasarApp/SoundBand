@@ -55,4 +55,12 @@ public:
     }
 };
 
+class InitDBError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("Error creating database..");
+    }
+};
+
 #endif // EXAPTIONS_H

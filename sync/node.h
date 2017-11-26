@@ -2,8 +2,8 @@
 #define NODE_H
 #include <QTcpServer>
 #include "ETcpSocket.h"
-#include <song.h>
-class Syncer;
+#include "song.h"
+
 namespace syncLib {
 
 typedef unsigned char Type;
@@ -53,7 +53,7 @@ private:
     Syncer playdata;
 public:
     package();
-    package(const QByteArray& array);
+    package(QByteArray &array);
     ~package();
     /**
      * @brief getHeader
@@ -74,7 +74,7 @@ public:
     bool isValid() const;
     void clear();
     QByteArray parseTo();
-    bool parseFrom(const QByteArray& array);
+    bool parseFrom(QByteArray& array);
     friend class Sync;
 };
 

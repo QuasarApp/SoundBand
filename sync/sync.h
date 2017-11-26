@@ -7,6 +7,7 @@
 class QSqlDatabase;
 class QMediaPlayer;
 class QSqlQuery;
+class QBuffer;
 namespace syncLib {
 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
@@ -24,12 +25,18 @@ private:
     Node *node;
     QSqlDatabase *db;
     QMediaPlayer *player;
-    QList<SongHeader>* playList;
+    QBuffer *buffer;
+    QList<SongHeader> playList;
     QSqlQuery *qyery;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     LocalScanner deepScaner;
 
+    /**
+     * @brief sqlErrorLog show sql error
+     * @param qyery
+     */
+    void sqlErrorLog(const QString& qyery);
 
     /**
      * @brief rescan - search for existing servers

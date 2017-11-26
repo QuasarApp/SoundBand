@@ -6,7 +6,6 @@
 #include "exaptions.h"
 #include "time.h"
 #include "thread"
-
 #include "config.h"
 
 #ifdef QT_DEBUG
@@ -15,45 +14,91 @@
 
 namespace syncLib{
 
-Sync::Sync(){
+Sync::Sync():
+    node(nullptr),
+    db(nullptr),
+    player(nullptr),
+    qyery(nullptr),
+    buffer(nullptr)
+{
     node = new Node();
     player = new QMediaPlayer(nullptr,QMediaPlayer::LowLatency);
+    buffer = new QBuffer;
     if(!player->isAvailable()){
         throw MediaException();
     }
+
     initDB();
+
     connect(node,SIGNAL(Message(ETcpSocket*)),SLOT(packageRender(ETcpSocket*)));
     connect(&deepScaner,SIGNAL(scaned(QList<ETcpSocket*>*)),SLOT(deepScaned(QList<ETcpSocket*>*)));
 
 }
 
+void Sync::sqlErrorLog(const QString &qyery){
+#ifdef QT_DEBUG
+            qDebug()<< qyery << ": fail:\n " <<this->qyery->lastError();
+#endif
+}
+
 void Sync::initDB(){
     if(db) return;
+    db = new QSqlDatabase();
     *db = QSqlDatabase::addDatabase("QSQLITE");
     QDir d(QString("./%0").arg(DATABASE_NAME));
     db->setDatabaseName(d.absolutePath());
     if(db->open()){
         qyery = new QSqlQuery(*db);
-        QString qyer = QString("CREATE TABLE IF NOT EXISTS %0 "
-                     "id int NOT NULL AUTO_INCREMENT,"
-                     "name VARCHAR(100),"
-                     "size INT NOT NULL,"
-                     "data BLOB NOT NULL").arg(DATATABLE_NAME);
-        qyery->exec(qyer);
+        QString qyer = QString("CREATE TABLE IF NOT EXISTS %0"
+                     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                     "name VARCHAR(100), "
+                     "size INT NOT NULL, "
+                     "data BLOB NOT NULL)").arg(DATATABLE_NAME);
+        if(!qyery->exec(qyer)){
+            sqlErrorLog(qyer);
+            throw InitDBError();
+        }
+
+        qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS i%0 ON %0(name,size)").arg(DATATABLE_NAME);
+        if(!qyery->exec(qyer)){
+            sqlErrorLog(qyer);
+            throw InitDBError();
+        }
     }
 }
 
 int Sync::save(const Song &song){
-    QString qyer = QString("INSERT INTO %0 (name, size, data) VALUES"
-                           "(%1,%2, :data)").arg(DATATABLE_NAME,
+    QString qyer = QString("SELECT id from %0 where name='%1' and size=%2").arg(DATATABLE_NAME,
                                                  song.name,
                                                  QString::number(song.size));
-    qyery->prepare(qyer);
-    qyery->bindValue(":data",song.source);
-    if(!qyery->exec())
+    if(!qyery->exec(qyer)){
+        sqlErrorLog(qyer);
         return -1;
-    if(qyery->exec(QString("SELECT MAAX(id) form %0").arg(DATATABLE_NAME)))
+    }
+    if(qyery->next()){
+        return qyery->value(0).toInt();
+    }
+
+    qyer = QString("INSERT INTO %0 (name,size,data) VALUES"
+                           "('%1',%2,:val)").arg(DATATABLE_NAME,
+                                                 song.name,
+                                                 QString::number(song.size));
+    if(!qyery->prepare(qyer)){
+        sqlErrorLog(qyer + " prepare error");
         return -1;
+    }
+    qyery->bindValue(":val",song.source);
+    if(!qyery->exec()){
+        sqlErrorLog(qyer);
+        return -1;
+    }
+    if(!qyery->exec(QString("SELECT MAX(id) from %0").arg(DATATABLE_NAME))){
+        sqlErrorLog(qyer);
+        return -1;
+    }
+    if(!qyery->next())
+        return -1;
+
     return qyery->value(0).toInt();
 }
 
@@ -70,6 +115,10 @@ bool Sync::load(const SongHeader &song,Song &result){
             return false;
         }
     }else {
+        return false;
+    }
+
+    if(!qyery->next()){
         return false;
     }
 
@@ -114,13 +163,14 @@ bool Sync::play(const SongHeader &header, const Syncer *syncdata){
 }
 
 bool Sync::play(Song &song, Syncer *syncdata){
-    QBuffer buffer(&song.source);
-    player->setMedia(QMediaContent(), &buffer);
-    if(syncdata && !sync(*syncdata)){
-        return false;
-    }
+    //QBuffer buffer(&song.source);
+    buffer->setData(song.source);
+    buffer->open(QIODevice::ReadOnly);
+    player->setMedia(QMediaContent(), buffer);
+
 
     fbroadcaster = !bool(syncdata);
+    playList.push_front(static_cast<SongHeader&>(song));
     if(fbroadcaster){
         package pac;
         if(!createPackage(t_song_h | t_sync, pac)){
@@ -129,15 +179,19 @@ bool Sync::play(Song &song, Syncer *syncdata){
         node->WriteAll(pac.parseTo());
     }
 
+    if(syncdata && !sync(*syncdata)){
+        return false;
+    }
+
     player->play();
-    playList->push_front(static_cast<SongHeader>(song));
+
     return true;
 }
 
 bool Sync::play(int id_song, Syncer *syncdata){
 
     QString qyer = QString("SELECT * from %0 where id=%1").arg(DATATABLE_NAME).arg(id_song);
-    if(!qyery->exec(qyer)){
+    if(!qyery->exec(qyer) || !qyery->next()){
         return false;
     }
     Song song;
@@ -203,18 +257,18 @@ bool Sync::createPackage(Type type, package &pac){
     }
 
     if(type & TypePackage::t_song_h && fbroadcaster){
-        if(playList->isEmpty())
+        if(playList.isEmpty())
             return false;
 
-        pac.header = playList->front();
+        pac.header = playList.front();
 
     }
 
     if(type & TypePackage::t_song && fbroadcaster){
-        if(playList->isEmpty())
+        if(playList.isEmpty())
             return false;
 
-        if(!load(playList->front(), pac.source))
+        if(!load(playList.front(), pac.source))
             return false;
 
     }
@@ -285,7 +339,7 @@ void Sync::packageRender(ETcpSocket *socket){
             }
 
             if(pkg.getType() & t_sync){
-                if(playList->empty()){
+                if(playList.empty()){
                     throw SyncError();
                 }
             }

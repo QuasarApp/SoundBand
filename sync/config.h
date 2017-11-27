@@ -3,7 +3,7 @@
 
 // LIB VERSION
 #define MAJOR_VERSION               0
-#define MINOR_VERSION               0
+#define MINOR_VERSION               1
 #define REVISION_VERSION            0
 
 // sqlite config

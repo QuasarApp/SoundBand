@@ -134,6 +134,11 @@ public:
      * @param sync - data of sync
      */
     bool sync(const Syncer& sync);
+    /**
+     * @brief getVersion
+     * @return curent version of library
+     */
+    QString getVersion();
     Sync();
     ~Sync();
 };

@@ -4,6 +4,8 @@
 #include "node.h"
 #include "LocalScanner.h"
 #include <chrono>
+#include "config.h"
+
 class QSqlDatabase;
 class QMediaPlayer;
 class QSqlQuery;
@@ -31,6 +33,7 @@ private:
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     LocalScanner deepScaner;
+    int port;
 
     /**
      * @brief sqlErrorLog show sql error
@@ -141,7 +144,29 @@ public:
      * @param sync - data of sync
      */
     bool sync(const Syncer& sync);
-    Sync();
+    /**
+     * @brief addNode add new connect
+     * @param ip of connection
+     * @param port of connection
+     * @return true if all done
+     */
+    bool addNode(const QString ip, int port);
+
+    /**
+     * @brief scan - search for existing servers
+     * result saved in servers
+     */
+    void scan();
+
+    /**
+     * @brief getServersList
+     * @return  list of servers
+     */
+    const QList<ETcpSocket*>& getServersList() const;
+
+    bool listen(ETcpSocket* server);
+
+    Sync(int port = DEFAULT_PORT);
     ~Sync();
 };
 }

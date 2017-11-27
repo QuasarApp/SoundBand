@@ -3,6 +3,7 @@
 #include <QTcpServer>
 #include "ETcpSocket.h"
 #include "song.h"
+#include "config.h"
 
 namespace syncLib {
 
@@ -91,7 +92,7 @@ public:
     void WriteAll(const QByteArray&);
     void disconnectClient(ETcpSocket*);
     QList<ETcpSocket*>* getClients();
-    bool addNode(const QString &node, int port = DEDAULT_PORT);
+    bool addNode(const QString &node, int port);
     bool addNode(ETcpSocket* node);
     ~Node();
 signals:

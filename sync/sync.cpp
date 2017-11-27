@@ -14,7 +14,7 @@
 
 namespace syncLib{
 
-Sync::Sync():
+Sync::Sync(int port):
     node(nullptr),
     db(nullptr),
     player(nullptr),
@@ -22,6 +22,7 @@ Sync::Sync():
     buffer(nullptr)
 {
     node = new Node();
+    node->listen(QHostAddress::Any, this->port = port);
     player = new QMediaPlayer(nullptr,QMediaPlayer::LowLatency);
     buffer = new QBuffer;
     if(!player->isAvailable()){
@@ -244,6 +245,40 @@ bool Sync::sync(const Syncer &sync){
     return true;
 }
 
+bool Sync::addNode(const QString ip, int port){
+     if(!node->addNode(ip, port))
+         return false;
+
+     rescan();
+     return true;
+}
+
+void Sync::scan(){
+
+    rescan(true);
+}
+
+const QList<ETcpSocket*>& Sync::getServersList() const{
+    return servers;
+}
+
+bool Sync::listen(ETcpSocket *server){
+    if(!server){
+        return false;
+    }
+
+    if(!server->getSource()->isOpen() && server->getSource()->open(QIODevice::ReadWrite)){
+        return false;
+    }
+    package pac;
+
+    if(!createPackage(t_sync,pac)){
+        return false;
+    }
+
+    return server->Write(pac.parseTo());
+}
+
 bool Sync::createPackage(Type type, package &pac){
     pac.clear();
 
@@ -376,7 +411,7 @@ void Sync::rescan(bool deep){
 
     if(deep){
        deepScaner.setInterval(DEEP_SCANER_INTERVAL);
-       deepScaner.scane();
+       deepScaner.scane(port);
     }
 }
 

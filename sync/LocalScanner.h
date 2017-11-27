@@ -18,7 +18,7 @@ private slots:
     void scaned_();
     void connected(ETcpSocket *);
 public:
-    void scane();
+    void scane(int port);
     void setInterval(int msec);
     static QHostAddress thisAdress();
     LocalScanner();

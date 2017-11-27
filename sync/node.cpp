@@ -135,7 +135,6 @@ bool package::parseFrom(QByteArray &array){
 package::~package(){}
 
 Node::Node():QTcpServer(){
-
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
 }
 

@@ -34,6 +34,7 @@ private:
     bool fbroadcaster;
     LocalScanner deepScaner;
     int port;
+    QString dataBaseName;
 
     /**
      * @brief sqlErrorLog show sql error
@@ -49,7 +50,7 @@ private:
     /**
      * @brief initDB initialize local database of song
      */
-    void initDB();
+    void initDB(const QString& database = DATABASE_NAME );
     /**
      * @brief load song of database;
      * @brief song -
@@ -166,7 +167,7 @@ public:
 
     bool listen(ETcpSocket* server);
 
-    Sync(int port = DEFAULT_PORT);
+    Sync(int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
 };
 }

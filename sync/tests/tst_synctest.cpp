@@ -56,17 +56,17 @@ void SyncTest::test_case2()
 
     syncLib::Sync sync(1994);
 
-  //  syncLib::Sync sync2(1998);
+    syncLib::Sync sync2(1998,"test2.dat");
 
     QVERIFY(sync.play(1));
 
-   // QVERIFY(sync2.addNode("localhost",1994));
+    QVERIFY(sync2.addNode("127.0.0.1",1994));
 
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
-   // QVERIFY(sync2.getServersList().size() > 0);
+    QVERIFY(sync2.getServersList().size() > 0);
 
- //   QVERIFY(sync2.listen(sync2.getServersList().front()));
+    QVERIFY(sync2.listen(sync2.getServersList().front()));
 
 }
 

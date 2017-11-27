@@ -134,7 +134,17 @@ bool package::parseFrom(QByteArray &array){
 
 package::~package(){}
 
-Node::Node():QTcpServer(){
+Node::Node(int port):QTcpServer(){
+    if(!listen(QHostAddress::Any, port)){
+#ifdef QT_DEBUG
+        qDebug() << errorString();
+#endif
+        throw initNodeError();
+        return ;
+    }
+#ifdef QT_DEBUG
+    qDebug() << "node started on:" << serverAddress().toString() << "port:" << serverPort();
+#endif
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
 }
 
@@ -163,7 +173,7 @@ void Node::readData(ETcpSocket *c){
 
 void Node::WriteAll(const QByteArray &data){
     for(ETcpSocket*i:clients){
-        i->getSource()->write(data);
+        i->Write(data);
     }
 }
 

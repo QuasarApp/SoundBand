@@ -1,5 +1,6 @@
 #include "ETcpSocket.h"
 #include "exaptions.h"
+#include "config.h"
 
 ETcpSocket::ETcpSocket()
 {
@@ -14,7 +15,8 @@ ETcpSocket::ETcpSocket(QTcpSocket*ptr)
 
 ETcpSocket::ETcpSocket(const QString& address, int port){
     source = new QTcpSocket();
-    if(!source->bind(QHostAddress(address),port) || !source->open(QIODevice::ReadWrite)){
+    source->connectToHost(address, port);
+    if(!source->waitForConnected(DEEP_SCANER_INTERVAL) || !source->open(QIODevice::ReadWrite)){
         throw AddNodeExaption();
     }
     init();

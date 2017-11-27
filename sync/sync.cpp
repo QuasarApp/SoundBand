@@ -14,22 +14,24 @@
 
 namespace syncLib{
 
-Sync::Sync(int port):
+Sync::Sync(int port, const QString &datadir):
     node(nullptr),
     db(nullptr),
     player(nullptr),
     qyery(nullptr),
     buffer(nullptr)
 {
-    node = new Node();
-    node->listen(QHostAddress::Any, this->port = port);
+    node = new Node(this->port = port);
+
     player = new QMediaPlayer(nullptr,QMediaPlayer::LowLatency);
     buffer = new QBuffer;
     if(!player->isAvailable()){
         throw MediaException();
     }
 
-    initDB();
+    fbroadcaster = false;
+
+    initDB(datadir);
 
     connect(node,SIGNAL(Message(ETcpSocket*)),SLOT(packageRender(ETcpSocket*)));
     connect(&deepScaner,SIGNAL(scaned(QList<ETcpSocket*>*)),SLOT(deepScaned(QList<ETcpSocket*>*)));
@@ -42,11 +44,12 @@ void Sync::sqlErrorLog(const QString &qyery){
 #endif
 }
 
-void Sync::initDB(){
+void Sync::initDB(const QString &database){
     if(db) return;
+    dataBaseName = database;
     db = new QSqlDatabase();
-    *db = QSqlDatabase::addDatabase("QSQLITE");
-    QDir d(QString("./%0").arg(DATABASE_NAME));
+    *db = QSqlDatabase::addDatabase("QSQLITE", "connection_of_" + database);
+    QDir d(QString("./%0").arg(dataBaseName));
     db->setDatabaseName(d.absolutePath());
     if(db->open()){
         qyery = new QSqlQuery(*db);
@@ -58,12 +61,16 @@ void Sync::initDB(){
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
             throw InitDBError();
+            delete db;
+            return;
         }
 
         qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS i%0 ON %0(name,size)").arg(DATATABLE_NAME);
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
             throw InitDBError();
+            delete db;
+            return;
         }
     }
 }
@@ -164,7 +171,6 @@ bool Sync::play(const SongHeader &header, const Syncer *syncdata){
 }
 
 bool Sync::play(Song &song, Syncer *syncdata){
-    //QBuffer buffer(&song.source);
     buffer->setData(song.source);
     buffer->open(QIODevice::ReadOnly);
     player->setMedia(QMediaContent(), buffer);

@@ -23,6 +23,14 @@ public:
     }
 };
 
+class initNodeError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("The node on this device could not be deployed.");
+    }
+};
+
 class CreatePackageExaption:public std::exception
 {
 public:

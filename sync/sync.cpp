@@ -14,14 +14,14 @@
 
 namespace syncLib{
 
-Sync::Sync(int port, const QString &datadir):
+Sync::Sync(const QString address, int port, const QString &datadir):
     node(nullptr),
     db(nullptr),
     player(nullptr),
     qyery(nullptr),
     buffer(nullptr)
 {
-    node = new Node(this->port = port);
+    node = new Node(address , this->port = port);
 
     player = new QMediaPlayer(nullptr,QMediaPlayer::LowLatency);
     buffer = new QBuffer;

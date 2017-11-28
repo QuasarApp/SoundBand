@@ -11,6 +11,9 @@
 #define DATATABLE_NAME              "songs"
 
 // network config
+#define DEFAULT_ADRESS              "DEFAULT_ADRESS"
+#define DEFAULT_NRTWORK             0         // the network number from which the address will be taken.
+#define LOCAL_HOST                  "127.0.0.1"
 #define DEFAULT_PORT                1239
 #define MAX_SYNC_TIME               20 * 1000 // 10 sec on microsec
 #define SYNC_TIME                   5 * 1000  // 5 sec on microsec

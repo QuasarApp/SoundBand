@@ -1,5 +1,6 @@
 #include "node.h"
 #include "exaptions.h"
+#include "LocalScanner.h"
 
 namespace syncLib{
 
@@ -134,8 +135,12 @@ bool package::parseFrom(QByteArray &array){
 
 package::~package(){}
 
-Node::Node(int port):QTcpServer(){
-    if(!listen(QHostAddress::Any, port)){
+Node::Node(const QString &addres, int port):QTcpServer(){
+    QString address = addres;
+    if(address == DEFAULT_ADRESS){
+            address = LocalScanner::thisAdress().toString();
+    }
+    if(!listen(QHostAddress(address), port)){
 #ifdef QT_DEBUG
         qDebug() << errorString();
 #endif

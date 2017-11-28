@@ -167,7 +167,7 @@ public:
 
     bool listen(ETcpSocket* server);
 
-    Sync(int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
+    Sync(const QString address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
 };
 }

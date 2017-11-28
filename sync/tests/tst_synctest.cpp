@@ -54,13 +54,13 @@ void SyncTest::test_case2()
 {
 
 
-    syncLib::Sync sync(1994);
+    syncLib::Sync sync(LOCAL_HOST, 1994);
 
-    syncLib::Sync sync2(1998,"test2.dat");
+    syncLib::Sync sync2(LOCAL_HOST, 1998,"test2.dat");
 
     QVERIFY(sync.play(1));
 
-    QVERIFY(sync2.addNode("127.0.0.1",1994));
+    QVERIFY(sync2.addNode(LOCAL_HOST, 1994));
 
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 

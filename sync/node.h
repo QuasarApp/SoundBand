@@ -88,7 +88,7 @@ private slots:
     void newConnection_();
     void readData(ETcpSocket*_client);
 public:
-    Node(int port);
+    Node(const QString &addres = DEFAULT_ADRESS, int port = DEFAULT_PORT);
     void WriteAll(const QByteArray&);
     void disconnectClient(ETcpSocket*);
     QList<ETcpSocket*>* getClients();

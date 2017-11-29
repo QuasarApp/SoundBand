@@ -42,7 +42,11 @@ void SyncTest::test_case1()
 
     QVERIFY(sync.play(":/song/test_song"));
 
+    sync.stop();
+
     QVERIFY(sync.play(1));
+
+    sync.stop();
 
     QVERIFY(!sync.play(2));
 
@@ -59,6 +63,8 @@ void SyncTest::test_case2()
     syncLib::Sync sync2(LOCAL_HOST, 1998,"test2.dat");
 
     QVERIFY(sync.play(1));
+
+    sync.stop();
 
     QVERIFY(sync2.addNode(LOCAL_HOST, 1994));
 

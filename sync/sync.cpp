@@ -232,6 +232,7 @@ void Sync::pause(){
 }
 
 void Sync::stop(){
+    buffer->close();
     player->stop();
 }
 

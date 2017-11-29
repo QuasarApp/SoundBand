@@ -2,8 +2,9 @@
 #define NODE_H
 #include <QTcpServer>
 #include "ETcpSocket.h"
-#include <song.h>
-class Syncer;
+#include "song.h"
+#include "config.h"
+
 namespace syncLib {
 
 typedef unsigned char Type;
@@ -50,7 +51,7 @@ private:
     Syncer playdata;
 public:
     package();
-    package(const QByteArray& array);
+    package(QByteArray &array);
     ~package();
     /**
      * @brief getHeader
@@ -71,7 +72,7 @@ public:
     bool isValid() const;
     void clear();
     QByteArray parseTo();
-    bool parseFrom(const QByteArray& array);
+    bool parseFrom(QByteArray& array);
     friend class Sync;
 };
 
@@ -84,11 +85,11 @@ private slots:
     void newConnection_();
     void readData(ETcpSocket*_client);
 public:
-    Node();
+    Node(const QString &addres = DEFAULT_ADRESS, int port = DEFAULT_PORT);
     void WriteAll(const QByteArray&);
     void disconnectClient(ETcpSocket*);
     QList<ETcpSocket*>* getClients();
-    bool addNode(const QString &node, int port = DEDAULT_PORT);
+    bool addNode(const QString &node, int port);
     bool addNode(ETcpSocket* node);
     ~Node();
 signals:

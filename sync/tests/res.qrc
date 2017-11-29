@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/song">
+        <file alias="test_song">res/under ground.mp3</file>
+    </qresource>
+</RCC>

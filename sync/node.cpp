@@ -1,14 +1,15 @@
 #include "node.h"
-#include <QTcpSocket>
-#include "song.h"
-#include <QDataStream>
 #include "exaptions.h"
+#include "LocalScanner.h"
+
 namespace syncLib{
 
-package::package(){
+package::package()
+{
     clear();
 }
-package::package(const QByteArray &array):
+
+package::package( QByteArray &array):
     package::package(){
     parseFrom(array);
 }
@@ -80,7 +81,7 @@ void package::clear(){
 
 QByteArray package::parseTo(){
     QByteArray temp;
-    QDataStream stream(temp);
+    QDataStream stream(&temp, QIODevice::WriteOnly);
     temp.clear();
     if(isValid()){
         stream <<  static_cast<unsigned char>(type);
@@ -105,9 +106,9 @@ QByteArray package::parseTo(){
     return temp;
 }
 
-bool package::parseFrom(const QByteArray &array){
+bool package::parseFrom(QByteArray &array){
     type = TypePackage::t_void;
-    QDataStream stream(array);
+    QDataStream stream(&array, QIODevice::ReadOnly);
 
     unsigned char temp_type;
     stream >> temp_type;
@@ -132,8 +133,23 @@ bool package::parseFrom(const QByteArray &array){
     return isValid();
 }
 
-Node::Node():QTcpServer(){
-    connect(this,SIGNAL(acceptError(QAbstractSocket::SocketError)),SLOT(acceptError_(QAbstractSocket::SocketError)));
+package::~package(){}
+
+Node::Node(const QString &addres, int port):QTcpServer(){
+    QString address = addres;
+    if(address == DEFAULT_ADRESS){
+            address = LocalScanner::thisAdress().toString();
+    }
+    if(!listen(QHostAddress(address), port)){
+#ifdef QT_DEBUG
+        qDebug() << errorString();
+#endif
+        throw initNodeError();
+        return ;
+    }
+#ifdef QT_DEBUG
+    qDebug() << "node started on:" << serverAddress().toString() << "port:" << serverPort();
+#endif
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
 }
 
@@ -162,7 +178,7 @@ void Node::readData(ETcpSocket *c){
 
 void Node::WriteAll(const QByteArray &data){
     for(ETcpSocket*i:clients){
-        i->getSource()->write(data);
+        i->Write(data);
     }
 }
 

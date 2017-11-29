@@ -23,6 +23,14 @@ public:
     }
 };
 
+class initNodeError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("The node on this device could not be deployed.");
+    }
+};
+
 class CreatePackageExaption:public std::exception
 {
 public:
@@ -52,6 +60,14 @@ class SyncError:public std::exception
 public:
     QString what(){
         return QObject::tr("The playlist is empty, the player has nothing to play.");
+    }
+};
+
+class InitDBError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("Error creating database..");
     }
 };
 

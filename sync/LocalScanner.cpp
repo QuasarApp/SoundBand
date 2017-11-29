@@ -30,7 +30,7 @@ QHostAddress LocalScanner::thisAdress(){
     return QHostAddress::LocalHost;
 }
 
-void LocalScanner::scane(){
+void LocalScanner::scane(int port){
     if(!socets.empty())
         return ;
     QList<QHostAddress> adress= QNetworkInterface::allAddresses();
@@ -43,7 +43,7 @@ void LocalScanner::scane(){
                 adr=adr.left(adr.lastIndexOf("."))+"."+QString::number(i);
                 ETcpSocket *temp=new ETcpSocket;
                 connect(temp,SIGNAL(Connected(ETcpSocket*)),SLOT(connected(ETcpSocket*)));
-                temp->getSource()->connectToHost(adr,DEDAULT_PORT);
+                temp->getSource()->connectToHost(adr, port);
                 socets.push_back(temp);
             }
         }

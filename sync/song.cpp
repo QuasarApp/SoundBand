@@ -20,6 +20,8 @@ bool SongHeader::operator ==(const SongHeader& right){
     return this->name == right.name && this->size == right.size;
 }
 
+SongHeader::~SongHeader(){}
+
 unsigned int SongHeader::getSize() const{
     QByteArray size;
     QDataStream stream(size);

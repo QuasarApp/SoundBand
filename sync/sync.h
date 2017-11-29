@@ -4,9 +4,12 @@
 #include "node.h"
 #include "LocalScanner.h"
 #include <chrono>
+#include "config.h"
+
 class QSqlDatabase;
 class QMediaPlayer;
 class QSqlQuery;
+class QBuffer;
 namespace syncLib {
 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
@@ -24,12 +27,20 @@ private:
     Node *node;
     QSqlDatabase *db;
     QMediaPlayer *player;
-    QList<SongHeader>* playList;
+    QBuffer *buffer;
+    QList<SongHeader> playList;
     QSqlQuery *qyery;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     LocalScanner deepScaner;
+    int port;
+    QString dataBaseName;
 
+    /**
+     * @brief sqlErrorLog show sql error
+     * @param qyery
+     */
+    void sqlErrorLog(const QString& qyery);
 
     /**
      * @brief rescan - search for existing servers
@@ -39,7 +50,7 @@ private:
     /**
      * @brief initDB initialize local database of song
      */
-    void initDB();
+    void initDB(const QString& database = DATABASE_NAME );
     /**
      * @brief load song of database;
      * @brief song -
@@ -135,11 +146,34 @@ public:
      */
     bool sync(const Syncer& sync);
     /**
+     * @brief addNode add new connect
+     * @param ip of connection
+     * @param port of connection
+     * @return true if all done
+     */
+    bool addNode(const QString ip, int port);
+
+    /**
+     * @brief scan - search for existing servers
+     * result saved in servers
+     */
+    void scan();
+
+    /**
+     * @brief getServersList
+     * @return  list of servers
+     */
+    const QList<ETcpSocket*>& getServersList() const;
+
+    bool listen(ETcpSocket* server);
+
+    /**
      * @brief getVersion
      * @return curent version of library
      */
     QString getVersion();
-    Sync();
+
+    Sync(const QString address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
 };
 }

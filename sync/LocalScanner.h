@@ -29,7 +29,7 @@ public:
     /**
      * @brief scane - start scaning
      */
-    void scane();
+    void scane(int port);
     /**
      * @brief setInterval - set a new waiting interval
      * @param msec

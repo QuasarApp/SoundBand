@@ -62,11 +62,6 @@ void SyncTest::test_case2()
 
     QVERIFY(sync2.addNode(LOCAL_HOST, 1994));
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
-    QVERIFY(sync2.getServersList().size() > 0);
-
-    QVERIFY(sync2.listen(sync2.getServersList().front()));
 
 }
 

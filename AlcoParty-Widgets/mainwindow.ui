@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>AlcoParty</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -23,21 +23,21 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="Play">
           <property name="text">
            <string>Play</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="Pause">
           <property name="text">
            <string>Pause</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_4">
+         <widget class="QPushButton" name="Stop">
           <property name="text">
            <string>Stop</string>
           </property>
@@ -59,35 +59,35 @@
        </spacer>
       </item>
       <item row="2" column="4">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="label_Seek">
         <property name="text">
          <string>- Seek</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0" colspan="4">
-       <widget class="QSlider" name="horizontalSlider_2">
+       <widget class="QSlider" name="horizontalSlider_Seek">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="Search">
         <property name="text">
          <string>Serch and play</string>
         </property>
        </widget>
       </item>
       <item row="1" column="4">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="label_value">
         <property name="text">
          <string>- Value</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0" colspan="4">
-       <widget class="QSlider" name="horizontalSlider">
+       <widget class="QSlider" name="horizontalSlider_Value">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

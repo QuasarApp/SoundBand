@@ -41,6 +41,8 @@ void LocalScanner::scane(int port){
             for(int i=0;i<256;i++){
                 QString adr= ip.toString();
                 adr=adr.left(adr.lastIndexOf("."))+"."+QString::number(i);
+                if(adr == ip.toString())
+                    continue;
                 ETcpSocket *temp=new ETcpSocket;
                 connect(temp,SIGNAL(Connected(ETcpSocket*)),SLOT(connected(ETcpSocket*)));
                 temp->getSource()->connectToHost(adr, port);
@@ -57,6 +59,7 @@ void LocalScanner::scaned_(){
 }
 
 void LocalScanner::connected(ETcpSocket *c){
+    socets.removeOne(c);
     results.push_back(c);
 }
 

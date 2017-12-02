@@ -389,7 +389,7 @@ void Sync::packageRender(ETcpSocket *socket){
         }else{
 
             package answer;
-            if(!createPackage(pkg.getType() | ~t_what | ~t_play | ~t_stop | ~t_brodcaster, answer)){
+            if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer)){
                 throw CreatePackageExaption();
             }
             socket->Write(answer.parseTo());
@@ -428,6 +428,7 @@ void Sync::deepScaned(QList<ETcpSocket *> * list){
     }
     QByteArray array = pac.parseTo();
     for(ETcpSocket * i: *list){
+        node->addNode(i);
         i->Write(array);
     }
 }

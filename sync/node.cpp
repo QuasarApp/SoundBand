@@ -43,28 +43,18 @@ bool package::isValid() const{
 
     }
 
-    if(type & TypePackage::t_sync){
+    if(type & TypePackage::t_sync && type & t_brodcaster){
         ret = ret && (playdata.run > 0 && playdata.seek > 0);
 
     }
 
-    if(type & TypePackage::t_song_h){
+    if(type & TypePackage::t_song_h && type & t_brodcaster){
         ret = ret && header.size > 0;
 
     }
 
-    if(type & TypePackage::t_song){
+    if(type & TypePackage::t_song && type & t_brodcaster){
         ret = ret && source.size > 0;
-
-    }
-
-    if(type & TypePackage::t_close){
-        ret = ret && true;
-
-    }
-
-    if(type & TypePackage::t_stop){
-        ret = ret && true;
 
     }
 
@@ -86,18 +76,18 @@ QByteArray package::parseTo(){
     if(isValid()){
         stream <<  static_cast<unsigned char>(type);
 
-        if(type & TypePackage::t_sync){
+        if(type & TypePackage::t_sync && type & t_brodcaster){
             stream << playdata.run;
             stream << playdata.seek;
 
         }
 
-        if(type & TypePackage::t_song_h){
+        if(type & TypePackage::t_song_h && type & t_brodcaster){
             stream << header;
 
         }
 
-        if(type & TypePackage::t_song){
+        if(type & TypePackage::t_song && type & t_brodcaster){
             stream << source;
 
         }
@@ -156,6 +146,9 @@ Node::Node(const QString &addres, int port):QTcpServer(){
 void Node::acceptError_(ETcpSocket*c){
     c->getSource()->close();
     clients.removeOne(c);
+#ifdef QT_DEBUG
+    qDebug() << "node diskonected error:" <<c->getSource()->errorString() << " node:" << c->name();
+#endif
     emit ClientDisconnected(c);
     delete c;
 }
@@ -207,6 +200,8 @@ bool Node::addNode(const QString &node,int port){
 
 bool Node::addNode(ETcpSocket *node){
     if(node->getSource()->isOpen()){
+        connect(node,SIGNAL(Disconnected(ETcpSocket*)),this,SLOT(acceptError_(ETcpSocket*)));
+        connect(node,SIGNAL(Message(ETcpSocket*)),this,SLOT(readData(ETcpSocket*)));
         clients.append(node);
         return true;
     }

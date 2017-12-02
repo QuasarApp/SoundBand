@@ -158,6 +158,11 @@ Clock Sync::from(const milliseconds& mc){
 }
 
 bool Sync::play(const SongHeader &header, const Syncer *syncdata){
+
+    if(!header.isValid()){
+        return false;
+    }
+
     QString qyer = QString("SELECT * from %0 where name=%1 and size=%2").arg(DATATABLE_NAME).arg(header.name).arg(header.size);
     if(!qyery->exec(qyer)){
         return false;
@@ -167,17 +172,22 @@ bool Sync::play(const SongHeader &header, const Syncer *syncdata){
     song.name = qyery->value(1).toString();
     song.size = qyery->value(2).toInt();
     song.source = qyery->value(3).toByteArray();
-    return Sync::play(song,syncdata);
+    return Sync::play(song, syncdata);
 }
 
-bool Sync::play(Song &song, Syncer *syncdata){
+bool Sync::play(const Song &song, const Syncer *syncdata){
+
+    if(!song.isValid()){
+        return false;
+    }
+
     buffer->setData(song.source);
     buffer->open(QIODevice::ReadOnly);
     player->setMedia(QMediaContent(), buffer);
 
 
     fbroadcaster = !bool(syncdata);
-    playList.push_front(static_cast<SongHeader&>(song));
+    playList.push_front(static_cast<const SongHeader&>(song));
     if(fbroadcaster){
         package pac;
         if(!createPackage(t_song_h | t_sync, pac)){
@@ -355,15 +365,18 @@ void Sync::packageRender(ETcpSocket *socket){
                 player->play();
             }
 
-            if((pkg.getType() & t_song_h) && !play(pkg.getHeader(), &pkg.getPlayData())){
-                if((pkg.getType() & t_song) && !play(pkg.getSong(), &pkg.getPlayData())){
-                    package answer;
-                    if(!createPackage(t_song | t_sync, answer)){
-                        throw CreatePackageExaption();
-                    }
-                    socket->Write(answer.parseTo());
+            if(pkg.getType() & t_sync && !play(pkg.getHeader(), &pkg.getPlayData()) && !play(pkg.getSong(), &pkg.getPlayData())){
 
+                Type requestType = t_song_h;
+
+                if(pkg.getType() & t_song_h)
+                    requestType = t_song;
+
+                package answer;
+                if(!createPackage(requestType | t_sync, answer)){
+                    throw CreatePackageExaption();
                 }
+                socket->Write(answer.parseTo());
             }
 
             if(pkg.getType() & t_close){
@@ -380,13 +393,14 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->Write(answer.parseTo());
             }
 
+
+        }else{
+
             if(pkg.getType() & t_sync){
                 if(playList.empty()){
                     throw SyncError();
                 }
             }
-
-        }else{
 
             package answer;
             if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer)){

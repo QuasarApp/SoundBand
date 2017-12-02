@@ -114,7 +114,7 @@ public:
      * @param syncdata data of synbced playning of media data.
      * @return true if all done else false.
      */
-    bool play(Song &song, Syncer *syncdata = nullptr);
+    bool play(const Song &song, const Syncer *syncdata = nullptr);
     /**
      * @brief Play song from local media file.
      * @param url of local media file.

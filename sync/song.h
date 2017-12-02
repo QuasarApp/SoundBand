@@ -41,7 +41,8 @@ public:
     SongHeader();
     SongHeader& operator = (const SongHeader& right);
     bool operator == (const SongHeader& right);
-    virtual unsigned int getSize()const;
+    virtual unsigned int getSize() const;
+    virtual bool isValid() const;
     virtual ~SongHeader();
     friend QDataStream& operator << (QDataStream& stream, const SongHeader& song);
     friend QDataStream& operator >> (QDataStream& stream, SongHeader& song);
@@ -59,6 +60,7 @@ public:
     Song(const SongHeader& from);
     void clear();
     unsigned int getSize() const;
+    bool isValid() const;
     ~Song();
     friend QDataStream& operator << (QDataStream& stream, const Song& song);
     friend QDataStream& operator >> (QDataStream& stream, Song& song);

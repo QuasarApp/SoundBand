@@ -30,7 +30,9 @@ SOURCES += \
     ../sync/LocalScanner.cpp \
     ../sync/node.cpp \
     ../sync/song.cpp \
-    ../sync/sync.cpp
+    ../sync/sync.cpp \
+    servermodel.cpp \
+    songmodel.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,7 +42,9 @@ HEADERS += \
     ../sync/LocalScanner.h \
     ../sync/node.h \
     ../sync/song.h \
-    ../sync/sync.h
+    ../sync/sync.h \
+    servermodel.h \
+    songmodel.h
 
 FORMS += \
         mainwindow.ui

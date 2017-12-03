@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,6 +12,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     source = new syncLib::Sync();
     ui->horizontalSlider_Value->setMaximum(100);
+    ui->horizontalSlider_Value->setValue(source->getValume());
+    songModel.setSource(source->getPlayList());
+    ui->localSongsView->setModel(&songModel);
+    ui->localSongsView->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);
+    ui->horizontalSlider_Seek->setMaximum(1000000);
+
+    connect(source,SIGNAL(seekChanged(qint64)),SLOT(on_seekChanged(qint64)));
+
 }
 
 MainWindow::~MainWindow()
@@ -20,16 +30,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_Play_clicked()
 {
-    QString song_path = QFileDialog::getOpenFileName(this);
 
-    if(!song_path.isEmpty() && !source->play(song_path)){
-        QMessageBox::critical(this,tr("Error"),tr("Сould not play the file you selected."));
+    int curentSong = ui->localSongsView->currentIndex().row();
+    if(!source->play(songModel.data(songModel.index(curentSong, 0), Qt::DisplayRole).toInt())){
+          QMessageBox::critical(this,tr("Error"),tr("Сould not play the file you selected."));
     }
+
 }
 
 void MainWindow::on_Pause_clicked()
 {
-    source->pause(true);
+    if(ui->Pause->text() == "Play"){
+        source->pause(false);
+        ui->Pause->setText("Pause");
+
+    }else{
+        source->pause(true);
+        ui->Pause->setText("Play");
+
+    }
 }
 
 void MainWindow::on_Stop_clicked()
@@ -52,5 +71,28 @@ void MainWindow::on_Search_clicked()
 
 void MainWindow::on_horizontalSlider_Value_valueChanged(int value)
 {
-//    source->set>setMaximum(100);
+    source->setValume(value);
+}
+
+void MainWindow::on_listen_clicked()
+{
+
+}
+
+void MainWindow::on_Select_clicked()
+{
+    QStringList songs =  QFileDialog::getOpenFileNames(this);
+
+    for(QString url:songs){
+        source->addNewSong(url);
+        songModel.refresh();
+    }
+}
+
+void MainWindow::on_horizontalSlider_Seek_sliderReleased(){
+    source->jump(ui->horizontalSlider_Seek->value() / 1000000.0 *  source->getEndPoint());
+}
+
+void MainWindow::on_seekChanged(qint64 value){
+    ui->horizontalSlider_Seek->setValue(value * 1000000 / source->getEndPoint());
 }

@@ -4,6 +4,8 @@
 #include <QMainWindow>
 
 #include "../sync/sync.h"
+#include "songmodel.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -29,8 +31,18 @@ private slots:
 
     void on_horizontalSlider_Value_valueChanged(int value);
 
+    void on_listen_clicked();
+
+    void on_Select_clicked();
+
+    void on_horizontalSlider_Seek_sliderReleased();
+
+    void on_seekChanged(qint64 value);
+
 private:
     syncLib::Sync *source;
+    SongModel songModel;
+//    QList<syncLib::SongHeader>* playList;
     Ui::MainWindow *ui;
 };
 

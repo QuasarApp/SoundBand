@@ -129,8 +129,9 @@ public:
     bool play(int id_song, Syncer* syncdata = nullptr);
     /**
      * @brief Pause playning song.
+     * state - state of playning
      */
-    void pause();
+    void pause(bool state);
     /**
      * @brief stop playning song.
      */
@@ -173,8 +174,42 @@ public:
      */
     QString getVersion();
 
+    /**
+     * @brief setValume max valume is 100
+     * @return true if all done
+     */
+    bool setValume(unsigned int value);
+    /**
+     * @brief getvalume
+     * This property holds the current playback volume.
+     * The playback volume is scaled linearly,
+     *  ranging from 0 (silence) to 100 (full volume).
+     *  Values outside this range will be clamped.
+     */
+    unsigned int getValume() const;
+    /**
+     * @brief seek
+     * @return curent playning milisecond
+     */
+    unsigned int seek()const;
+
     Sync(const QString address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
+
+signals:
+    /**
+     * @brief seekChanged
+     * @param seek
+     * Signal the position of the content has changed to position,
+     * expressed in milliseconds.
+     */
+    void seekChanged(qint64 seek);
+
+    /**
+     * @brief networkStateChange
+     * signal if changed count of activity servers.
+     */
+    void networkStateChange();
 };
 }
 

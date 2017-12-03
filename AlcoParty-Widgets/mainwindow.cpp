@@ -29,7 +29,7 @@ void MainWindow::on_Play_clicked()
 
 void MainWindow::on_Pause_clicked()
 {
-    source->pause();
+    source->pause(true);
 }
 
 void MainWindow::on_Stop_clicked()

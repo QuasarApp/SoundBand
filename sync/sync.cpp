@@ -35,7 +35,7 @@ Sync::Sync(const QString address, int port, const QString &datadir):
 
     connect(node,SIGNAL(Message(ETcpSocket*)),SLOT(packageRender(ETcpSocket*)));
     connect(&deepScaner,SIGNAL(scaned(QList<ETcpSocket*>*)),SLOT(deepScaned(QList<ETcpSocket*>*)));
-
+    connect(player,SIGNAL(positionChanged(qint64)),SIGNAL(seekChanged(qint64)));
 }
 
 void Sync::sqlErrorLog(const QString &qyery){
@@ -237,8 +237,12 @@ bool Sync::play(QString url){
     return Sync::play(song);
 }
 
-void Sync::pause(){
-    player->pause();
+void Sync::pause(bool state){
+    if(state){
+        player->pause();
+    }else{
+        player->play();
+    }
 }
 
 void Sync::stop(){
@@ -346,10 +350,12 @@ void Sync::packageRender(ETcpSocket *socket){
 
         if(pkg.getType() & t_brodcaster && servers.indexOf(socket) == -1){
             servers.append(socket);
+            emit networkStateChange();
         }
 
         if(!(pkg.getType() & t_brodcaster) && servers.indexOf(socket) != -1){
             servers.removeOne(socket);
+            emit networkStateChange();
         }
 
         if(fbroadcaster == (pkg.getType() & t_brodcaster)){
@@ -450,6 +456,24 @@ void Sync::deepScaned(QList<ETcpSocket *> * list){
 QString Sync::getVersion(){
     return QString(tr("Version") + "%0.%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION).arg(REVISION_VERSION);
 }
+
+bool Sync::setValume(unsigned int valume){
+    if(valume > 100)
+        return false;
+
+    player->setVolume(valume);
+
+    return true;
+}
+
+unsigned int Sync::getValume() const{
+    return player->volume();
+}
+
+unsigned int Sync::seek() const{
+    return player->position();
+}
+
 Sync::~Sync(){
     delete node;
     delete db;

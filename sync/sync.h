@@ -6,8 +6,9 @@
 #include <chrono>
 #include "config.h"
 
+#include <QMediaPlayer>
+
 class QSqlDatabase;
-class QMediaPlayer;
 class QSqlQuery;
 class QBuffer;
 namespace syncLib {
@@ -29,13 +30,18 @@ private:
     QMediaPlayer *player;
     QBuffer *buffer;
     QList<SongHeader> playList;
+    SongHeader * curentSong;
     QSqlQuery *qyery;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     LocalScanner deepScaner;
     int port;
     QString dataBaseName;
-
+    /**
+     * @brief findHeader set curent song if playList have playng song
+     * @return true if all done
+     */
+    bool findHeader(const Song& song);
     /**
      * @brief sqlErrorLog show sql error
      * @param qyery
@@ -64,6 +70,11 @@ private:
      * @return id of song saved on local database.
      */
     int save(const Song &song);
+    /**
+     * @brief updateAvelableSongs will update the list of participants of songs.
+     * @return true if all done
+     */
+    bool updateAvailableSongs();
     /**
      * @brief fromDataBase return a song from local database by id.
      * @param id of song saved in local database.
@@ -95,10 +106,16 @@ private slots:
      * @param socket
      */
     void packageRender(ETcpSocket* socket);
+
     /**
      * @brief deepScaned scaning in local network
      */
     void deepScaned(QList<ETcpSocket *> *);
+
+    /**
+     * @brief endPlay signal has ending playing
+     */
+    void endPlay(QMediaPlayer::State state);
 
 public:
     /**
@@ -114,7 +131,7 @@ public:
      * @param syncdata data of synbced playning of media data.
      * @return true if all done else false.
      */
-    bool play(Song &song, Syncer *syncdata = nullptr);
+    bool play(const Song &song, const Syncer *syncdata = nullptr);
     /**
      * @brief Play song from local media file.
      * @param url of local media file.
@@ -129,8 +146,9 @@ public:
     bool play(int id_song, Syncer* syncdata = nullptr);
     /**
      * @brief Pause playning song.
+     * state - state of playning
      */
-    void pause();
+    void pause(bool state);
     /**
      * @brief stop playning song.
      */
@@ -139,7 +157,7 @@ public:
      * @brief jump - jump to new position of playning media data.
      * @param seek - a new position of media data.
      */
-    void jump(const int seek);
+    void jump(const qint64 seek);
     /**
      * @brief sync with server
      * @param sync - data of sync
@@ -173,8 +191,70 @@ public:
      */
     QString getVersion();
 
+    /**
+     * @brief setValume max valume is 100
+     * @return true if all done
+     */
+    bool setValume(unsigned int value);
+
+    /**
+     * @brief getvalume
+     * This property holds the current playback volume.
+     * The playback volume is scaled linearly,
+     *  ranging from 0 (silence) to 100 (full volume).
+     *  Values outside this range will be clamped.
+     */
+    unsigned int getValume() const;
+
+    /**
+     * @brief seek
+     * @return curent playning milisecond
+     */
+    unsigned int seek()const;
+
+    /**
+     * @brief getPlayList
+     * @return list of available songs
+     */
+    const QList<SongHeader> *getPlayList() const;
+
+    /**
+     * @brief getCurentSong
+     * @return playing song.
+     */
+    const SongHeader *getCurentSong() const;
+
+    /**
+     * @brief addNewSong push a new song into local database.
+     * @param name - name of pushed song
+     * @return true is all done.
+     */
+    bool addNewSong(const QString &url);
+
+    /**
+     * @brief getEndPoint
+     * @return end point of playng song.
+     */
+    qint64 getEndPoint() const;
+
     Sync(const QString address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
+
+signals:
+    /**
+     * @brief seekChanged
+     * @param seek
+     * Signal the position of the content has changed to position,
+     * expressed in milliseconds.
+     */
+    void seekChanged(qint64 seek);
+
+    /**
+     * @brief networkStateChange
+     * signal if changed count of activity servers.
+     */
+    void networkStateChange();
+
 };
 }
 

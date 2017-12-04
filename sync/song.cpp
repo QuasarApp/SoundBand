@@ -20,14 +20,21 @@ bool SongHeader::operator ==(const SongHeader& right){
     return this->name == right.name && this->size == right.size;
 }
 
-SongHeader::~SongHeader(){}
-
 unsigned int SongHeader::getSize() const{
     QByteArray size;
     QDataStream stream(size);
     stream << id << name << this->size;
     return size.size();
 }
+
+bool SongHeader::isValid() const{
+
+    return id > -1 && !name.isEmpty() && size > 0;
+}
+
+SongHeader::~SongHeader(){}
+
+
 
 Song::Song():
     SongHeader()
@@ -60,12 +67,17 @@ void Song::clear(){
     source.clear();
 }
 
-Song::~Song(){
-    source.clear();
-}
-
 unsigned int Song::getSize() const{
     return SongHeader::getSize() + source.size();
+}
+
+bool Song::isValid() const{
+
+    return SongHeader::isValid() && source.size() == size;
+}
+
+Song::~Song(){
+    source.clear();
 }
 
 QDataStream& operator << (QDataStream& stream,const Song& song){

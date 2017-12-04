@@ -128,7 +128,7 @@ package::~package(){}
 Node::Node(const QString &addres, int port):QTcpServer(){
     QString address = addres;
     if(address == DEFAULT_ADRESS){
-            address = LocalScanner::thisAdress().toString();
+            address = LocalScanner::thisAddress().toString();
     }
     if(!listen(QHostAddress(address), port)){
 #ifdef QT_DEBUG

@@ -39,7 +39,7 @@ public:
      * @brief thisAdress - return addres of local network
      * @return addres
      */
-    static QHostAddress thisAdress();
+    static QHostAddress thisAddress();
     LocalScanner();
     ~LocalScanner();
 signals:

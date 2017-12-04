@@ -22,11 +22,18 @@ void LocalScanner::clearSocets(){
     socets.clear();
 }
 
-QHostAddress LocalScanner::thisAdress(){
-    QList<QHostAddress> adress= QNetworkInterface::allAddresses();
-    for(QHostAddress &ip:adress)
-        if(ip.protocol() == QAbstractSocket::IPv4Protocol && ip != QHostAddress(QHostAddress::LocalHost))
-            return ip;
+QHostAddress LocalScanner::thisAddress(){
+//code was taken from https://stackoverflow.com/questions/13835989/get-local-ip-address-in-qt
+    foreach (const QNetworkInterface &netInterface, QNetworkInterface::allInterfaces()) {
+        QNetworkInterface::InterfaceFlags flags = netInterface.flags();
+        if( (bool)(flags & QNetworkInterface::IsRunning) && !(bool)(flags & QNetworkInterface::IsLoopBack)){
+            foreach (const QNetworkAddressEntry &address, netInterface.addressEntries()) {
+                if(address.ip().protocol() == QAbstractSocket::IPv4Protocol)
+                    return address.ip();
+            }
+        }
+    }
+
     return QHostAddress::LocalHost;
 }
 

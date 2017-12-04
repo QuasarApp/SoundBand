@@ -5,7 +5,7 @@
 
 #include "../sync/sync.h"
 #include "songmodel.h"
-
+#include "servermodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,9 +39,13 @@ private slots:
 
     void on_seekChanged(qint64 value);
 
+    void on_network_state_changed();
+
 private:
     syncLib::Sync *source;
+    const QList<ETcpSocket *> *playList;
     SongModel songModel;
+    ServerModel serverModel;
 //    QList<syncLib::SongHeader>* playList;
     Ui::MainWindow *ui;
 };

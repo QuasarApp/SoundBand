@@ -13,12 +13,19 @@ MainWindow::MainWindow(QWidget *parent) :
     source = new syncLib::Sync();
     ui->horizontalSlider_Value->setMaximum(100);
     ui->horizontalSlider_Value->setValue(source->getValume());
+
     songModel.setSource(source->getPlayList());
+    playList = &(source->getServersList());
+    serverModel.setSource(playList);
+
     ui->localSongsView->setModel(&songModel);
+    ui->ServersView->setModel(&serverModel);
+
     ui->localSongsView->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);
     ui->horizontalSlider_Seek->setMaximum(1000000);
 
     connect(source,SIGNAL(seekChanged(qint64)),SLOT(on_seekChanged(qint64)));
+    connect(source,SIGNAL(networkStateChange()),SLOT(on_network_state_changed()));
 
 }
 
@@ -76,7 +83,10 @@ void MainWindow::on_horizontalSlider_Value_valueChanged(int value)
 
 void MainWindow::on_listen_clicked()
 {
-
+    int curentServer = ui->ServersView->currentIndex().row();
+    if(!source->listen((*playList)[curentServer])){
+          QMessageBox::critical(this,tr("Error"),tr("Сould not play the file you selected."));
+    }
 }
 
 void MainWindow::on_Select_clicked()
@@ -95,4 +105,8 @@ void MainWindow::on_horizontalSlider_Seek_sliderReleased(){
 
 void MainWindow::on_seekChanged(qint64 value){
     ui->horizontalSlider_Seek->setValue(value * 1000000 / source->getEndPoint());
+}
+
+void MainWindow::on_network_state_changed(){
+    serverModel.refresh();
 }

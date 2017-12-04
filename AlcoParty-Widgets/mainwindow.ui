@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>442</width>
-    <height>259</height>
+    <height>353</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,6 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="6" column="0" colspan="3">
-       <widget class="QListView" name="ServersView"/>
-      </item>
       <item row="2" column="1">
        <widget class="QPushButton" name="Pause">
         <property name="text">
@@ -117,6 +114,9 @@
         </attribute>
        </widget>
       </item>
+      <item row="6" column="0" colspan="3">
+       <widget class="QTableView" name="ServersView"/>
+      </item>
      </layout>
     </item>
    </layout>
@@ -127,7 +127,7 @@
      <x>0</x>
      <y>0</y>
      <width>442</width>
-     <height>22</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

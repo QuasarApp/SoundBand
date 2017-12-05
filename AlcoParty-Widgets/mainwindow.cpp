@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->ServersView->setModel(&serverModel);
 
     ui->localSongsView->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);
+    ui->ServersView->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);
+
     ui->horizontalSlider_Seek->setMaximum(1000000);
 
     connect(source,SIGNAL(seekChanged(qint64)),SLOT(on_seekChanged(qint64)));

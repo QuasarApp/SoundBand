@@ -154,7 +154,7 @@ bool Sync::load(const SongHeader &song,Song &result){
             return false;
         }
     }else if(!song.name.isEmpty() && song.size > 0){
-        QString qyer = QString("SELECT * from %0 where name=%1 and size=%2").arg(DATATABLE_NAME).arg(song.name).arg(song.size);
+        QString qyer = QString("SELECT * from %0 where name='%1' and size=%2").arg(DATATABLE_NAME).arg(song.name).arg(song.size);
         if(!qyery->exec(qyer)){
             return false;
         }
@@ -199,10 +199,16 @@ bool Sync::play(const SongHeader &header, const Syncer *syncdata){
         return false;
     }
 
-    QString qyer = QString("SELECT * from %0 where name=%1 and size=%2").arg(DATATABLE_NAME).arg(header.name).arg(header.size);
+    QString qyer = QString("SELECT * from %0 where name='%1' and size=%2").arg(DATATABLE_NAME).arg(header.name).arg(header.size);
     if(!qyery->exec(qyer)){
+        sqlErrorLog(qyer);
         return false;
     }
+
+    if(!qyery->next()){
+        return false;
+    }
+
     Song song;
     song.id = qyery->value(0).toInt();
     song.name = qyery->value(1).toString();
@@ -220,12 +226,10 @@ bool Sync::play(const Song &song, const Syncer *syncdata){
     buffer->close();
     buffer->setData(song.source);
     buffer->open(QIODevice::ReadOnly);
-
     player->setMedia(QMediaContent(), buffer);
 
-
     fbroadcaster = !bool(syncdata);
-    if(!findHeader(song)){
+    if(!findHeader(song) && save(song) > -1 && !findHeader(song)){
         return false;
     }
 

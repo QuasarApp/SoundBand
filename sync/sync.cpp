@@ -61,7 +61,7 @@ void Sync::initDB(const QString &database){
     if(db) return;
     dataBaseName = database;
     db = new QSqlDatabase();
-    *db = QSqlDatabase::addDatabase("QSQLITE", "connection_of_" + database);
+    *db = QSqlDatabase::addDatabase("QSQLITE", database);
     QDir d(QString("./%0").arg(dataBaseName));
     db->setDatabaseName(d.absolutePath());
     if(db->open()){
@@ -550,6 +550,8 @@ Sync::~Sync(){
     delete db;
     delete player;
     servers.clear();
+    QSqlDatabase::removeDatabase(dataBaseName);
+
 }
 
 }

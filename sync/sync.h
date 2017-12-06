@@ -227,9 +227,9 @@ public:
     /**
      * @brief addNewSong push a new song into local database.
      * @param name - name of pushed song
-     * @return true is all done.
+     * @return id of song.
      */
-    bool addNewSong(const QString &url);
+    int addNewSong(const QString &url);
 
     /**
      * @brief getEndPoint

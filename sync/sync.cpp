@@ -265,11 +265,12 @@ bool Sync::play(int id_song, Syncer *syncdata){
 }
 
 bool Sync::play(QString url){
-    if(!addNewSong(url)){
+    int id = addNewSong(url);
+    if(id < 0){
         return false;
     }
 
-    return Sync::play(url);
+    return Sync::play(id);
 }
 
 void Sync::pause(bool state){
@@ -524,10 +525,10 @@ const SongHeader* Sync::getCurentSong() const{
     return curentSong;
 }
 
-bool Sync::addNewSong(const QString &url){
+int Sync::addNewSong(const QString &url){
     QFile f(url);
     if(!f.open(QIODevice::ReadOnly)){
-        return false;
+        return -1;
     }
     QByteArray bytes = f.readAll();
     f.close();
@@ -536,11 +537,8 @@ bool Sync::addNewSong(const QString &url){
     song.name = name;
     song.size = bytes.size();
     song.source = bytes;
-    song.id = Sync::save(song);
-    if(song.id < 0)
-        return false;
 
-    return true;
+    return Sync::save(song);
 }
 
 qint64 Sync::getEndPoint() const {

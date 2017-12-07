@@ -293,10 +293,9 @@ bool Sync::sync(const Syncer &sync){
     milliseconds sync_time  = sync.run - now();
     if(sync_time > MAX_SYNC_TIME && sync_time <= 0)
         return false;
-    Clock run_time = from(sync.run);
     do {
         std::this_thread::yield();
-    } while (std::chrono::high_resolution_clock::now() < run_time);
+    } while (now() < sync.run);
     player->setPosition(sync.seek);
     return true;
 }

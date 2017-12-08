@@ -1,5 +1,5 @@
 # Welcome to the AlcoParty!
-========
+===========================
 
 ## What is AlcoParty
 AlcoParty is a cross-platform application for synchronous music playback on all your devices.
@@ -12,8 +12,8 @@ supported platform:
 Build instructions will appear later for each of the platforms.
 
 
-##Оther documents
-	* [Contributor Covenant Code of Conduct][homepage].
+## Оther documents
+	
+1. [Contributor Covenant Code of Conduct](/doc/CODE_OF_CONDUCT.md).
 
-[CODE_OF_CONDUCT]: ./doc/CODE_OF_CONDUCT.md
 

@@ -111,8 +111,8 @@ bool package::parseFrom(QByteArray &array){
 
     if((type & TypePackage::t_sync && type & t_brodcaster) ||
        (type & TypePackage::t_feedback && !(type & t_brodcaster))){
-        stream << playdata.run;
-        stream << playdata.seek;
+        stream >> playdata.run;
+        stream >> playdata.seek;
 
     }
 

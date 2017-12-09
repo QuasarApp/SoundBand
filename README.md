@@ -9,3 +9,5 @@ supported platform:
 3. Windows 
 
 Build instructions will appear later for each of the platforms.
+
+1. [Code of Conduct](doc/CODE_OF_CONDUCT.md)

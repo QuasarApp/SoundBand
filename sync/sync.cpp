@@ -3,8 +3,9 @@
 #include <QMultimedia>
 #include <QSqlQuery>
 #include "exaptions.h"
-#include "time.h"
-#include "thread"
+#include <ctime>
+#include <thread>
+#include <cmath>
 #include "config.h"
 
 #ifdef QT_DEBUG
@@ -37,6 +38,10 @@ Sync::Sync(const QString address, int port, const QString &datadir):
     connect(&deepScaner, SIGNAL(scaned(QList<ETcpSocket*>*)), SLOT(deepScaned(QList<ETcpSocket*>*)));
     connect(player, SIGNAL(positionChanged(qint64)), SIGNAL(seekChanged(qint64)));
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(endPlay(QMediaPlayer::State)));
+}
+
+unsigned int Sync::abs(int number) const{
+    return number & ~ 0x82000000;
 }
 
 bool Sync::findHeader(const Song &song){
@@ -261,7 +266,7 @@ bool Sync::play(int id_song, Syncer *syncdata){
     song.name = qyery->value(1).toString();
     song.size = qyery->value(2).toInt();
     song.source = qyery->value(3).toByteArray();
-    return Sync::play(song,syncdata);
+    return Sync::play(song ,syncdata);
 }
 
 bool Sync::play(QString url){
@@ -269,7 +274,6 @@ bool Sync::play(QString url){
     if(id < 0){
         return false;
     }
-
     return Sync::play(id);
 }
 
@@ -341,10 +345,17 @@ bool Sync::createPackage(Type type, package &pac){
 
     pac.type = type;
 
-    if(type & TypePackage::t_sync && fbroadcaster){
+    if(type & TypePackage::t_sync  && fbroadcaster){
 
         pac.playdata.run = now() + SYNC_TIME;
         pac.playdata.seek = player->position() + SYNC_TIME;
+
+    }
+
+    if( type & TypePackage::t_feedback && fbroadcaster){
+
+        pac.playdata.run = now();
+        pac.playdata.seek = player->position();
 
     }
 
@@ -403,10 +414,6 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from server
 
-            if(pkg.getType() & t_play){
-                player->play();
-            }
-
             if(pkg.getType() & t_sync && !play(pkg.getHeader(), &pkg.getPlayData()) && !play(pkg.getSong(), &pkg.getPlayData())){
 
                 Type requestType = t_song_h;
@@ -438,14 +445,27 @@ void Sync::packageRender(ETcpSocket *socket){
 
         }else{
 
-            if(pkg.getType() & t_sync){
+            if(pkg.getType() & t_sync ){
                 if(!curentSong){
-                    throw SyncError();
+                    return ;
+                }
+            }
+
+            Type fnoSynced = t_void;
+            if(pkg.getType() & t_feedback){
+                if(!curentSong){
+                    return ;
+                }
+
+                unsigned int diff = abs(static_cast<unsigned int>(player->position() - (pkg.getPlayData().seek + (now() - pkg.getPlayData().run))));
+
+                if(diff < MIN_DIFFERENCE){
+                    fnoSynced = t_feedback;
                 }
             }
 
             package answer;
-            if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer)){
+            if(!createPackage(pkg.getType() & ~t_what & ~fnoSynced  & ~t_stop & ~t_brodcaster, answer)){
                 throw CreatePackageExaption();
             }
             socket->Write(answer.parseTo());

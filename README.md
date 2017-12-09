@@ -1,5 +1,5 @@
 # Welcome to the AlcoParty!
-# ![AlcoParty Logo](/resurses/icons/logo.png) AlcoParty
+# ![AlcoParty Logo](/resurses/icons/logo.png)
 
 ***************************
 ## What is AlcoParty

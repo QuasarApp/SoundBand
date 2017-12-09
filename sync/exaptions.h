@@ -71,4 +71,12 @@ public:
     }
 };
 
+class feedbackError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("Could not create synchronization confirmation packet.");
+    }
+};
+
 #endif // EXAPTIONS_H

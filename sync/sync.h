@@ -38,6 +38,12 @@ private:
     int port;
     QString dataBaseName;
     /**
+     * @brief abs
+     * @return module of numver
+     */
+    unsigned int abs(int number)const;
+
+    /**
      * @brief findHeader set curent song if playList have playng song
      * @return true if all done
      */
@@ -121,10 +127,11 @@ public:
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param header of song
+     * @param feedback - information about result of palying (cell default constructor if paying failed)
      * @param syncdata data of synbced playning of media data.
      * @return true if all done else false.
      */
-    bool play(const SongHeader &header,  const Syncer *syncdata = nullptr);
+    bool play(const SongHeader &header, const Syncer *syncdata = nullptr);
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param song playning media data.
@@ -227,9 +234,9 @@ public:
     /**
      * @brief addNewSong push a new song into local database.
      * @param name - name of pushed song
-     * @return true is all done.
+     * @return id of song.
      */
-    bool addNewSong(const QString &url);
+    int addNewSong(const QString &url);
 
     /**
      * @brief getEndPoint

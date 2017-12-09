@@ -3,8 +3,9 @@
 #include <QMultimedia>
 #include <QSqlQuery>
 #include "exaptions.h"
-#include "time.h"
-#include "thread"
+#include <ctime>
+#include <thread>
+#include <cmath>
 #include "config.h"
 
 #ifdef QT_DEBUG
@@ -39,6 +40,10 @@ Sync::Sync(const QString address, int port, const QString &datadir):
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(endPlay(QMediaPlayer::State)));
 }
 
+unsigned int Sync::abs(int number) const{
+    return number & ~ 0x82000000;
+}
+
 bool Sync::findHeader(const Song &song){
 
     for(SongHeader & header: playList){
@@ -61,7 +66,7 @@ void Sync::initDB(const QString &database){
     if(db) return;
     dataBaseName = database;
     db = new QSqlDatabase();
-    *db = QSqlDatabase::addDatabase("QSQLITE", "connection_of_" + database);
+    *db = QSqlDatabase::addDatabase("QSQLITE", database);
     QDir d(QString("./%0").arg(dataBaseName));
     db->setDatabaseName(d.absolutePath());
     if(db->open()){
@@ -261,15 +266,15 @@ bool Sync::play(int id_song, Syncer *syncdata){
     song.name = qyery->value(1).toString();
     song.size = qyery->value(2).toInt();
     song.source = qyery->value(3).toByteArray();
-    return Sync::play(song,syncdata);
+    return Sync::play(song ,syncdata);
 }
 
 bool Sync::play(QString url){
-    if(!addNewSong(url)){
+    int id = addNewSong(url);
+    if(id < 0){
         return false;
     }
-
-    return Sync::play(url);
+    return Sync::play(id);
 }
 
 void Sync::pause(bool state){
@@ -339,10 +344,17 @@ bool Sync::createPackage(Type type, package &pac){
 
     pac.type = type;
 
-    if(type & TypePackage::t_sync && fbroadcaster){
+    if(type & TypePackage::t_sync  && fbroadcaster){
 
         pac.playdata.run = now() + SYNC_TIME;
         pac.playdata.seek = player->position() + SYNC_TIME;
+
+    }
+
+    if( type & TypePackage::t_feedback && !fbroadcaster){
+
+        pac.playdata.run = now();
+        pac.playdata.seek = player->position();
 
     }
 
@@ -401,22 +413,27 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from server
 
-            if(pkg.getType() & t_play){
-                player->play();
-            }
+            if(pkg.getType() & t_sync){
+                if(!play(pkg.getHeader(), &pkg.getPlayData()) && !play(pkg.getSong(), &pkg.getPlayData())){
 
-            if(pkg.getType() & t_sync && !play(pkg.getHeader(), &pkg.getPlayData()) && !play(pkg.getSong(), &pkg.getPlayData())){
+                    Type requestType = t_song_h;
 
-                Type requestType = t_song_h;
+                    if(pkg.getType() & t_song_h)
+                        requestType = t_song;
 
-                if(pkg.getType() & t_song_h)
-                    requestType = t_song;
+                    package answer;
+                    if(!createPackage(requestType | t_sync, answer)){
+                        throw CreatePackageExaption();
+                    }
+                    socket->Write(answer.parseTo());
+                }else{
+                    package feedback;
 
-                package answer;
-                if(!createPackage(requestType | t_sync, answer)){
-                    throw CreatePackageExaption();
+                    if(!createPackage(t_feedback, feedback)){
+                        throw feedbackError();
+                    }
+                    socket->Write(feedback.parseTo());
                 }
-                socket->Write(answer.parseTo());
             }
 
             if(pkg.getType() & t_close){
@@ -436,14 +453,31 @@ void Sync::packageRender(ETcpSocket *socket){
 
         }else{
 
-            if(pkg.getType() & t_sync){
+            if(pkg.getType() & t_sync ){
                 if(!curentSong){
-                    throw SyncError();
+                    return ;
+                }
+            }
+
+            Type responceType = pkg.getType();
+            if(pkg.getType() & t_feedback){
+                if(!curentSong){
+                    return ;
+                }
+
+                unsigned int diff = abs(static_cast<unsigned int>(player->position() - (pkg.getPlayData().seek + (now() - pkg.getPlayData().run))));
+
+#ifdef QT_DEBUG
+                qDebug() << "diff " << socket->name() <<": " << diff;
+#endif
+
+                if(diff > MIN_DIFFERENCE){
+                    responceType = responceType | t_sync;
                 }
             }
 
             package answer;
-            if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer)){
+            if(!createPackage(responceType & ~t_what & ~t_feedback  & ~t_stop & ~t_brodcaster, answer)){
                 throw CreatePackageExaption();
             }
             socket->Write(answer.parseTo());
@@ -523,10 +557,10 @@ const SongHeader* Sync::getCurentSong() const{
     return curentSong;
 }
 
-bool Sync::addNewSong(const QString &url){
+int Sync::addNewSong(const QString &url){
     QFile f(url);
     if(!f.open(QIODevice::ReadOnly)){
-        return false;
+        return -1;
     }
     QByteArray bytes = f.readAll();
     f.close();
@@ -535,11 +569,8 @@ bool Sync::addNewSong(const QString &url){
     song.name = name;
     song.size = bytes.size();
     song.source = bytes;
-    song.id = Sync::save(song);
-    if(song.id < 0)
-        return false;
 
-    return true;
+    return Sync::save(song);
 }
 
 qint64 Sync::getEndPoint() const {
@@ -551,6 +582,8 @@ Sync::~Sync(){
     delete db;
     delete player;
     servers.clear();
+    QSqlDatabase::removeDatabase(dataBaseName);
+
 }
 
 }

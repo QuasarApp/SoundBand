@@ -10,4 +10,4 @@ supported platform:
 
 Build instructions will appear later for each of the platforms.
 
-1. [Code of Conduct](doc/CODE_OF_CONDUCT.md)
+1. [Code of Conduct](doc/CodeOfConduct.md)

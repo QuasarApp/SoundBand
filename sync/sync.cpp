@@ -426,6 +426,13 @@ void Sync::packageRender(ETcpSocket *socket){
                     throw CreatePackageExaption();
                 }
                 socket->Write(answer.parseTo());
+            }else{
+                package feedback;
+
+                if(!createPackage(t_feedback, feedback)){
+                    throw feedbackError();
+                }
+                socket->Write(feedback.parseTo());
             }
 
             if(pkg.getType() & t_close){
@@ -460,12 +467,12 @@ void Sync::packageRender(ETcpSocket *socket){
                 unsigned int diff = abs(static_cast<unsigned int>(player->position() - (pkg.getPlayData().seek + (now() - pkg.getPlayData().run))));
 
                 if(diff < MIN_DIFFERENCE){
-                    fnoSynced = t_feedback;
+                    fnoSynced = t_sync;
                 }
             }
 
             package answer;
-            if(!createPackage(pkg.getType() & ~t_what & ~fnoSynced  & ~t_stop & ~t_brodcaster, answer)){
+            if(!createPackage(pkg.getType() & ~t_what | fnoSynced  & ~t_stop & ~t_brodcaster, answer)){
                 throw CreatePackageExaption();
             }
             socket->Write(answer.parseTo());

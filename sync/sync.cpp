@@ -468,13 +468,17 @@ void Sync::packageRender(ETcpSocket *socket){
 
                 unsigned int diff = abs(static_cast<unsigned int>(player->position() - (pkg.getPlayData().seek + (now() - pkg.getPlayData().run))));
 
+#ifdef QT_DEBUG
+                qDebug() << "diff " << socket->name() <<": " << diff;
+#endif
+
                 if(diff > MIN_DIFFERENCE){
                     responceType = responceType | t_sync;
                 }
             }
 
             package answer;
-            if(!createPackage(responceType & ~t_what  & ~t_stop & ~t_brodcaster, answer)){
+            if(!createPackage(responceType & ~t_what & ~t_feedback  & ~t_stop & ~t_brodcaster, answer)){
                 throw CreatePackageExaption();
             }
             socket->Write(answer.parseTo());

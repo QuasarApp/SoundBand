@@ -41,7 +41,7 @@ private:
      * @brief abs
      * @return module of numver
      */
-    unsigned int abs(int number)const;
+    int abs(int number)const;
 
     /**
      * @brief findHeader set curent song if playList have playng song

@@ -10,6 +10,7 @@
 
 #ifdef QT_DEBUG
 #include <QDebug>
+#include <iostream>
 #endif
 
 namespace syncLib{
@@ -40,8 +41,8 @@ Sync::Sync(const QString address, int port, const QString &datadir):
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(endPlay(QMediaPlayer::State)));
 }
 
-unsigned int Sync::abs(int number) const{
-    return number & ~ 0x82000000;
+int Sync::abs(int number) const{
+    return (number << 1) >> 1;
 }
 
 bool Sync::findHeader(const Song &song){
@@ -471,8 +472,10 @@ void Sync::packageRender(ETcpSocket *socket){
                 qDebug() << "diff " << socket->name() <<": " << diff;
 #endif
 
-                if(diff > MIN_DIFFERENCE){
+                if(diff > 1){
                     responceType = responceType | t_sync;
+                }else{
+                    std::cout<<"Synced!!"<<std::endl;
                 }
             }
 

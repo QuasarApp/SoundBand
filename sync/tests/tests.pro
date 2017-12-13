@@ -11,7 +11,8 @@ SOURCES +=  tst_synctest.cpp \
     ../LocalScanner.cpp \
     ../node.cpp \
     ../song.cpp \
-    ../sync.cpp
+    ../sync.cpp \
+    ../player.cpp
 
 RESOURCES += \
     res.qrc
@@ -23,4 +24,5 @@ HEADERS += \
     ../LocalScanner.h \
     ../node.h \
     ../song.h \
-    ../sync.h
+    ../sync.h \
+    ../player.h

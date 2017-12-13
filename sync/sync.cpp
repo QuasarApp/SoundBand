@@ -23,7 +23,7 @@ Sync::Sync(const QString address, int port, const QString &datadir):
 {
     node = new Node(address , this->port = port);
 
-    player = new QMediaPlayer(nullptr,QMediaPlayer::LowLatency);
+    player = new Player(BUFFER_NAME,nullptr,QMediaPlayer::LowLatency);
     buffer = new QBuffer;
     if(!player->isAvailable()){
         throw MediaException();
@@ -223,10 +223,9 @@ bool Sync::play(const Song &song, const Syncer *syncdata){
         return false;
     }
 
-    buffer->close();
-    buffer->setData(song.source);
-    buffer->open(QIODevice::ReadOnly);
-    player->setMedia(QMediaContent(), buffer);
+    if(!player->setMediaFromBytes(song.source)){
+        return false;
+    }
 
     fbroadcaster = !bool(syncdata);
     if(!findHeader(song) && save(song) > -1 && !findHeader(song)){

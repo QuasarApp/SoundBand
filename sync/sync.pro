@@ -28,7 +28,13 @@ SOURCES += \
     song.cpp \
     node.cpp \
     ETcpSocket.cpp \
-    LocalScanner.cpp
+    LocalScanner.cpp \
+    ETcpSocket.cpp \
+    LocalScanner.cpp \
+    node.cpp \
+    player.cpp \
+    song.cpp \
+    sync.cpp
 
 HEADERS += \
         sync.h \
@@ -37,7 +43,15 @@ HEADERS += \
     config.h \
     exaptions.h \
     ETcpSocket.h \
-    LocalScanner.h
+    LocalScanner.h \
+    config.h \
+    ETcpSocket.h \
+    exaptions.h \
+    LocalScanner.h \
+    node.h \
+    player.h \
+    song.h \
+    sync.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

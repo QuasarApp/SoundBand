@@ -6,7 +6,7 @@
 #include <chrono>
 #include "config.h"
 
-#include <QMediaPlayer>
+#include "player.h"
 
 class QSqlDatabase;
 class QSqlQuery;
@@ -27,7 +27,7 @@ class Sync : public QObject
 private:
     Node *node;
     QSqlDatabase *db;
-    QMediaPlayer *player;
+    Player *player;
     QBuffer *buffer;
     QList<SongHeader> playList;
     SongHeader * curentSong;

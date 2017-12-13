@@ -32,7 +32,8 @@ SOURCES += \
     ../sync/song.cpp \
     ../sync/sync.cpp \
     servermodel.cpp \
-    songmodel.cpp
+    songmodel.cpp \
+    ../sync/player.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -44,7 +45,8 @@ HEADERS += \
     ../sync/song.h \
     ../sync/sync.h \
     servermodel.h \
-    songmodel.h
+    songmodel.h \
+    ../sync/player.h
 
 FORMS += \
         mainwindow.ui

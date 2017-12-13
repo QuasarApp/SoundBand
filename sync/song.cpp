@@ -29,7 +29,8 @@ unsigned int SongHeader::getSize() const{
 
 bool SongHeader::isValid() const{
 
-    return id > -1 && !name.isEmpty() && size > 0;
+    return id > -1 && !name.isEmpty() && size > 0 && name.endsWith(".mp3");
+
 }
 
 SongHeader::~SongHeader(){}

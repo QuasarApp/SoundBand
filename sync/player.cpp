@@ -4,12 +4,8 @@
 #include <QFile>
 #include <QDir>
 
-Player::Player(const QString bufferFile)
-{
-   buffer = bufferFile;
-}
 
-Player::Player(const QString bufferFile, QObject *parent, Flags flags):
+Player::Player(const QString &bufferFile, QObject *parent, Flags flags):
     QMediaPlayer(parent, flags)
 {
    buffer = bufferFile;

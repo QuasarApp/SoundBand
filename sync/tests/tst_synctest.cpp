@@ -16,7 +16,8 @@ private slots:
 
     void sycn_tests();
 
-    void package_tests();
+    void player_tests();
+
 
 };
 
@@ -62,8 +63,36 @@ void SyncTest::sycn_tests()
 
 }
 
-void SyncTest::package_tests()
+void SyncTest::player_tests()
 {
+    QFile f(":/song/test_song");
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+
+    Player pl(BUFFER_NAME);
+
+    QByteArray array = f.readAll();
+    f.close();
+    QVERIFY(pl.setMediaFromBytes(array));
+
+    f.setFileName(BUFFER_NAME);
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+
+    QByteArray array2 = f.readAll();
+    f.close();
+
+    QVERIFY(array.length() == array2.length());
+
+    QVERIFY(pl.setMediaFromBytes(array));
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+
+    array2 = f.readAll();
+
+    QVERIFY(array.length() == array2.length());
+
+
 
 
 }

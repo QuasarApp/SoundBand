@@ -9,8 +9,7 @@ class Player : public QMediaPlayer
 private:
     QString buffer;
 public:
-    Player(const QString bufferFile);
-    Player(const QString bufferFile, QObject *parent = Q_NULLPTR, Flags flags = Flags());
+    Player(const QString& bufferFile, QObject *parent = Q_NULLPTR, Flags flags = Flags());
     bool setMediaFromBytes(const QByteArray& array);
     ~Player();
 

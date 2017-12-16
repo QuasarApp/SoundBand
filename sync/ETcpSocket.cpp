@@ -87,6 +87,8 @@ void ETcpSocket::readReady_(){
             }
 
             source->write(cArray);
+
+            array->clear();
             return;
         }
 
@@ -105,8 +107,9 @@ void ETcpSocket::readReady_(){
 
             lastTime = ChronoTime::now();
             source->write(cArray);
-            return;
 
+            array->clear();
+            return;
         }
 
         case CALIBRATION_RECEIVER_DONE:{
@@ -119,16 +122,17 @@ void ETcpSocket::readReady_(){
             fSynced = true;
 
             source->write(cArray);
-            return;
 
+            array->clear();
+            return;
         }
 
         case CALIBRATION_SENDER_DONE:{
 
             stream >> differenceTime;
 
+            array->clear();
             return;
-
         }
 
         }

@@ -41,10 +41,6 @@ Sync::Sync(const QString address, int port, const QString &datadir):
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(endPlay(QMediaPlayer::State)));
 }
 
-int Sync::abs(int number) const{
-    return (number << 1) >> 1;
-}
-
 bool Sync::findHeader(const Song &song){
 
     for(SongHeader & header: playList){
@@ -179,26 +175,6 @@ bool Sync::load(const SongHeader &song,Song &result){
     return true;
 }
 
-/*
- * information about chrono
- * https://stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
- */
-
-milliseconds Sync::now(){
-    auto tim = std::chrono::system_clock::now();
-    auto mc = std::chrono::time_point_cast<std::chrono::milliseconds>(tim);
-    auto epoh = mc.time_since_epoch();
-#ifdef QT_DEBUG
-    qDebug() << epoh.count();
-#endif
-    return epoh.count();
-}
-
-Clock Sync::from(const milliseconds& mc){
-    std::chrono::milliseconds dur(mc);
-    return Clock(dur);
-}
-
 bool Sync::play(const SongHeader &header, const Syncer *syncdata){
 
     if(!header.isValid()){
@@ -296,13 +272,16 @@ void Sync::jump(const qint64 seek){
 }
 
 bool Sync::sync(const Syncer &sync){
-    milliseconds sync_time  = sync.run - now();
+    milliseconds sync_time  = sync.run - ChronoTime::now();
     if(sync_time > MAX_SYNC_TIME && sync_time <= 0)
         return false;
-    Clock run_time = from(sync.run);
+
+    Clock run_time = ChronoTime::from(sync.run);
+
     do {
         std::this_thread::yield();
     } while (std::chrono::high_resolution_clock::now() < run_time);
+
     player->setPosition(sync.seek);
     return true;
 }
@@ -348,14 +327,14 @@ bool Sync::createPackage(Type type, package &pac){
 
     if(type & TypePackage::t_sync  && fbroadcaster){
 
-        pac.playdata.run = now() + SYNC_TIME;
+        pac.playdata.run = ChronoTime::now() + SYNC_TIME;
         pac.playdata.seek = player->position() + SYNC_TIME;
 
     }
 
     if( type & TypePackage::t_feedback && !fbroadcaster){
 
-        pac.playdata.run = now();
+        pac.playdata.run = ChronoTime::now();
         pac.playdata.seek = player->position();
 
     }
@@ -467,7 +446,7 @@ void Sync::packageRender(ETcpSocket *socket){
                     return ;
                 }
 
-                unsigned int diff = abs(static_cast<unsigned int>(player->position() - (pkg.getPlayData().seek + (now() - pkg.getPlayData().run))));
+                unsigned int diff = ChronoTime::abs(player->position() - (pkg.getPlayData().seek + (ChronoTime::now() - pkg.getPlayData().run)));
 
 #ifdef QT_DEBUG
                 qDebug() << "diff " << socket->name() <<": " << diff;

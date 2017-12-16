@@ -13,7 +13,6 @@ class QSqlQuery;
 class QBuffer;
 namespace syncLib {
 
-typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class Node;
 
@@ -37,11 +36,6 @@ private:
     LocalScanner deepScaner;
     int port;
     QString dataBaseName;
-    /**
-     * @brief abs
-     * @return module of numver
-     */
-    int abs(int number)const;
 
     /**
      * @brief findHeader set curent song if playList have playng song
@@ -87,17 +81,7 @@ private:
      * @return song drom local database.
      */
     Song fromDataBase(const int id);
-    /**
-     * @brief now - get now time on microsecunds
-     * @return - count of microsecunds
-     */
-    milliseconds now();
-    /**
-     * @brief from cast to chrono secunds
-     * @param mcrs microseconds of uint_64
-     * @return microseconds of chrono
-     */
-    Clock from(const milliseconds &mcrs);
+
     /**
      * @brief createPackage - Create a package that shows current state of the node
      * @param type - Type of an answer

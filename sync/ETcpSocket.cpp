@@ -1,6 +1,5 @@
 #include "ETcpSocket.h"
 #include "exaptions.h"
-#include "config.h"
 
 ETcpSocket::ETcpSocket()
 {
@@ -23,7 +22,10 @@ ETcpSocket::ETcpSocket(const QString& address, int port){
 }
 
 void ETcpSocket::init(){
-    array=new QByteArray;
+    array = new QByteArray;
+    fSynced = false;
+    differenceTime = 0;
+
     connect(source,SIGNAL(connected()),this,SLOT(connected_()));
     connect(source,SIGNAL(disconnected()),this,SLOT(disconnected_()));
     connect(source,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error_(QAbstractSocket::SocketError)));
@@ -59,11 +61,77 @@ void ETcpSocket::stateChanged_(QAbstractSocket::SocketState socketState){
 
 void ETcpSocket::readReady_(){
     bool sizewrite=array->isEmpty();
-    //while(source->bytesAvailable())
     array->append(source->readAll());
     QDataStream stream(array,QIODevice::ReadOnly);
-    if(sizewrite)
-        stream>>size;
+    if(sizewrite){
+        stream >> size;
+        switch (size) {
+        case CALIBRATION_SENDER:{
+            milliseconds ms;
+            stream >> ms;
+
+            milliseconds range = ChronoTime::now() - ms;
+
+            QByteArray cArray;
+            QDataStream stream(&cArray,QIODevice::ReadWrite);
+
+            if(range < MIN_DIFFERENCE){
+                stream << CALIBRATION_RECEIVER_DONE;
+                fSynced = true;
+
+            }else{
+                stream << CALIBRATION_RECEIVER;
+                stream << range;
+
+            }
+
+            source->write(cArray);
+            return;
+        }
+
+
+        case CALIBRATION_RECEIVER:{
+            ping = ChronoTime::now() - lastTime;
+            milliseconds ms;
+            stream >> ms;
+
+            differenceTime += ms + ping / 2;
+
+            QByteArray cArray;
+            QDataStream stream(&cArray,QIODevice::ReadWrite);
+            stream << CALIBRATION_SENDER;
+            stream << milliseconds(ChronoTime::now() + differenceTime);
+
+            lastTime = ChronoTime::now();
+            source->write(cArray);
+            return;
+
+        }
+
+        case CALIBRATION_RECEIVER_DONE:{
+
+            QByteArray cArray;
+            QDataStream stream(&cArray,QIODevice::ReadWrite);
+            stream << CALIBRATION_SENDER_DONE;
+
+            stream << milliseconds(-differenceTime);
+            fSynced = true;
+
+            source->write(cArray);
+            return;
+
+        }
+
+        case CALIBRATION_SENDER_DONE:{
+
+            stream >> differenceTime;
+
+            return;
+
+        }
+
+        }
+    }
 #ifdef QT_DEBUG
     qDebug()<<"messae size:"<<size;
     qDebug()<<"message package size:"<<array->size();
@@ -77,7 +145,6 @@ void ETcpSocket::readReady_(){
     }else{
         emit donwload(array->size(),size);
     }
-   // emit ReadReady(this);
 }
 
 QString ETcpSocket::name() const{
@@ -112,12 +179,21 @@ QString ETcpSocket::toStringTcp(){
     return source->peerAddress().toString();
 }
 
+milliseconds ETcpSocket::getDifferenceTime() const{
+    return differenceTime;
+}
+
+bool ETcpSocket::isSynced()const{
+    return fSynced;
+}
+
 bool ETcpSocket::Write(const QByteArray&data){
     if(source->state()==QTcpSocket::ConnectedState){
        QByteArray array;
        QDataStream stream(&array,QIODevice::ReadWrite);
-       stream<<qint32(0);
-       //stream<<data;
+
+       stream << qint32(0);
+
        array.append(data);
        stream.device()->seek(0);
        stream<<qint32(array.size());
@@ -131,6 +207,19 @@ bool ETcpSocket::Write(const QByteArray&data){
 #endif
    }
     return false;
+}
+
+void ETcpSocket::calibration(){
+    if(!fSynced){
+        QByteArray cArray;
+        QDataStream stream(&cArray,QIODevice::ReadWrite);
+        stream << CALIBRATION_SENDER;
+        stream << milliseconds(ChronoTime::now());
+        lastTime = ChronoTime::now();
+
+        source->write(cArray);
+    }
+
 }
 
 ETcpSocket::~ETcpSocket()

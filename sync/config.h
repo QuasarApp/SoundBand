@@ -20,6 +20,6 @@
 #define DEEP_SCANER_INTERVAL        10000     // 10 sec
 
 // sync
-#define MIN_DIFFERENCE              100       // millisec
+#define MIN_DIFFERENCE              10       // millisec
 
 #endif // CONFIG_H

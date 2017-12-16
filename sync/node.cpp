@@ -38,18 +38,14 @@ bool package::isValid() const{
 
     }
 
-    if(type & TypePackage::t_feedback & TypePackage::t_sync){
-        return false;
+    if(type & TypePackage::t_play){
+        ret = ret && true;
 
     }
 
-    if(type & TypePackage::t_sync  && type & t_brodcaster){
+    if(type & TypePackage::t_sync && type & t_brodcaster){
         ret = ret && (playdata.run > 0 && playdata.seek > 0);
 
-    }
-
-    if(type & TypePackage::t_feedback){
-        ret = ret && !(type & t_brodcaster) && (playdata.run > 0 && playdata.seek > 0);
     }
 
     if(type & TypePackage::t_song_h && type & t_brodcaster){
@@ -80,8 +76,7 @@ QByteArray package::parseTo(){
     if(isValid()){
         stream <<  static_cast<unsigned char>(type);
 
-        if((type & TypePackage::t_sync && type & t_brodcaster) ||
-           (type & TypePackage::t_feedback && !(type & t_brodcaster))){
+        if(type & TypePackage::t_sync && type & t_brodcaster){
             stream << playdata.run;
             stream << playdata.seek;
 
@@ -109,19 +104,18 @@ bool package::parseFrom(QByteArray &array){
     stream >> temp_type;
     type = static_cast<TypePackage> (temp_type);
 
-    if((type & TypePackage::t_sync && type & t_brodcaster) ||
-       (type & TypePackage::t_feedback && !(type & t_brodcaster))){
+    if(type & TypePackage::t_sync){
         stream >> playdata.run;
         stream >> playdata.seek;
 
     }
 
-    if(type & TypePackage::t_song_h && type & t_brodcaster){
+    if(type & TypePackage::t_song_h){
         stream >> header;
 
     }
 
-    if(type & TypePackage::t_song && type & t_brodcaster){
+    if(type & TypePackage::t_song){
         stream >> source;
 
     }

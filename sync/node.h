@@ -12,7 +12,7 @@ typedef unsigned char Type;
 /**
  * @brief The TypePackage enum
  * t_void         =   this package empty and not valid.
- * t_feedback     =   feedback for synced.
+ * t_play         =   play curent audio file.
  * t_song_h       =   the header of playing audio file.
  * t_song         =   the package with this type is necessary for translite media data on network.
  * t_sync         =   the infomation about sync playning media file on network.
@@ -24,7 +24,7 @@ typedef unsigned char Type;
 
 enum TypePackage{
      t_void         =   0x00,
-     t_feedback     =   0x01,
+     t_play         =   0x01,
      t_song_h       =   0x02,
      t_song         =   0x04,
      t_sync         =   0x08,

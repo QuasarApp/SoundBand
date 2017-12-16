@@ -13,6 +13,7 @@ class QSqlQuery;
 class QBuffer;
 namespace syncLib {
 
+typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class Node;
 
@@ -36,7 +37,6 @@ private:
     LocalScanner deepScaner;
     int port;
     QString dataBaseName;
-
     /**
      * @brief findHeader set curent song if playList have playng song
      * @return true if all done
@@ -81,14 +81,13 @@ private:
      * @return song drom local database.
      */
     Song fromDataBase(const int id);
-
     /**
      * @brief createPackage - Create a package that shows current state of the node
      * @param type - Type of an answer
      * @param pac - the resulting value
      * @return true if everything's done
      */
-    bool createPackage(Type type ,package& pac);
+    bool createPackage(Type type , package& pac, const ETcpSocket *for_ = NULL);
 private slots:
 
     /**
@@ -111,11 +110,10 @@ public:
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param header of song
-     * @param feedback - information about result of palying (cell default constructor if paying failed)
      * @param syncdata data of synbced playning of media data.
      * @return true if all done else false.
      */
-    bool play(const SongHeader &header, const Syncer *syncdata = nullptr);
+    bool play(const SongHeader &header,  const Syncer *syncdata = nullptr);
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param song playning media data.

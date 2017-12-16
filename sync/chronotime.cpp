@@ -11,14 +11,14 @@ ChronoTime::ChronoTime()
  * https://stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
  */
 
-milliseconds ChronoTime::now(){
+milliseconds ChronoTime::now(int calibration){
     auto tim = std::chrono::system_clock::now();
     auto mc = std::chrono::time_point_cast<std::chrono::milliseconds>(tim);
     auto epoh = mc.time_since_epoch();
 #ifdef QT_DEBUG
     qDebug() << epoh.count();
 #endif
-    return epoh.count();
+    return epoh.count() + calibration;
 }
 
 Clock ChronoTime::from(const milliseconds& mc){

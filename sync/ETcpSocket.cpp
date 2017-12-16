@@ -40,6 +40,7 @@ void ETcpSocket::error_(QAbstractSocket::SocketError i){
 }
 
 void ETcpSocket::connected_(){
+    calibration();
     emit Connected(this);
 }
 

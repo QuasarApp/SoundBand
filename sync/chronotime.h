@@ -17,7 +17,7 @@ public:
      * @brief now - get now time on microsecunds
      * @return - count of microsecunds
      */
-    static milliseconds now();
+    static milliseconds now(int calibration = 0);
     /**
      * @brief from cast to chrono secunds
      * @param mcrs microseconds of uint_64

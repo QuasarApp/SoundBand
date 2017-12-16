@@ -3,14 +3,11 @@
 #include <QMultimedia>
 #include <QSqlQuery>
 #include "exaptions.h"
-#include <ctime>
-#include <thread>
-#include <cmath>
-#include "config.h"
+#include "thread"
+#include "chronotime.h"
 
 #ifdef QT_DEBUG
 #include <QDebug>
-#include <iostream>
 #endif
 
 namespace syncLib{
@@ -217,7 +214,7 @@ bool Sync::play(const Song &song, const Syncer *syncdata){
 
     if(fbroadcaster){
         package pac;
-        if(!createPackage(t_song_h | t_sync, pac)){
+        if(!createPackage(t_play, pac)){
             throw CreatePackageExaption();
         }
         node->WriteAll(pac.parseTo());
@@ -243,7 +240,7 @@ bool Sync::play(int id_song, Syncer *syncdata){
     song.name = qyery->value(1).toString();
     song.size = qyery->value(2).toInt();
     song.source = qyery->value(3).toByteArray();
-    return Sync::play(song ,syncdata);
+    return Sync::play(song,syncdata);
 }
 
 bool Sync::play(QString url){
@@ -251,6 +248,7 @@ bool Sync::play(QString url){
     if(id < 0){
         return false;
     }
+
     return Sync::play(id);
 }
 
@@ -275,13 +273,10 @@ bool Sync::sync(const Syncer &sync){
     milliseconds sync_time  = sync.run - ChronoTime::now();
     if(sync_time > MAX_SYNC_TIME && sync_time <= 0)
         return false;
-
     Clock run_time = ChronoTime::from(sync.run);
-
     do {
         std::this_thread::yield();
     } while (std::chrono::high_resolution_clock::now() < run_time);
-
     player->setPosition(sync.seek);
     return true;
 }
@@ -313,29 +308,26 @@ bool Sync::listen(ETcpSocket *server){
     }
     package pac;
 
-    if(!createPackage(t_sync,pac)){
+    if(!createPackage(t_sync, pac)){
         return false;
     }
 
     return server->Write(pac.parseTo());
 }
 
-bool Sync::createPackage(Type type, package &pac){
+bool Sync::createPackage(Type type, package &pac, const ETcpSocket *for_){
     pac.clear();
 
     pac.type = type;
 
-    if(type & TypePackage::t_sync  && fbroadcaster){
+    if(type & TypePackage::t_sync && fbroadcaster){
 
-        pac.playdata.run = ChronoTime::now() + SYNC_TIME;
+        if(!for_  || !for_->isSynced()){
+            return false;
+        }
+
+        pac.playdata.run = ChronoTime::now(for_->getDifferenceTime()) + SYNC_TIME;
         pac.playdata.seek = player->position() + SYNC_TIME;
-
-    }
-
-    if( type & TypePackage::t_feedback && !fbroadcaster){
-
-        pac.playdata.run = ChronoTime::now();
-        pac.playdata.seek = player->position();
 
     }
 
@@ -394,27 +386,27 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from server
 
-            if(pkg.getType() & t_sync){
-                if(!play(pkg.getHeader(), &pkg.getPlayData()) && !play(pkg.getSong(), &pkg.getPlayData())){
+            if(pkg.getType() & t_play){
 
-                    Type requestType = t_song_h;
-
-                    if(pkg.getType() & t_song_h)
-                        requestType = t_song;
-
-                    package answer;
-                    if(!createPackage(requestType | t_sync, answer)){
-                        throw CreatePackageExaption();
-                    }
-                    socket->Write(answer.parseTo());
-                }else{
-                    package feedback;
-
-                    if(!createPackage(t_feedback, feedback)){
-                        throw feedbackError();
-                    }
-                    socket->Write(feedback.parseTo());
+                package answer;
+                if(!createPackage(t_sync, answer)){
+                    throw CreatePackageExaption();
                 }
+                socket->Write(answer.parseTo());
+            }
+
+            if(pkg.getType() & t_sync && !play(pkg.getHeader(), &pkg.getPlayData()) && !play(pkg.getSong(), &pkg.getPlayData())){
+
+                Type requestType = t_song_h;
+
+                if(pkg.getType() & t_song_h)
+                    requestType = t_song;
+
+                package answer;
+                if(!createPackage(requestType | t_sync, answer)){
+                    throw CreatePackageExaption();
+                }
+                socket->Write(answer.parseTo());
             }
 
             if(pkg.getType() & t_close){
@@ -434,33 +426,18 @@ void Sync::packageRender(ETcpSocket *socket){
 
         }else{
 
-            if(pkg.getType() & t_sync ){
+            if(pkg.getType() & t_sync){
                 if(!curentSong){
-                    return ;
-                }
-            }
-
-            Type responceType = pkg.getType();
-            if(pkg.getType() & t_feedback){
-                if(!curentSong){
-                    return ;
+                    throw SyncError();
                 }
 
-                unsigned int diff = ChronoTime::abs(player->position() - (pkg.getPlayData().seek + (ChronoTime::now() - pkg.getPlayData().run)));
-
-#ifdef QT_DEBUG
-                qDebug() << "diff " << socket->name() <<": " << diff;
-#endif
-
-                if(diff > 1){
-                    responceType = responceType | t_sync;
-                }else{
-                    std::cout<<"Synced!!"<<std::endl;
+                if(!socket->isSynced()){
+                    socket->calibration();
                 }
             }
 
             package answer;
-            if(!createPackage(responceType & ~t_what & ~t_feedback  & ~t_stop & ~t_brodcaster, answer)){
+            if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer, socket)){
                 throw CreatePackageExaption();
             }
             socket->Write(answer.parseTo());

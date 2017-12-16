@@ -377,6 +377,7 @@ void Sync::packageRender(ETcpSocket *socket){
         package pkg;
         if(!pkg.parseFrom((*array))){
             throw BadAnswerExaption();
+            socket->nextItem();
             continue;
         }
 //     package answer;
@@ -395,7 +396,8 @@ void Sync::packageRender(ETcpSocket *socket){
 
         if(fbroadcaster == (pkg.getType() & t_brodcaster)){
             throw BrodcastConflict();
-            return;
+            socket->nextItem();
+            continue;
         }
 
         if(pkg.getType() & t_brodcaster){
@@ -416,6 +418,8 @@ void Sync::packageRender(ETcpSocket *socket){
                 package answer;
                 if(!createPackage(requestType | t_sync, answer)){
                     throw CreatePackageExaption();
+                    socket->nextItem();
+                    continue;
                 }
                 socket->Write(answer.parseTo());
             }
@@ -424,12 +428,15 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->getSource()->close();
                 node->getClients()->removeOne(socket);
                 delete socket;
+                return;
             }
 
             if(pkg.getType() & t_what){
                 package answer;
                 if(!createPackage(t_void, answer)){
                     throw CreatePackageExaption();
+                    socket->nextItem();
+                    continue;
                 }
                 socket->Write(answer.parseTo());
             }
@@ -440,12 +447,16 @@ void Sync::packageRender(ETcpSocket *socket){
             if(pkg.getType() & t_sync){
                 if(!curentSong){
                     throw SyncError();
+                    socket->nextItem();
+                    continue;
                 }
             }
 
             package answer;
             if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer)){
                 throw CreatePackageExaption();
+                socket->nextItem();
+                continue;
             }
             socket->Write(answer.parseTo());
 
@@ -453,6 +464,7 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->getSource()->close();
                 node->getClients()->removeOne(socket);
                 delete socket;
+                return;
             }
 
         }

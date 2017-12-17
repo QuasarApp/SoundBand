@@ -4,6 +4,14 @@
 #include <QTcpServer>
 #include <QList>
 #include <QDataStream>
+#include "chronotime.h"
+
+#define CALIBRATION_SENDER qint32(-1)
+#define CALIBRATION_RECEIVER qint32(-2)
+#define CALIBRATION_SENDER_DONE qint32(-3)
+#define CALIBRATION_RECEIVER_DONE qint32(-4)
+
+
 
 /**
  * @brief The ETcpSocket class
@@ -25,6 +33,8 @@
  * }
  *
  */
+
+
 class ETcpSocket:public QObject
 {
     Q_OBJECT
@@ -35,6 +45,17 @@ private:
     qint32 size;
     QList<QByteArray*> ReadyStack;
     void init();
+    /**
+     * @brief differenceTime - local time difference in milliseconds
+     * on milliseconds
+     */
+    milliseconds differenceTime;
+    /**
+     * @brief fSynced - whether a time difference was found.
+     */
+    bool fSynced;
+    milliseconds lastTime;
+    milliseconds ping;
 
 private slots:
     void connected_();
@@ -70,6 +91,25 @@ public:
      * @return true if all done else false.
      */
     bool Write(const QByteArray&);
+
+    /**
+     * @brief getDifferenceTime
+     * @return Difference Time of remoute node.
+     */
+    milliseconds getDifferenceTime()const;
+
+    /**
+     * @brief isSynced
+     * @return
+     */
+    bool isSynced()const;
+
+    /**
+     * @brief calibration - will calculate the difference in time between the connected node
+     *  and the current node.
+     */
+    void calibration();
+
     ~ETcpSocket();
 public slots:
     /**
@@ -125,6 +165,7 @@ signals:
      *  The socketState parameter is the new state.
      */
     void StateChanged(ETcpSocket*,QAbstractSocket::SocketState socketState);
+
 
 };
 

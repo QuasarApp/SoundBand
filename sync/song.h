@@ -3,12 +3,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QDataStream>
-#include "config.h"
-
-/**
- * @brief Time_point on nanosecunds (uint64_t)
- */
-typedef quint64 milliseconds;
+#include "chronotime.h"
 
 namespace syncLib {
 
@@ -23,7 +18,7 @@ struct Syncer
      */
     milliseconds seek;
     /**
-     * @brief run when is play media file (int)
+     * @brief run when is play media file (milliseconds)
      */
     milliseconds run;
 };

@@ -82,23 +82,12 @@ private:
      */
     Song fromDataBase(const int id);
     /**
-     * @brief now - get now time on microsecunds
-     * @return - count of microsecunds
-     */
-    milliseconds now();
-    /**
-     * @brief from cast to chrono secunds
-     * @param mcrs microseconds of uint_64
-     * @return microseconds of chrono
-     */
-    Clock from(const milliseconds &mcrs);
-    /**
      * @brief createPackage - Create a package that shows current state of the node
      * @param type - Type of an answer
      * @param pac - the resulting value
      * @return true if everything's done
      */
-    bool createPackage(Type type ,package& pac);
+    bool createPackage(Type type , package& pac, const ETcpSocket *for_ = NULL);
 private slots:
 
     /**

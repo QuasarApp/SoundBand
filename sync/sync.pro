@@ -24,11 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        sync.cpp \
-    song.cpp \
-    node.cpp \
-    ETcpSocket.cpp \
-    LocalScanner.cpp \
+    chronotime.cpp \
     ETcpSocket.cpp \
     LocalScanner.cpp \
     node.cpp \
@@ -36,14 +32,9 @@ SOURCES += \
     song.cpp \
     sync.cpp
 
+
 HEADERS += \
-        sync.h \
-    song.h \
-    node.h \
-    config.h \
-    exaptions.h \
-    ETcpSocket.h \
-    LocalScanner.h \
+    chronotime.h \
     config.h \
     ETcpSocket.h \
     exaptions.h \
@@ -52,6 +43,7 @@ HEADERS += \
     player.h \
     song.h \
     sync.h
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

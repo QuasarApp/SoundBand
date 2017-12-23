@@ -34,7 +34,8 @@ SOURCES += \
     servermodel.cpp \
     songmodel.cpp \
     ../sync/player.cpp \
-    ../sync/chronotime.cpp
+    ../sync/chronotime.cpp \
+    ../sync/mysql.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -48,7 +49,8 @@ HEADERS += \
     servermodel.h \
     songmodel.h \
     ../sync/player.h \
-    ../sync/chronotime.h
+    ../sync/chronotime.h \
+    ../sync/mysql.h
 
 FORMS += \
         mainwindow.ui

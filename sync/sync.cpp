@@ -17,13 +17,11 @@ Sync::Sync(const QString address, int port, const QString &datadir):
     db(nullptr),
     player(nullptr),
     qyery(nullptr),
-    buffer(nullptr),
     curentSong(nullptr)
 {
     node = new Node(address , this->port = port);
 
     player = new Player(BUFFER_NAME,nullptr,QMediaPlayer::LowLatency);
-    buffer = new QBuffer;
     if(!player->isAvailable()){
         throw MediaException();
     }
@@ -260,7 +258,6 @@ void Sync::pause(bool state){
 }
 
 void Sync::stop(){
-    buffer->close();
     player->stop();
 }
 

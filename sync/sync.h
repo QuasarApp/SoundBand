@@ -5,12 +5,9 @@
 #include "LocalScanner.h"
 #include <chrono>
 #include "config.h"
-
+#include "mysql.h"
 #include "player.h"
 
-class QSqlDatabase;
-class QSqlQuery;
-class QBuffer;
 namespace syncLib {
 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
@@ -28,7 +25,6 @@ private:
     Node *node;
     QSqlDatabase *db;
     Player *player;
-    QBuffer *buffer;
     QList<SongHeader> playList;
     SongHeader * curentSong;
     QSqlQuery *qyery;

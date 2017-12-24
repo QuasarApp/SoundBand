@@ -8,7 +8,6 @@
 
 // sqlite config
 #define DATABASE_NAME               "songdata.dat"
-#define DATATABLE_NAME              "songs"
 #define BUFFER_NAME                 "buffer"
 
 // network config

@@ -63,11 +63,13 @@ void Sync::initDB(const QString &database){
     db->setDatabaseName(d.absolutePath());
     if(db->open()){
         qyery = new QSqlQuery(*db);
-        QString qyer = QString("CREATE TABLE IF NOT EXISTS %0"
-                     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                     "name VARCHAR(100), "
+        QString qyer = QString("CREATE TABLE IF NOT EXISTS songs("
+                     "id INTEGER AUTO INCREMENT,"
+                     "name VARCHAR(100),"
                      "size INT NOT NULL, "
-                     "data BLOB NOT NULL)").arg(DATATABLE_NAME);
+                     "data BLOB NOT NULL),"
+                     "PRIMARY KEY(id)"
+                     ")");
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
             throw InitDBError();
@@ -75,7 +77,46 @@ void Sync::initDB(const QString &database){
             return;
         }
 
-        qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS i%0 ON %0(name,size)").arg(DATATABLE_NAME);
+        qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS isongs ON songs(name,size)");
+        if(!qyery->exec(qyer)){
+            sqlErrorLog(qyer);
+            throw InitDBError();
+            delete db;
+            return;
+        }
+
+        qyer = QString("CREATE TABLE IF NOT EXISTS playlists("
+                     "id INTEGER AUTO INCREMENT,"
+                     "name VARCHAR(50) NOT NULL UNIQUE,"
+                     "description VARCHAR(1000) DEFAULT 'without description',"
+                     "image BLOB,"
+                     "PRIMARY KEY(id)"
+                     ")");
+        if(!qyery->exec(qyer)){
+            sqlErrorLog(qyer);
+            throw InitDBError();
+            delete db;
+            return;
+        }
+
+        qyer = QString("CREATE TABLE IF NOT EXISTS playlistsdata("
+                     "playlist INT NOT NULL,"
+                     "song INT NOT NULL,"
+                     "FOREIGN KEY(playlist) REFERENCES playlists(id)"
+                        "ON UPDATE CASCADE"
+                        "ON DELETE CASCADE,"
+                     "FOREIGN KEY(song) REFERENCES songs(id)"
+                        "ON UPDATE CASCADE"
+                        "ON DELETE CASCADE"
+                     ")");
+        if(!qyery->exec(qyer)){
+            sqlErrorLog(qyer);
+            throw InitDBError();
+            delete db;
+            return;
+        }
+
+        qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS iplaylistsdata ON playlistsdata(playlist,song)");
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
             throw InitDBError();
@@ -87,8 +128,7 @@ void Sync::initDB(const QString &database){
 }
 
 int Sync::save(const Song &song){
-    QString qyer = QString("SELECT id from %0 where name='%1' and size=%2").arg(DATATABLE_NAME,
-                                                 song.name,
+    QString qyer = QString("SELECT id from songs where name='%0' and size=%1").arg(song.name,
                                                  QString::number(song.size));
     if(!qyery->exec(qyer)){
         sqlErrorLog(qyer);
@@ -98,9 +138,8 @@ int Sync::save(const Song &song){
         return qyery->value(0).toInt();
     }
 
-    qyer = QString("INSERT INTO %0 (name,size,data) VALUES"
-                           "('%1',%2,:val)").arg(DATATABLE_NAME,
-                                                 song.name,
+    qyer = QString("INSERT INTO songs (name,size,data) VALUES"
+                           "('%0',%1,:val)").arg(song.name,
                                                  QString::number(song.size));
     if(!qyery->prepare(qyer)){
         sqlErrorLog(qyer + " prepare error");
@@ -111,7 +150,7 @@ int Sync::save(const Song &song){
         sqlErrorLog(qyer);
         return -1;
     }
-    if(!qyery->exec(QString("SELECT MAX(id) from %0").arg(DATATABLE_NAME))){
+    if(!qyery->exec(QString("SELECT MAX(id) from songs"))){
         sqlErrorLog(qyer);
         return -1;
     }
@@ -124,7 +163,7 @@ int Sync::save(const Song &song){
 }
 
 bool Sync::updateAvailableSongs(){
-    QString qyer = QString("SELECT id,name,size from %0").arg(DATATABLE_NAME);
+    QString qyer = QString("SELECT id,name,size from songs");
     if(!qyery->exec(qyer)){
         sqlErrorLog(qyer);
         return false;
@@ -146,12 +185,12 @@ bool Sync::updateAvailableSongs(){
 bool Sync::load(const SongHeader &song,Song &result){
     result.clear();
     if(song.id > -1){
-        QString qyer = QString("SELECT * from %0 where id=%1").arg(DATATABLE_NAME).arg(song.id);
+        QString qyer = QString("SELECT * from songs where id=%0").arg(song.id);
         if(!qyery->exec(qyer)){
             return false;
         }
     }else if(!song.name.isEmpty() && song.size > 0){
-        QString qyer = QString("SELECT * from %0 where name='%1' and size=%2").arg(DATATABLE_NAME).arg(song.name).arg(song.size);
+        QString qyer = QString("SELECT * from songs where name='%0' and size=%1").arg(song.name).arg(song.size);
         if(!qyery->exec(qyer)){
             return false;
         }
@@ -176,7 +215,7 @@ bool Sync::play(const SongHeader &header, const Syncer *syncdata){
         return false;
     }
 
-    QString qyer = QString("SELECT * from %0 where name='%1' and size=%2").arg(DATATABLE_NAME).arg(header.name).arg(header.size);
+    QString qyer = QString("SELECT * from songs where name='%0' and size=%1").arg(header.name).arg(header.size);
     if(!qyery->exec(qyer)){
         sqlErrorLog(qyer);
         return false;
@@ -228,7 +267,7 @@ bool Sync::play(const Song &song, const Syncer *syncdata){
 
 bool Sync::play(int id_song, Syncer *syncdata){
 
-    QString qyer = QString("SELECT * from %0 where id=%1").arg(DATATABLE_NAME).arg(id_song);
+    QString qyer = QString("SELECT * from songs where id=%0").arg(id_song);
     if(!qyery->exec(qyer) || !qyery->next()){
         return false;
     }

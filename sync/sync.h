@@ -23,60 +23,26 @@ class Sync : public QObject
     Q_OBJECT
 private:
     Node *node;
-    QSqlDatabase *db;
     Player *player;
     QList<SongHeader> playList;
-    SongHeader * curentSong;
-    QSqlQuery *qyery;
+    SongHeader *curentSong;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     LocalScanner deepScaner;
+    MySql *sql;
     int port;
-    QString dataBaseName;
     /**
      * @brief findHeader set curent song if playList have playng song
      * @return true if all done
      */
     bool findHeader(const Song& song);
-    /**
-     * @brief sqlErrorLog show sql error
-     * @param qyery
-     */
-    void sqlErrorLog(const QString& qyery);
 
     /**
      * @brief rescan - search for existing servers
      * result saved in servers
      */
     void rescan(bool deep = false);
-    /**
-     * @brief initDB initialize local database of song
-     */
-    void initDB(const QString& database = DATABASE_NAME );
-    /**
-     * @brief load song of database;
-     * @brief song -
-     * @brief result - the resulting value;
-     * @return true if everything's done
-     */
-    bool load(const SongHeader &song, Song &result);
-    /**
-     * @brief save media data into local database.
-     * @param song savining media data.
-     * @return id of song saved on local database.
-     */
-    int save(const Song &song);
-    /**
-     * @brief updateAvelableSongs will update the list of participants of songs.
-     * @return true if all done
-     */
-    bool updateAvailableSongs();
-    /**
-     * @brief fromDataBase return a song from local database by id.
-     * @param id of song saved in local database.
-     * @return song drom local database.
-     */
-    Song fromDataBase(const int id);
+
     /**
      * @brief createPackage - Create a package that shows current state of the node
      * @param type - Type of an answer
@@ -210,17 +176,17 @@ public:
     const SongHeader *getCurentSong() const;
 
     /**
+     * @brief getEndPoint
+     * @return end point of playng song.
+     */
+    qint64 getEndPoint() const;
+
+    /**
      * @brief addNewSong push a new song into local database.
      * @param name - name of pushed song
      * @return id of song.
      */
     int addNewSong(const QString &url);
-
-    /**
-     * @brief getEndPoint
-     * @return end point of playng song.
-     */
-    qint64 getEndPoint() const;
 
     Sync(const QString address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();

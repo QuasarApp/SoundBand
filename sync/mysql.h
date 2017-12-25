@@ -76,16 +76,25 @@ public:
      * @param newPlayList - a new paly list.
      * @return trye if all done.
      */
-    bool addPlayList(const QString& newPlayList);
+    bool addPlayList(const QString& newPlayList, const QString& desc = "");
 
     /**
-     * @brief changePlayList - replase play list for song.
-     * @param heder - header of song.  first : song removed by id,
+     * @brief addToPlayList - add song to play list.
+     * @param header - header of song.  first : song removed by id,
      * if id of head = -1 then song removed by name and size, and if song no finded this finction return false.
      * @param newPlaylist
      * @return true if all done.
      */
-    bool changePlayList(const SongHeader& heder, const QString& newPlaylist);
+    bool addToPlayList(const SongHeader& header, const QString& playList);
+
+    /**
+     * @brief addToPlayList - add song to play list.
+     * @param header - header of song.  first : song removed by id,
+     * if id of head = -1 then song removed by name and size, and if song no finded this finction return false.
+     * @param newPlaylist
+     * @return true if all done.
+     */
+    bool removeFromPlayList(const SongHeader& header, const QString& playList);
 
     /**
      * @brief removePlayList - remove play list from local database.

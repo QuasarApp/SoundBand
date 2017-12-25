@@ -27,6 +27,8 @@ bool Player::setMediaFromBytes(const QByteArray &array){
         return false;
     }
 
+
+
     f.close();
 
     setMedia(QUrl::fromLocalFile(QDir("./").absoluteFilePath(buffer)));

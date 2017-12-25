@@ -30,7 +30,9 @@ SOURCES += \
     node.cpp \
     player.cpp \
     song.cpp \
-    sync.cpp
+    sync.cpp \
+    mysql.cpp
+
 
 
 HEADERS += \
@@ -42,7 +44,9 @@ HEADERS += \
     node.h \
     player.h \
     song.h \
-    sync.h
+    sync.h \
+    mysql.h
+
 
 unix {
     target.path = /usr/lib

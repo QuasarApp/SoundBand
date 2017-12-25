@@ -54,12 +54,13 @@ public:
     Song();
     Song(const SongHeader& from);
     void clear();
+    const QByteArray& getSource()const;
     unsigned int getSize() const;
     bool isValid() const;
     ~Song();
     friend QDataStream& operator << (QDataStream& stream, const Song& song);
     friend QDataStream& operator >> (QDataStream& stream, Song& song);
-    friend class Sync;
+    friend class MySql;
 };
 }
 #endif // SONG_H

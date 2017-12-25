@@ -111,6 +111,15 @@ public:
      */
     static bool exec(QSqlQuery *q, const QString& sqlFile);
 
+    /**
+     * @brief getPlayLists show all created playlists.
+     * @param list - list of play lists.
+     * @return trye if all done
+     */
+    bool getPlayLists(QStringList &list);
+
+    void clear();
+
     ~MySql();
 };
 }

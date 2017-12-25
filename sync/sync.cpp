@@ -219,8 +219,8 @@ bool Sync::play(const Song &song, const Syncer *syncdata){
         node->WriteAll(pac.parseTo());
     }
 
-    if(syncdata && !sync(*syncdata)){
-        return false;
+    if(syncdata){
+        return sync(*syncdata);
     }
 
     player->play();
@@ -272,11 +272,17 @@ bool Sync::sync(const Syncer &sync){
     milliseconds sync_time  = sync.run - ChronoTime::now();
     if(sync_time > MAX_SYNC_TIME && sync_time <= 0)
         return false;
-    Clock run_time = ChronoTime::from(sync.run);
-    do {
-        std::this_thread::yield();
-    } while (std::chrono::high_resolution_clock::now() < run_time);
-    player->setPosition(sync.seek);
+
+    milliseconds delay = player->getPlayDelay();
+    if(delay < 0)
+        return false;
+
+    player->setPosition(sync.seek + delay);
+
+    QTimer::singleShot(sync_time, [=]() {
+        player->play();
+    });
+
     return true;
 }
 

@@ -3,9 +3,8 @@
 #include <QMultimedia>
 #include <QSqlQuery>
 #include "exaptions.h"
-#include "time.h"
 #include "thread"
-#include "config.h"
+#include "chronotime.h"
 
 #ifdef QT_DEBUG
 #include <QDebug>
@@ -15,23 +14,20 @@ namespace syncLib{
 
 Sync::Sync(const QString address, int port, const QString &datadir):
     node(nullptr),
-    db(nullptr),
     player(nullptr),
-    qyery(nullptr),
-    buffer(nullptr),
     curentSong(nullptr)
 {
     node = new Node(address , this->port = port);
 
     player = new Player(BUFFER_NAME,nullptr,QMediaPlayer::LowLatency);
-    buffer = new QBuffer;
     if(!player->isAvailable()){
         throw MediaException();
     }
 
     fbroadcaster = false;
 
-    initDB(datadir);
+    sql = new MySql(datadir);
+    sql->updateAvailableSongs(playList);
 
     connect(node, SIGNAL(Message(ETcpSocket*)), SLOT(packageRender(ETcpSocket*)));
     connect(&deepScaner, SIGNAL(scaned(QList<ETcpSocket*>*)), SLOT(deepScaned(QList<ETcpSocket*>*)));
@@ -51,169 +47,15 @@ bool Sync::findHeader(const Song &song){
     return false;
 }
 
-void Sync::sqlErrorLog(const QString &qyery){
-#ifdef QT_DEBUG
-            qDebug()<< qyery << ": fail:\n " <<this->qyery->lastError();
-#endif
-}
-
-void Sync::initDB(const QString &database){
-    if(db) return;
-    dataBaseName = database;
-    db = new QSqlDatabase();
-    *db = QSqlDatabase::addDatabase("QSQLITE", database);
-    QDir d(QString("./%0").arg(dataBaseName));
-    db->setDatabaseName(d.absolutePath());
-    if(db->open()){
-        qyery = new QSqlQuery(*db);
-        QString qyer = QString("CREATE TABLE IF NOT EXISTS %0"
-                     "(id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                     "name VARCHAR(100), "
-                     "size INT NOT NULL, "
-                     "data BLOB NOT NULL)").arg(DATATABLE_NAME);
-        if(!qyery->exec(qyer)){
-            sqlErrorLog(qyer);
-            throw InitDBError();
-            delete db;
-            return;
-        }
-
-        qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS i%0 ON %0(name,size)").arg(DATATABLE_NAME);
-        if(!qyery->exec(qyer)){
-            sqlErrorLog(qyer);
-            throw InitDBError();
-            delete db;
-            return;
-        }
-    }
-    updateAvailableSongs();
-}
-
-int Sync::save(const Song &song){
-    QString qyer = QString("SELECT id from %0 where name='%1' and size=%2").arg(DATATABLE_NAME,
-                                                 song.name,
-                                                 QString::number(song.size));
-    if(!qyery->exec(qyer)){
-        sqlErrorLog(qyer);
-        return -1;
-    }
-    if(qyery->next()){
-        return qyery->value(0).toInt();
-    }
-
-    qyer = QString("INSERT INTO %0 (name,size,data) VALUES"
-                           "('%1',%2,:val)").arg(DATATABLE_NAME,
-                                                 song.name,
-                                                 QString::number(song.size));
-    if(!qyery->prepare(qyer)){
-        sqlErrorLog(qyer + " prepare error");
-        return -1;
-    }
-    qyery->bindValue(":val",song.source);
-    if(!qyery->exec()){
-        sqlErrorLog(qyer);
-        return -1;
-    }
-    if(!qyery->exec(QString("SELECT MAX(id) from %0").arg(DATATABLE_NAME))){
-        sqlErrorLog(qyer);
-        return -1;
-    }
-    if(!qyery->next())
-        return -1;
-
-    int result = qyery->value(0).toInt();
-    updateAvailableSongs();
-    return result;
-}
-
-bool Sync::updateAvailableSongs(){
-    QString qyer = QString("SELECT id,name,size from %0").arg(DATATABLE_NAME);
-    if(!qyery->exec(qyer)){
-        sqlErrorLog(qyer);
-        return false;
-    }
-
-    playList.clear();
-
-    while(qyery->next()){
-        SongHeader song;
-        song.id = qyery->value(0).toInt();
-        song.name = qyery->value(1).toString();
-        song.size = qyery->value(2).toInt();
-        playList.push_back(song);
-    }
-
-    return true;
-}
-
-bool Sync::load(const SongHeader &song,Song &result){
-    result.clear();
-    if(song.id > -1){
-        QString qyer = QString("SELECT * from %0 where id=%1").arg(DATATABLE_NAME).arg(song.id);
-        if(!qyery->exec(qyer)){
-            return false;
-        }
-    }else if(!song.name.isEmpty() && song.size > 0){
-        QString qyer = QString("SELECT * from %0 where name='%1' and size=%2").arg(DATATABLE_NAME).arg(song.name).arg(song.size);
-        if(!qyery->exec(qyer)){
-            return false;
-        }
-    }else {
-        return false;
-    }
-
-    if(!qyery->next()){
-        return false;
-    }
-
-    result.id = qyery->value(0).toInt();
-    result.name = qyery->value(1).toString();
-    result.size = qyery->value(2).toInt();
-    result.source = qyery->value(3).toByteArray();
-    return true;
-}
-
-/*
- * information about chrono
- * https://stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
- */
-
-milliseconds Sync::now(){
-    auto tim = std::chrono::system_clock::now();
-    auto mc = std::chrono::time_point_cast<std::chrono::milliseconds>(tim);
-    auto epoh = mc.time_since_epoch();
-#ifdef QT_DEBUG
-    qDebug() << epoh.count();
-#endif
-    return epoh.count();
-}
-
-Clock Sync::from(const milliseconds& mc){
-    std::chrono::milliseconds dur(mc);
-    return Clock(dur);
-}
-
 bool Sync::play(const SongHeader &header, const Syncer *syncdata){
 
-    if(!header.isValid()){
-        return false;
-    }
-
-    QString qyer = QString("SELECT * from %0 where name='%1' and size=%2").arg(DATATABLE_NAME).arg(header.name).arg(header.size);
-    if(!qyery->exec(qyer)){
-        sqlErrorLog(qyer);
-        return false;
-    }
-
-    if(!qyery->next()){
-        return false;
-    }
-
     Song song;
-    song.id = qyery->value(0).toInt();
-    song.name = qyery->value(1).toString();
-    song.size = qyery->value(2).toInt();
-    song.source = qyery->value(3).toByteArray();
+    SongHeader newheader = header;
+    newheader.id = -1;
+    if(!sql->load(newheader,song)){
+        return false;
+    }
+
     return Sync::play(song, syncdata);
 }
 
@@ -223,22 +65,24 @@ bool Sync::play(const Song &song, const Syncer *syncdata){
         return false;
     }
 
-    if(!player->setMediaFromBytes(song.source)){
+    if(!player->setMediaFromBytes(song.getSource())){
         return false;
     }
 
     fbroadcaster = !bool(syncdata);
-    if(!findHeader(song) && save(song) > -1 && !findHeader(song)){
+    if(!findHeader(song) && sql->save(song) > -1 && !findHeader(song)){
         return false;
     }
 
     if(fbroadcaster){
         package pac;
-        if(!createPackage(t_song_h | t_sync, pac)){
+        if(!createPackage(t_play, pac)){
             throw CreatePackageExaption();
         }
         node->WriteAll(pac.parseTo());
     }
+
+    sql->updateAvailableSongs(playList);
 
     if(syncdata && !sync(*syncdata)){
         return false;
@@ -251,16 +95,12 @@ bool Sync::play(const Song &song, const Syncer *syncdata){
 
 bool Sync::play(int id_song, Syncer *syncdata){
 
-    QString qyer = QString("SELECT * from %0 where id=%1").arg(DATATABLE_NAME).arg(id_song);
-    if(!qyery->exec(qyer) || !qyery->next()){
-        return false;
-    }
+    SongHeader header;
+    header.id = id_song;
     Song song;
-    song.id = qyery->value(0).toInt();
-    song.name = qyery->value(1).toString();
-    song.size = qyery->value(2).toInt();
-    song.source = qyery->value(3).toByteArray();
-    return Sync::play(song,syncdata);
+    sql->load(header, song);
+
+    return Sync::play(song, syncdata);
 }
 
 bool Sync::play(QString url){
@@ -281,7 +121,6 @@ void Sync::pause(bool state){
 }
 
 void Sync::stop(){
-    buffer->close();
     player->stop();
 }
 
@@ -290,14 +129,20 @@ void Sync::jump(const qint64 seek){
 }
 
 bool Sync::sync(const Syncer &sync){
-    milliseconds sync_time  = sync.run - now();
+    milliseconds sync_time  = sync.run - ChronoTime::now();
     if(sync_time > MAX_SYNC_TIME && sync_time <= 0)
         return false;
-    Clock run_time = from(sync.run);
-    do {
-        std::this_thread::yield();
-    } while (std::chrono::high_resolution_clock::now() < run_time);
-    player->setPosition(sync.seek);
+
+    milliseconds delay = player->getPlayDelay();
+    if(delay < 0)
+        return false;
+
+    player->setPosition(sync.seek + delay);
+
+    QTimer::singleShot(sync_time, [=]() {
+        player->play();
+    });
+
     return true;
 }
 
@@ -328,21 +173,25 @@ bool Sync::listen(ETcpSocket *server){
     }
     package pac;
 
-    if(!createPackage(t_sync,pac)){
+    if(!createPackage(t_sync, pac)){
         return false;
     }
 
     return server->Write(pac.parseTo());
 }
 
-bool Sync::createPackage(Type type, package &pac){
+bool Sync::createPackage(Type type, package &pac, const ETcpSocket *for_){
     pac.clear();
 
     pac.type = type;
 
     if(type & TypePackage::t_sync && fbroadcaster){
 
-        pac.playdata.run = now() + SYNC_TIME;
+        if(!for_  || !for_->isSynced()){
+            return false;
+        }
+
+        pac.playdata.run = ChronoTime::now(for_->getDifferenceTime()) + SYNC_TIME;
         pac.playdata.seek = player->position() + SYNC_TIME;
 
     }
@@ -359,7 +208,7 @@ bool Sync::createPackage(Type type, package &pac){
         if(!curentSong)
             return false;
 
-        if(!load(*curentSong, pac.source))
+        if(!sql->load(*curentSong, pac.source))
             return false;
 
     }
@@ -377,6 +226,7 @@ void Sync::packageRender(ETcpSocket *socket){
         package pkg;
         if(!pkg.parseFrom((*array))){
             throw BadAnswerExaption();
+            socket->nextItem();
             continue;
         }
 //     package answer;
@@ -395,7 +245,8 @@ void Sync::packageRender(ETcpSocket *socket){
 
         if(fbroadcaster == (pkg.getType() & t_brodcaster)){
             throw BrodcastConflict();
-            return;
+            socket->nextItem();
+            continue;
         }
 
         if(pkg.getType() & t_brodcaster){
@@ -403,7 +254,12 @@ void Sync::packageRender(ETcpSocket *socket){
 //            if requst from server
 
             if(pkg.getType() & t_play){
-                player->play();
+
+                package answer;
+                if(!createPackage(t_sync, answer)){
+                    throw CreatePackageExaption();
+                }
+                socket->Write(answer.parseTo());
             }
 
             if(pkg.getType() & t_sync && !play(pkg.getHeader(), &pkg.getPlayData()) && !play(pkg.getSong(), &pkg.getPlayData())){
@@ -416,6 +272,8 @@ void Sync::packageRender(ETcpSocket *socket){
                 package answer;
                 if(!createPackage(requestType | t_sync, answer)){
                     throw CreatePackageExaption();
+                    socket->nextItem();
+                    continue;
                 }
                 socket->Write(answer.parseTo());
             }
@@ -424,12 +282,15 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->getSource()->close();
                 node->getClients()->removeOne(socket);
                 delete socket;
+                return;
             }
 
             if(pkg.getType() & t_what){
                 package answer;
                 if(!createPackage(t_void, answer)){
                     throw CreatePackageExaption();
+                    socket->nextItem();
+                    continue;
                 }
                 socket->Write(answer.parseTo());
             }
@@ -440,12 +301,20 @@ void Sync::packageRender(ETcpSocket *socket){
             if(pkg.getType() & t_sync){
                 if(!curentSong){
                     throw SyncError();
+                    socket->nextItem();
+                    continue;
+                }
+
+                if(!socket->isSynced()){
+                    socket->calibration();
                 }
             }
 
             package answer;
-            if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer)){
+            if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer, socket)){
                 throw CreatePackageExaption();
+                socket->nextItem();
+                continue;
             }
             socket->Write(answer.parseTo());
 
@@ -453,6 +322,7 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->getSource()->close();
                 node->getClients()->removeOne(socket);
                 delete socket;
+                return;
             }
 
         }
@@ -524,32 +394,21 @@ const SongHeader* Sync::getCurentSong() const{
     return curentSong;
 }
 
-int Sync::addNewSong(const QString &url){
-    QFile f(url);
-    if(!f.open(QIODevice::ReadOnly)){
-        return -1;
-    }
-    QByteArray bytes = f.readAll();
-    f.close();
-    QString name = url.right(url.lastIndexOf(QRegularExpression("[\\/]"))); // meby [[\\\/]]
-    Song song;
-    song.name = name;
-    song.size = bytes.size();
-    song.source = bytes;
-
-    return Sync::save(song);
-}
-
 qint64 Sync::getEndPoint() const {
     return player->duration();
 }
 
+int Sync::addNewSong(const QString &url){
+    int result = sql->save(url);
+    sql->updateAvailableSongs(playList);
+    return result;
+}
+
 Sync::~Sync(){
     delete node;
-    delete db;
     delete player;
+    delete sql;
     servers.clear();
-    QSqlDatabase::removeDatabase(dataBaseName);
 
 }
 

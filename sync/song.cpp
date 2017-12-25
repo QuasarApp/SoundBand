@@ -72,6 +72,10 @@ unsigned int Song::getSize() const{
     return SongHeader::getSize() + source.size();
 }
 
+const QByteArray& Song::getSource()const{
+    return source;
+}
+
 bool Song::isValid() const{
 
     return SongHeader::isValid() && source.size() == size;

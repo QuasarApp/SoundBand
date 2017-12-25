@@ -6,23 +6,31 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES +=  tst_synctest.cpp \
+SOURCES += \
+    tst_synctest.cpp \
+    ../chronotime.cpp \
     ../ETcpSocket.cpp \
     ../LocalScanner.cpp \
     ../node.cpp \
+    ../player.cpp \
     ../song.cpp \
     ../sync.cpp \
-    ../player.cpp
+    ../mysql.cpp
+
 
 RESOURCES += \
     res.qrc
 
 HEADERS += \
+    ../chronotime.h \
     ../config.h \
     ../ETcpSocket.h \
     ../exaptions.h \
     ../LocalScanner.h \
     ../node.h \
+    ../player.h \
     ../song.h \
     ../sync.h \
-    ../player.h
+    ../mysql.h
+
+

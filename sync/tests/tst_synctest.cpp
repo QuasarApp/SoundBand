@@ -16,7 +16,10 @@ private slots:
 
     void sycn_tests();
 
-    void package_tests();
+    void player_tests();
+
+    void database_tests();
+
 
 };
 
@@ -46,7 +49,7 @@ void SyncTest::sycn_tests()
     sync->stop();
     QVERIFY(!sync->play(2));
 
-    QVERIFY(QFile(DATABASE_NAME).size() == 2068480);
+    QVERIFY(QFile(DATABASE_NAME).size() == 2084864);
 
     delete sync;
 
@@ -62,9 +65,101 @@ void SyncTest::sycn_tests()
 
 }
 
-void SyncTest::package_tests()
+void SyncTest::player_tests()
 {
+    QFile f(":/song/test_song");
 
+    QVERIFY(f.open(QIODevice::ReadOnly));
+
+    Player pl(BUFFER_NAME);
+
+    QByteArray array = f.readAll();
+    f.close();
+    QVERIFY(pl.setMediaFromBytes(array));
+
+    f.setFileName(BUFFER_NAME);
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+
+    QByteArray array2 = f.readAll();
+    f.close();
+
+    QVERIFY(array.length() == array2.length());
+
+    QVERIFY(pl.setMediaFromBytes(array));
+
+    QVERIFY(f.open(QIODevice::ReadOnly));
+
+    array2 = f.readAll();
+
+    QVERIFY(array.length() == array2.length());
+
+
+
+
+}
+
+void SyncTest::database_tests()
+{
+    syncLib::MySql sql("test1");
+    syncLib::SongHeader header;
+    syncLib::Song song;
+
+    QVERIFY(!sql.load(header,song));
+
+    QVERIFY(!sql.addToPlayList(header,"none"));
+
+    header.id = sql.save(":/song/test_song");
+    QVERIFY(header.id > 0);
+
+    QVERIFY(sql.load(header,song));
+
+    header = static_cast<syncLib::SongHeader>(song);
+    QVERIFY(sql.load(header,song));
+
+    QVERIFY(sql.addPlayList("play","desc of play"));
+
+    QVERIFY(sql.addToPlayList(header,"play"));
+
+    QVERIFY(!sql.addToPlayList(header,"play"));
+
+    QVERIFY(sql.removeFromPlayList(header,"play"));
+
+    header.id = -1;
+    QVERIFY(sql.addToPlayList(header,"play"));
+
+    QVERIFY(!sql.addToPlayList(header,"play"));
+
+    QList<syncLib::SongHeader> list;
+    sql.updateAvailableSongs(list);
+
+    QVERIFY(list.size() == 1);
+    list.clear();
+    sql.updateAvailableSongs(list,"play");
+
+    QVERIFY(list.size() == 1);
+
+    sql.updateAvailableSongs(list,"play2");
+    QVERIFY(list.size() == 0);
+
+    QVERIFY(sql.removeFromPlayList(header,"play"));
+
+    QVERIFY(sql.removeSong(header));
+
+    sql.updateAvailableSongs(list);
+    QVERIFY(list.size() == 0);
+
+    QStringList playlists;
+    sql.getPlayLists(playlists);
+    QVERIFY(playlists.size() == 1);
+
+    QVERIFY(sql.removePlayList("play"));
+
+    sql.getPlayLists(playlists);
+    QVERIFY(playlists.size() == 0);
+
+    sql.clear();
+    QVERIFY(QFile("test1").size() == 32768);
 
 }
 

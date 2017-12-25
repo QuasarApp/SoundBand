@@ -71,5 +71,4 @@ public:
     }
 };
 
-
 #endif // EXAPTIONS_H

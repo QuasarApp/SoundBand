@@ -197,8 +197,15 @@ bool MySql::load(const SongHeader &song,Song &result){
     return true;
 }
 
-bool MySql::updateAvailableSongs(QList<SongHeader>& list){
-    QString qyer = QString("SELECT id,name,size from songs");
+bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playList){
+    QString qyer;
+    if(playList.isEmpty()){
+        qyer = QString("SELECT id,name,size from songs");
+    }else{
+        qyer = QString("SELECT id,name,size from songs where "
+                       "id = (select song from playlistsdata where playlist='%0')").arg(playList);
+    }
+
     if(!qyery->exec(qyer)){
         sqlErrorLog(qyer);
         return false;

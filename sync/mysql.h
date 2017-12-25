@@ -8,7 +8,6 @@ class QSqlQuery;
 
 namespace syncLib {
 
-
 class MySql
 {
 private:
@@ -44,6 +43,9 @@ public:
      */
     int save(const Song &song);
 
+    /**
+     * @brief save media file, bud from url.
+     */
     int save(const QString &url);
 
     /**
@@ -56,10 +58,48 @@ public:
     /**
      * @brief updateAvelableSongs will update the list of participants of songs.
      * @param list - [out value] list of avelable song.
+     * @param playList - play list of songs.
      * @return true if all done
      */
-    bool updateAvailableSongs(QList<SongHeader>& list);
+    bool updateAvailableSongs(QList<SongHeader>& list, const QString &playList = "");
 
+    /**
+     * @brief removeSong - remove song from local database.
+     * @param header - heder removing song. first : song removed by id,
+     * if id of head = -1 then song removed by name and size, and if song no finded this finction return false.
+     * @return trye if all done.
+     */
+    bool removeSong(const SongHeader& header);
+
+    /**
+     * @brief addPlayList add a new play list into database.
+     * @param newPlayList - a new paly list.
+     * @return trye if all done.
+     */
+    bool addPlayList(const QString& newPlayList);
+
+    /**
+     * @brief changePlayList - replase play list for song.
+     * @param heder - header of song.  first : song removed by id,
+     * if id of head = -1 then song removed by name and size, and if song no finded this finction return false.
+     * @param newPlaylist
+     * @return true if all done.
+     */
+    bool changePlayList(const SongHeader& heder, const QString& newPlaylist);
+
+    /**
+     * @brief removePlayList - remove play list from local database.
+     * @param playList - removed play list.
+     * @return true if all done.
+     */
+    bool removePlayList(const QString& playList);
+
+    /**
+     * @brief exec - execute сustom sql file.
+     * @param q - sql query
+     * @param sqlFile - sql - file with sql code.
+     * @return trye if all done.
+     */
     static bool exec(QSqlQuery *q, const QString& sqlFile);
 
     ~MySql();

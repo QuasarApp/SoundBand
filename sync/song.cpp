@@ -1,7 +1,8 @@
 #include "song.h"
-
+#include <QStringList>
 namespace syncLib{
 
+static const QStringList ValidSongs = {".mp3", ".wav", ".ogg"};
 SongHeader::SongHeader()
 {
     this->id = -1;
@@ -28,8 +29,11 @@ unsigned int SongHeader::getSize() const{
 }
 
 bool SongHeader::isValid() const{
-
-    return id > -1 && !name.isEmpty() && size > 0 && name.endsWith(".mp3");
+    bool CheckSongs = false;
+    for (QString i: ValidSongs){
+        CheckSongs = CheckSongs || name.endsWith(i);
+    }
+    return id > -1 && !name.isEmpty() && size > 0 && CheckSongs;
 
 }
 

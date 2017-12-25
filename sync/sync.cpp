@@ -407,6 +407,7 @@ int Sync::addNewSong(const QString &url){
 Sync::~Sync(){
     delete node;
     delete player;
+    delete sql;
     servers.clear();
 
 }

@@ -166,7 +166,7 @@ int MySql::save(const QString &url){
     song.size = bytes.size();
     song.source = bytes;
 
-    if(!song.isValid()){
+    if(!song.isNameValid()){
         return -1;
     }
 

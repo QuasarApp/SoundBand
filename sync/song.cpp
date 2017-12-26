@@ -28,12 +28,17 @@ unsigned int SongHeader::getSize() const{
     return size.size();
 }
 
-bool SongHeader::isValid() const{
+bool SongHeader::isNameValid() const{
     bool CheckSongs = false;
     for (QString i: ValidSongs){
         CheckSongs = CheckSongs || name.endsWith(i);
     }
-    return id > -1 && !name.isEmpty() && size > 0 && CheckSongs;
+    return CheckSongs;
+}
+
+bool SongHeader::isValid() const{
+
+    return id > -1 && !name.isEmpty() && size > 0 && isNameValid();
 
 }
 

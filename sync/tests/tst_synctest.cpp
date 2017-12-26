@@ -41,7 +41,10 @@ void SyncTest::sycn_tests()
 
     QVERIFY(sync != nullptr);
 
-    QVERIFY(sync->play(":/song/test_song"));
+    QVERIFY(!sync->play(":/song/test_song"));
+
+    QVERIFY(sync->play(":/song/test_song.mp3"));
+
 
     sync->stop();
     QVERIFY(sync->play(1));
@@ -109,7 +112,7 @@ void SyncTest::database_tests()
 
     QVERIFY(!sql.addToPlayList(header,"none"));
 
-    header.id = sql.save(":/song/test_song");
+    header.id = sql.save(":/song/test_song.mp3");
     QVERIFY(header.id > 0);
 
     QVERIFY(sql.load(header,song));

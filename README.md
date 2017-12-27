@@ -17,4 +17,6 @@ Build instructions will appear later for each of the platforms.
 1. [Contributor Covenant Code of Conduct](/doc/Contributor_Covenant_Code_of_Conduct.md).
 2. [Code of Conduct](doc/Code_of_Conduct.md).
 
-
+## Donate
+If you want to help the project, then you can donate a small amount to our bitcoin wallet.
+bitcoin address - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q

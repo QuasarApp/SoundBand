@@ -5,14 +5,33 @@
 #include <QDir>
 
 
-Player::Player(const QString &bufferFile, QObject *parent, Flags flags):
-    QMediaPlayer(parent, flags)
+Player::Player(const QString &bufferFile, QObject *parent):
+    QObject(parent)
 {
+   if(!rescanDevices()){
+       throw AudioDevicesError();
+       delete this;
+       return;
+   }
    buffer = bufferFile;
    playDelay = 0;
-   predState = state();
    fSynced = false;
-   connect(this, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(_stateChanged(QMediaPlayer::State)));
+
+   decoder = new QAudioDecoder(this);
+
+   output = new QAudioOutput(availableDevices.first(), this);
+
+}
+
+int Player::rescanDevices(){
+
+    availableDevices = QAudioDeviceInfo::availableDevices(QAudio::MusicRole);
+
+    return availableDevices.size();
+}
+
+QMediaMetaData Player::fromByteArray(const QByteArray &array){
+
 }
 
 bool Player::setMediaFromBytes(const QByteArray &array){
@@ -20,6 +39,8 @@ bool Player::setMediaFromBytes(const QByteArray &array){
     if(!f.open(QIODevice::WriteOnly | QIODevice::Truncate)){
         return false;
     }
+
+
 
     if(array.length() != f.write(array.data(),array.length())){
 
@@ -60,4 +81,7 @@ milliseconds Player::getPlayDelay(){
 
 Player::~Player(){
 
+    availableDevices->clear();
+    delete decoder;
+    delete output;
 }

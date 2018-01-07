@@ -6,6 +6,7 @@
 #include <QAudioOutput>
 #include <QAudioDeviceInfo>
 #include <QMediaMetaData>
+#include <QBuffer>
 
 #include "chronotime.h"
 
@@ -19,33 +20,25 @@ class Player : public QObject
 private:
     QString buffer;
     milliseconds playDelay;
-    bool fSynced;
+    bool fbuffered;
+    QBuffer buf;
     QList<QAudioDeviceInfo> availableDevices;
     QAudioDecoder *decoder;
     QAudioOutput *output;
-
+    QAudioBuffer buffer;
 
 protected:
-
-    /**
-     * @brief fromByteArray extract QMediaMetaData from audioFile.
-     * @param array - array of media data.
-     * @return meta information about source.
-     */
-    QMediaMetaData fromByteArray(const QByteArray& array);
-
-    /**
-     * @brief AudioFormatFromMediaData create QAudioFormat from QMeiaMetaData
-     * @param media
-     * @return new Audio format
-     */
-    QAudioFormat AudioFormatFromMediaData(const QMediaMetaData& media);
 
     /**
      * @brief rescanDevices
      * @return count of findet devices.
      */
     int rescanDevices();
+private slots:
+    /**
+     * @brief decodeComplit
+     */
+    void decodeComplit();
 public:
 
     Player(const QString& bufferFile, QObject *parent = Q_NULLPTR);
@@ -59,9 +52,10 @@ public:
 
     /**
      * @brief play curent song;
+     * @param waiting : time of waiting for buffering source data.
      * @return true if all done.
      */
-    bool play();
+    bool play(int waiting = DEFAULT_BUFFERING_TIME);
 
     /**
      * @brief stop curent song.

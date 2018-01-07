@@ -3,7 +3,7 @@
 #include "exaptions.h"
 #include <QFile>
 #include <QDir>
-
+#include <thread>
 
 Player::Player(const QString &bufferFile, QObject *parent):
     QObject(parent)
@@ -15,11 +15,13 @@ Player::Player(const QString &bufferFile, QObject *parent):
    }
    buffer = bufferFile;
    playDelay = 0;
-   fSynced = false;
+   fbuffered = false;
 
    decoder = new QAudioDecoder(this);
 
    output = new QAudioOutput(availableDevices.first(), this);
+
+   connect(decoder, SIGNAL(finished()), this , SLOT(decodeComplit()));
 
 }
 
@@ -30,36 +32,44 @@ int Player::rescanDevices(){
     return availableDevices.size();
 }
 
-QMediaMetaData Player::fromByteArray(const QByteArray &array){
-
+void Player::decodeComplit(){
+    if(decoder->error() == QAudioDecoder::NoError){
+        buffer = decoder->read();
+        fbuffered = true;
+        buf.close();
+    }else{
+        throw AudioDecodeError(decoder->errorString());
+    }
 }
 
 bool Player::setMediaFromBytes(const QByteArray &array){
-    QFile f(buffer);
-    if(!f.open(QIODevice::WriteOnly | QIODevice::Truncate)){
+    decoder->setAudioFormat(void());
+
+    buf.setData(array);
+
+    if(!buf.open(QIODevice::ReadOnly)){
         return false;
     }
 
+    fbuffered = false;
 
+    decoder->setSourceDevice(buf);
 
-    if(array.length() != f.write(array.data(),array.length())){
-
-        f.close();
-        return false;
-    }
-
-
-
-    f.close();
-
-    setMedia(QUrl::fromLocalFile(QDir("./").absoluteFilePath(buffer)));
-    play();
-    pause();
-    playDelay = ChronoTime::now();
-    play();
-
+    decoder->start();
 
     return true;
+
+}
+
+bool Player::play(int waiting){
+    milliseconds now = ChronoTime::now();
+    while(!fbuffered && (ChronoTime::now() - now) < waiting ){
+        std::this_thread::yield();
+    }
+
+    if(!fbuffered){
+        return false;
+    }
 
 }
 
@@ -73,7 +83,7 @@ void Player::_stateChanged(QMediaPlayer::State state){
 }
 
 milliseconds Player::getPlayDelay(){
-    if(fSynced)
+    if(fbuffered)
         return playDelay;
     return -1;
 

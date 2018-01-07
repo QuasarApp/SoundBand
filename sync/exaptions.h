@@ -15,6 +15,27 @@ public:
     }
 };
 
+class AudioDevicesError: public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("your device do not have AudioAutputs or AudioAutputs not available");
+    }
+};
+
+class AudioDecodeError: public std::exception
+{
+private:
+    QString _message;
+public:
+    AudioDecodeError(QString message){
+        _message = message;
+    }
+    QString what(){
+        return QObject::tr("audio decode error :" + _message);
+    }
+};
+
 class AddNodeExaption:public std::exception
 {
 public:

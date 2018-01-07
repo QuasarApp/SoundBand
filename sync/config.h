@@ -22,4 +22,7 @@
 // sync
 #define MIN_DIFFERENCE              10       // millisec
 
+//player
+#define DEFAULT_BUFFERING_TIME      5000     // millisec
+
 #endif // CONFIG_H

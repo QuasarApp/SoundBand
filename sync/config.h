@@ -18,6 +18,7 @@
 #define MAX_SYNC_TIME               20 * 1000 // 10 sec on millisec
 #define SYNC_TIME                   5 * 1000  // 5 sec on millisec
 #define DEEP_SCANER_INTERVAL        10000     // 10 sec
+#define CHECK_PING_INTERVAL         5 * 60 *1000    // 5 minutes
 
 // sync
 #define MIN_DIFFERENCE              10       // millisec

@@ -1,5 +1,6 @@
 #include "ETcpSocket.h"
 #include "exaptions.h"
+#include <QTimer>
 
 ETcpSocket::ETcpSocket()
 {
@@ -25,7 +26,12 @@ void ETcpSocket::init(){
     array = new QByteArray;
     fSynced = false;
     differenceTime = 0;
+    pingTimer = new QTimer();
+    checInterval = CHECK_PING_INTERVAL;
 
+    srand(time(0));
+
+    connect(pingTimer, SIGNAL(timeout()), SLOT(calcPing(int)));
     connect(source,SIGNAL(connected()),this,SLOT(connected_()));
     connect(source,SIGNAL(disconnected()),this,SLOT(disconnected_()));
     connect(source,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error_(QAbstractSocket::SocketError)));
@@ -40,6 +46,7 @@ int ETcpSocket::getPing()const{
 }
 
 void ETcpSocket::calcPing(int flag){
+    pingTimer->setInterval(rand() % checInterval);
     QByteArray cArray;
     QDataStream stream(&cArray,QIODevice::ReadWrite);
     stream << flag;
@@ -48,11 +55,20 @@ void ETcpSocket::calcPing(int flag){
     source->write(cArray);
 }
 
+void ETcpSocket::setCheckInterval(int newInterval){
+    checInterval = newInterval;
+}
+
+int ETcpSocket::getCheckInterval()const{
+    return checInterval;
+}
+
 void ETcpSocket::error_(QAbstractSocket::SocketError i){
     emit Error(this,i);
 }
 
 void ETcpSocket::connected_(){
+    pingTimer->start(0);
     emit Connected(this);
 }
 

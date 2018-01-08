@@ -47,6 +47,8 @@ private:
     QByteArray *array;
     qint32 size;
     QList<QByteArray*> ReadyStack;
+    QTimer *pingTimer;
+    int checInterval;
     void init();
     /**
      * @brief differenceTime - local time difference in milliseconds
@@ -60,12 +62,15 @@ private:
     milliseconds lastTime;
     milliseconds ping;
 
-    /**
-     * @brief calcPing flag of calibration (CALIBRATION_PING or CALIBRATION_PING_DONE)
-     */
-    void calcPing(int flag);
+
 
 private slots:
+    /**
+     * @brief calcPing flag of calibration (CALIBRATION_PING (default)
+     *  or CALIBRATION_PING_DONE)
+     */
+    void calcPing(int flag = CALIBRATION_PING);
+
     void connected_();
     void disconnected_();
     void error_(QAbstractSocket::SocketError socketError);
@@ -77,6 +82,18 @@ public:
     explicit ETcpSocket();
     explicit ETcpSocket(QTcpSocket*);
     explicit ETcpSocket(const QString& addres,int port);
+
+    /**
+     * @brief setCheckInterval - set new interval of chking ping
+     * Check will be conducted within this interval
+     */
+    void setCheckInterval(int newInterval);
+
+    /**
+     * @brief getCheckInterval
+     * @return interval of cheking network ping.
+     */
+    int getCheckInterval()const;
 
     /**
      * @brief getPing

@@ -35,12 +35,24 @@ void ETcpSocket::init(){
     connect(source,SIGNAL(readyRead()),this,SLOT(readReady_()));
 }
 
+int ETcpSocket::getPing()const{
+    return ping;
+}
+
+void ETcpSocket::calcPing(int flag){
+    QByteArray cArray;
+    QDataStream stream(&cArray,QIODevice::ReadWrite);
+    stream << flag;
+    lastTime = ChronoTime::now();
+
+    source->write(cArray);
+}
+
 void ETcpSocket::error_(QAbstractSocket::SocketError i){
     emit Error(this,i);
 }
 
 void ETcpSocket::connected_(){
-    calibration();
     emit Connected(this);
 }
 
@@ -134,8 +146,16 @@ void ETcpSocket::readReady_(){
             array->clear();
             return;
         }
+        case CALIBRATION_PING_DONE:{
+            ping = ChronoTime::now() - lastTime;
+        }
+
+        case CALIBRATION_PING:{
+            calcPing(CALIBRATION_PING_DONE);
+        }
 
         }
+
     }
 #ifdef QT_DEBUG
     qDebug()<<"messae size:"<<size;

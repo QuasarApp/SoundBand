@@ -10,6 +10,9 @@
 #define CALIBRATION_RECEIVER qint32(-2)
 #define CALIBRATION_SENDER_DONE qint32(-3)
 #define CALIBRATION_RECEIVER_DONE qint32(-4)
+#define CALIBRATION_PING qint32(-5)
+#define CALIBRATION_PING_DONE qint32(-6)
+
 
 
 
@@ -57,6 +60,11 @@ private:
     milliseconds lastTime;
     milliseconds ping;
 
+    /**
+     * @brief calcPing flag of calibration (CALIBRATION_PING or CALIBRATION_PING_DONE)
+     */
+    void calcPing(int flag);
+
 private slots:
     void connected_();
     void disconnected_();
@@ -69,6 +77,12 @@ public:
     explicit ETcpSocket();
     explicit ETcpSocket(QTcpSocket*);
     explicit ETcpSocket(const QString& addres,int port);
+
+    /**
+     * @brief getPing
+     * @return ping of soccket;
+     */
+    int getPing()const;
     /**
      * @brief getSource
      * @return Qt TCP socket
@@ -85,6 +99,11 @@ public:
      * @param free - clear memory of top stack (true by default)
      */
     void nextItem(bool free = true);
+
+    /**
+     * @brief sizeDescriptPackege
+     * @return size of Descript of Packege
+     */
     int sizeDescriptPackege();
     /**
      * @brief Write - sends a message to the network.

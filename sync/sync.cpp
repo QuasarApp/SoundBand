@@ -129,6 +129,13 @@ void Sync::jump(const qint64 seek){
 }
 
 bool Sync::sync(const Syncer &sync){
+#ifdef REALTIMESYNC
+    if(!player->isSeekable() || !player->state() == QMediaPlayer::PlayingState){
+        return false;
+    }
+    player->setPosition(sync.seek + sync.ping);
+
+#else
     milliseconds sync_time  = sync.run - ChronoTime::now();
     if(sync_time > MAX_SYNC_TIME && sync_time <= 0)
         return false;
@@ -142,6 +149,8 @@ bool Sync::sync(const Syncer &sync){
     QTimer::singleShot(sync_time, [=]() {
         player->play();
     });
+
+#endif
 
     return true;
 }
@@ -294,6 +303,7 @@ void Sync::packageRender(ETcpSocket *socket){
                 }
                 socket->Write(answer.parseTo());
             }
+
 
 
         }else{

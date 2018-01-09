@@ -1,10 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// general otions
+
+#define REALTIMESYNC                1 // realtime synced mod (1 if enabled, 0 disabled)
+
 // LIB VERSION
 #define MAJOR_VERSION               0
 #define MINOR_VERSION               1
-#define REVISION_VERSION            0
+#define REVISION_VERSION            1
 
 // sqlite config
 #define DATABASE_NAME               "songdata.dat"

@@ -49,7 +49,7 @@ private:
      * @param pac - the resulting value
      * @return true if everything's done
      */
-    bool createPackage(Type type , package& pac, const ETcpSocket *for_ = NULL);
+    bool createPackage(Type type , package& pac);
 private slots:
 
     /**
@@ -72,17 +72,17 @@ public:
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param header of song
-     * @param syncdata data of synbced playning of media data.
+     * @param fbroadcast - server broadcasting sound.
      * @return true if all done else false.
      */
-    bool play(const SongHeader &header,  const Syncer *syncdata = nullptr);
+    bool play(const SongHeader &header,  bool fbroadcast = true);
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param song playning media data.
-     * @param syncdata data of synbced playning of media data.
+     * @param fbroadcast - server broadcasting sound.
      * @return true if all done else false.
      */
-    bool play(const Song &song, const Syncer *syncdata = nullptr);
+    bool play(const Song &song, bool fbroadcast = true);
     /**
      * @brief Play song from local media file.
      * @param url of local media file.
@@ -92,28 +92,37 @@ public:
     /**
      * @brief Play song from local database by id.
      * @param id_song of song.
+     * @param fbroadcast - server broadcasting sound.
      * @return true if all done else false.
      */
-    bool play(int id_song, Syncer* syncdata = nullptr);
+    bool play(int id_song, bool fbroadcast = true);
     /**
      * @brief Pause playning song.
      * state - state of playning
      */
-    void pause(bool state);
+    bool pause(bool state);
     /**
      * @brief stop playning song.
      */
     void stop();
+
     /**
      * @brief jump - jump to new position of playning media data.
      * @param seek - a new position of media data.
      */
     void jump(const qint64 seek);
+
     /**
      * @brief sync with server
      * @param sync - data of sync
      */
-    bool sync(const Syncer& sync);
+    bool sync(const Syncer& sync, milliseconds ping);
+
+    /**
+     * @brief sync with clients
+     */
+    void sync();
+
     /**
      * @brief addNode add new connect
      * @param ip of connection

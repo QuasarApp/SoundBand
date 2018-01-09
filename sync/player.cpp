@@ -9,10 +9,7 @@ Player::Player(const QString &bufferFile, QObject *parent, Flags flags):
     QMediaPlayer(parent, flags)
 {
    buffer = bufferFile;
-   playDelay = 0;
-   predState = state();
-   fSynced = false;
-   connect(this, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(_stateChanged(QMediaPlayer::State)));
+   bufferVolume = 0;
 }
 
 bool Player::setMediaFromBytes(const QByteArray &array){
@@ -26,36 +23,41 @@ bool Player::setMediaFromBytes(const QByteArray &array){
         f.close();
         return false;
     }
-
-
-
     f.close();
 
     setMedia(QUrl::fromLocalFile(QDir("./").absoluteFilePath(buffer)));
-    play();
-    pause();
-    playDelay = ChronoTime::now();
-    play();
 
+    return true;
+}
+
+bool Player::syncBegin(){
+
+    if(!isAudioAvailable()){
+        return false;
+    }
+    bufferVolume = volume();
+    setVolume(0);
+
+    play();
 
     return true;
 
 }
 
-void Player::_stateChanged(QMediaPlayer::State state){
-    if(!fSynced && state == QMediaPlayer::PlayingState && predState == QMediaPlayer::PausedState){
-        playDelay = ChronoTime::now() - playDelay;
-        pause();
-        fSynced = true;
+bool Player::syncEnd(){
+
+    if(!bufferVolume){
+        return false;
     }
-    predState = state;
+    setVolume(bufferVolume);
+    bufferVolume = 0;
+
+    return true;
+
 }
 
-milliseconds Player::getPlayDelay(){
-    if(fSynced)
-        return playDelay;
-    return -1;
-
+bool Player::isSynced()const{
+    return !bufferVolume;
 }
 
 Player::~Player(){

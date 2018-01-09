@@ -14,10 +14,9 @@ private:
     QString buffer;
     milliseconds playDelay;
     QMediaPlayer::State predState;
+    int bufferVolume;
     bool fSynced;
 
-private slots:
-    void _stateChanged(QMediaPlayer::State state);
 public:
 
     Player(const QString& bufferFile, QObject *parent = Q_NULLPTR, Flags flags = Flags());
@@ -30,11 +29,23 @@ public:
     bool setMediaFromBytes(const QByteArray& array);
 
     /**
-     * @brief getPlayDelay
-     * @return delay of playing song.
-     * @warning: working only with setMediaFromBytes.
+     * @brief syncBegin
+     * @return true if palyer waiting for sunced.
      */
-    milliseconds getPlayDelay();
+    bool syncBegin();
+
+    /**
+     * @brief syncEnd
+     * @return true if player waiting for finished sync.
+     */
+    bool syncEnd();
+
+    /**
+     * @brief isSynced
+     * @return true if palyer has been synced.
+     */
+    bool isSynced()const;
+
     ~Player();
 
 };

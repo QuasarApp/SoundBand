@@ -17,18 +17,6 @@ struct Syncer
      * @brief seek - wher is play media file
      */
     milliseconds seek;
-#ifdef REALTIMESYNC
-    /**
-     * @brief ping of node (milliseconds)
-     */
-    milliseconds ping;
-#else
-    /**
-     * @brief run when is play media file (milliseconds)
-     */
-    milliseconds run;
-#endif
-
 };
 
 /**

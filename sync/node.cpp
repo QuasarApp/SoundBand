@@ -44,7 +44,7 @@ bool package::isValid() const{
     }
 
     if(type & TypePackage::t_sync && type & t_brodcaster){
-        ret = ret && (playdata.run > 0 && playdata.seek > 0);
+        ret = ret && (playdata.seek > 0);
 
     }
 
@@ -65,7 +65,6 @@ bool package::isValid() const{
 void package::clear(){
     type = TypePackage::t_void;
     source.clear();
-    playdata.run = 0;
     playdata.seek = 0;
 }
 
@@ -77,7 +76,6 @@ QByteArray package::parseTo(){
         stream <<  static_cast<unsigned char>(type);
 
         if(type & TypePackage::t_sync && type & t_brodcaster){
-            stream << playdata.run;
             stream << playdata.seek;
 
         }
@@ -105,7 +103,6 @@ bool package::parseFrom(QByteArray &array){
     type = static_cast<TypePackage> (temp_type);
 
     if(type & TypePackage::t_sync){
-        stream >> playdata.run;
         stream >> playdata.seek;
 
     }

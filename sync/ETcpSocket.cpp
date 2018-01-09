@@ -11,6 +11,7 @@ ETcpSocket::ETcpSocket(QTcpSocket*ptr)
 {
     source=ptr;
     init();
+    pingTimer->start(0);
 }
 
 ETcpSocket::ETcpSocket(const QString& address, int port){

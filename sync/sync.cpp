@@ -301,8 +301,6 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->Write(answer.parseTo());
             }
 
-
-
         }else{
 
 //            if requst from client
@@ -351,7 +349,7 @@ void Sync::rescan(bool deep){
 
 void Sync::deepScaned(QList<ETcpSocket *> * list){
     package pac;
-    if(!createPackage(t_what,pac)){
+    if(!createPackage(t_what, pac)){
         throw CreatePackageExaption();
         return;
     }

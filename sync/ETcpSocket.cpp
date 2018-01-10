@@ -32,7 +32,7 @@ void ETcpSocket::init(){
 
     srand(time(0));
 
-    connect(pingTimer, SIGNAL(timeout()), SLOT(calcPing(int)));
+    connect(pingTimer, SIGNAL(timeout()), SLOT(calcPing()));
     connect(source,SIGNAL(connected()),this,SLOT(connected_()));
     connect(source,SIGNAL(disconnected()),this,SLOT(disconnected_()));
     connect(source,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error_(QAbstractSocket::SocketError)));
@@ -49,7 +49,7 @@ int ETcpSocket::getPing()const{
 void ETcpSocket::calcPing(int flag){
     pingTimer->setInterval(rand() % checInterval);
     QByteArray cArray;
-    QDataStream stream(&cArray,QIODevice::ReadWrite);
+    QDataStream stream(&cArray, QIODevice::ReadWrite);
     stream << flag;
     lastTime = ChronoTime::now();
 
@@ -82,7 +82,7 @@ void ETcpSocket::hostFound_(){
 }
 
 void ETcpSocket::proxyAuthenticationRequired_(const QNetworkProxy &proxy, QAuthenticator *authenticator){
-    emit ProxyAuthenticationRequired(this,proxy,authenticator);
+    emit ProxyAuthenticationRequired(this, proxy, authenticator);
 }
 
 void ETcpSocket::stateChanged_(QAbstractSocket::SocketState socketState){
@@ -164,11 +164,20 @@ void ETcpSocket::readReady_(){
             return;
         }
         case CALIBRATION_PING_DONE:{
+
             ping = ChronoTime::now() - lastTime;
+
+            array->clear();
+            return;
+
         }
 
         case CALIBRATION_PING:{
+
             calcPing(CALIBRATION_PING_DONE);
+
+            array->clear();
+            return;
         }
 
         }

@@ -137,7 +137,8 @@ bool Sync::sync(const Syncer &sync, milliseconds ping){
     }
     player->setPosition(sync.seek + ping);
 
-    return true;
+    return  player->syncEnd();
+;
 }
 
 void Sync::sync(){

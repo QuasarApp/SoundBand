@@ -3,7 +3,6 @@
 #include <QMultimedia>
 #include <QSqlQuery>
 #include "exaptions.h"
-#include "thread"
 #include "chronotime.h"
 
 #ifdef QT_DEBUG

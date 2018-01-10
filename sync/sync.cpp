@@ -3,7 +3,6 @@
 #include <QMultimedia>
 #include <QSqlQuery>
 #include "exaptions.h"
-#include "thread"
 #include "chronotime.h"
 
 #ifdef QT_DEBUG
@@ -137,7 +136,8 @@ bool Sync::sync(const Syncer &sync, milliseconds ping){
     }
     player->setPosition(sync.seek + ping);
 
-    return true;
+    return  player->syncEnd();
+;
 }
 
 void Sync::sync(){
@@ -275,6 +275,15 @@ void Sync::packageRender(ETcpSocket *socket){
 
                 package answer;
                 if(!createPackage(requestType | t_play, answer)){
+                    throw CreatePackageExaption();
+                    socket->nextItem();
+                    continue;
+                }
+                socket->Write(answer.parseTo());
+            }
+            else if(player->state() == QMediaPlayer::PlayingState){
+                package answer;
+                if(!createPackage(t_sync, answer)){
                     throw CreatePackageExaption();
                     socket->nextItem();
                     continue;

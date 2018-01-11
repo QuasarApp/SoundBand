@@ -38,7 +38,6 @@
 class ETcpSocket:public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name)
 private:
     QTcpSocket *source;
     QByteArray *array;
@@ -112,11 +111,19 @@ public:
 
     ~ETcpSocket();
 public slots:
+
+    /**
+     * @brief peerName
+     * @return name of peer
+     */
+    QString peerName()const;
+
     /**
      * @brief name
-     * @return hot name
+     * @return aame of local
      */
-    QString name()const;
+    QString localName()const;
+
     /**
      * @brief toStringTcp
      * @return string of tcp address

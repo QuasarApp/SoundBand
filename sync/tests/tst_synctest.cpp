@@ -109,44 +109,44 @@ void SyncTest::database_tests()
     syncLib::SongHeader header;
     syncLib::Song song;
 
-    QVERIFY(!sql.load(header,song));
+    QVERIFY(!sql.load(header, song));
 
-    QVERIFY(!sql.addToPlayList(header,"none"));
+    QVERIFY(!sql.addToPlayList(header, "none"));
 
     header.id = sql.save(":/song/test_song.mp3");
     QVERIFY(header.id > 0);
 
-    QVERIFY(sql.load(header,song));
+    QVERIFY(sql.load(header ,song));
 
     header = static_cast<syncLib::SongHeader>(song);
-    QVERIFY(sql.load(header,song));
+    QVERIFY(sql.load(header, song));
 
-    QVERIFY(sql.addPlayList("play","desc of play"));
+    QVERIFY(sql.addPlayList("play", "desc of play"));
 
-    QVERIFY(sql.addToPlayList(header,"play"));
+    QVERIFY(sql.addToPlayList(header, "play"));
 
-    QVERIFY(!sql.addToPlayList(header,"play"));
+    QVERIFY(!sql.addToPlayList(header, "play"));
 
-    QVERIFY(sql.removeFromPlayList(header,"play"));
+    QVERIFY(sql.removeFromPlayList(header, "play"));
 
     header.id = -1;
-    QVERIFY(sql.addToPlayList(header,"play"));
+    QVERIFY(sql.addToPlayList(header, "play"));
 
-    QVERIFY(!sql.addToPlayList(header,"play"));
+    QVERIFY(!sql.addToPlayList(header, "play"));
 
     QList<syncLib::SongHeader> list;
     sql.updateAvailableSongs(list);
 
     QVERIFY(list.size() == 1);
     list.clear();
-    sql.updateAvailableSongs(list,"play");
+    sql.updateAvailableSongs(list, "play");
 
     QVERIFY(list.size() == 1);
 
-    sql.updateAvailableSongs(list,"play2");
+    sql.updateAvailableSongs(list, "play2");
     QVERIFY(list.size() == 0);
 
-    QVERIFY(sql.removeFromPlayList(header,"play"));
+    QVERIFY(sql.removeFromPlayList(header, "play"));
 
     QVERIFY(sql.removeSong(header));
 
@@ -173,24 +173,16 @@ void SyncTest::network_tests(){
 
     QVERIFY(node1.getClients()->size() == 0);
 
+    ETcpSocket socket("127.0.0.1", 1994);
 
-    std::thread thread2([](){
-
-        ETcpSocket socket("127.0.0.1", 1994);
-        QVERIFY(socket.getSource()->waitForReadyRead(1000));
-
-        QVERIFY(socket.getSource()->readAll().size() == 14); // 14 byte because 4 byte is package description and 10 beta current data
-
-    });
     node1.waitForNewConnection(500);
     QVERIFY(node1.getClients()->size() > 0);
 
     QByteArray array(10, 'c');
-    node1.WriteAll(array);
-
-    thread2.join();
+    QVERIFY(node1.getClients()->first()->Write(array));
 
     node1.close();
+    socket.getSource()->close();
 
 }
 

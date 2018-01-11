@@ -282,6 +282,7 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->Write(answer.parseTo());
             }
             else if(player->state() == QMediaPlayer::PlayingState){
+
                 package answer;
                 if(!createPackage(t_sync, answer)){
                     throw CreatePackageExaption();

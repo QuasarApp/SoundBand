@@ -20,6 +20,7 @@ private slots:
 
     void database_tests();
 
+    void network_tests();
 
 };
 
@@ -163,6 +164,33 @@ void SyncTest::database_tests()
 
     sql.clear();
     QVERIFY(QFile("test1").size() == 32768);
+
+}
+
+void SyncTest::network_tests(){
+
+    syncLib::Node node1("127.0.0.1", 1994);
+
+    QVERIFY(node1.getClients()->size() == 0);
+
+
+    std::thread thread2([](){
+
+        ETcpSocket socket("127.0.0.1", 1994);
+        QVERIFY(socket.getSource()->waitForReadyRead(1000));
+
+        QVERIFY(socket.getSource()->readAll().size() == 14); // 14 byte because 4 byte is package description and 10 beta current data
+
+    });
+    node1.waitForNewConnection(500);
+    QVERIFY(node1.getClients()->size() > 0);
+
+    QByteArray array(10, 'c');
+    node1.WriteAll(array);
+
+    thread2.join();
+
+    node1.close();
 
 }
 

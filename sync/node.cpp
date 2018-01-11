@@ -144,7 +144,7 @@ void Node::acceptError_(ETcpSocket*c){
     c->getSource()->close();
     clients.removeOne(c);
 #ifdef QT_DEBUG
-    qDebug() << "node diskonected error:" <<c->getSource()->errorString() << " node:" << c->name();
+    qDebug() << "node diskonected error:" <<c->getSource()->errorString() << " node:" << c->peerName();
 #endif
     emit ClientDisconnected(c);
     delete c;
@@ -169,6 +169,9 @@ void Node::readData(ETcpSocket *c){
 void Node::WriteAll(const QByteArray &data){
     for(ETcpSocket*i:clients){
         i->Write(data);
+#ifdef QT_DEBUG
+        qDebug() << i->peerName();
+#endif
     }
 }
 

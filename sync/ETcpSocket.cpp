@@ -198,8 +198,12 @@ void ETcpSocket::readReady_(){
     }
 }
 
-QString ETcpSocket::name() const{
-    return source->peerAddress().toString();
+QString ETcpSocket::peerName() const{
+    return QString("%0:%1").arg(source->peerAddress().toString()).arg(source->peerPort());
+}
+
+QString ETcpSocket::localName() const{
+    return QString("%0:%1").arg(source->localAddress().toString()).arg(source->localPort());
 }
 
 QByteArray* ETcpSocket::topStack(){

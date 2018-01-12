@@ -71,4 +71,12 @@ public:
     }
 };
 
+class NetworkError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("There was an error on the socket, the connection will be closed.");
+    }
+};
+
 #endif // EXAPTIONS_H

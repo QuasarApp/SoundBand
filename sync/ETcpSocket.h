@@ -6,12 +6,17 @@
 #include <QDataStream>
 #include "chronotime.h"
 
-#define CALIBRATION_SENDER qint32(-1)
-#define CALIBRATION_RECEIVER qint32(-2)
-#define CALIBRATION_SENDER_DONE qint32(-3)
-#define CALIBRATION_RECEIVER_DONE qint32(-4)
-#define CALIBRATION_PING qint32(-5)
-#define CALIBRATION_PING_DONE qint32(-6)
+/*
+ * Driver options
+*/
+#define IS_GENERAL                  char(0)
+#define IS_DRIVER                   char(1)
+#define CALIBRATION_SENDER          char(2)
+#define CALIBRATION_RECEIVER        char(4)
+#define CALIBRATION_SENDER_DONE     char(8)
+#define CALIBRATION_RECEIVER_DONE   char(16)
+#define CALIBRATION_PING            char(32)
+#define CALIBRATION_PING_DONE       char(64)
 
 
 
@@ -61,6 +66,8 @@ private:
     milliseconds lastTime;
     milliseconds ping;
 
+    bool readDriverFlags(const char driver_flag);
+    bool driver();
 
 
 private slots:
@@ -68,7 +75,7 @@ private slots:
      * @brief calcPing flag of calibration (CALIBRATION_PING (default)
      *  or CALIBRATION_PING_DONE)
      */
-    void calcPing(int flag = CALIBRATION_PING);
+    void calcPing(char flag = CALIBRATION_PING | IS_DRIVER);
 
     void connected_();
     void disconnected_();

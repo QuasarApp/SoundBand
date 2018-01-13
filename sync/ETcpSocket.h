@@ -9,14 +9,16 @@
 /*
  * Driver options
 */
-#define IS_GENERAL                  char(0)
-#define IS_DRIVER                   char(1)
-#define CALIBRATION_SENDER          char(2)
-#define CALIBRATION_RECEIVER        char(4)
-#define CALIBRATION_SENDER_DONE     char(8)
-#define CALIBRATION_RECEIVER_DONE   char(16)
-#define CALIBRATION_PING            char(32)
-#define CALIBRATION_PING_DONE       char(64)
+#define IS_GENERAL                 0
+#define IS_DRIVER                  1
+#define CALIBRATION_SENDER         2
+#define CALIBRATION_RECEIVER       4
+#define CALIBRATION_SENDER_DONE    8
+#define CALIBRATION_RECEIVER_DONE  16
+#define CALIBRATION_PING           32
+#define CALIBRATION_PING_DONE      64
+
+typedef signed char driver_flag;
 
 
 
@@ -66,7 +68,7 @@ private:
     milliseconds lastTime;
     milliseconds ping;
 
-    bool readDriverFlags(const char driver_flag);
+    bool readDriverFlags(const driver_flag driverFlag);
     bool driver();
 
 
@@ -75,7 +77,7 @@ private slots:
      * @brief calcPing flag of calibration (CALIBRATION_PING (default)
      *  or CALIBRATION_PING_DONE)
      */
-    void calcPing(char flag = CALIBRATION_PING | IS_DRIVER);
+    void calcPing(driver_flag flag = CALIBRATION_PING | IS_DRIVER);
 
     void connected_();
     void disconnected_();
@@ -130,9 +132,10 @@ public:
     int sizeDescriptPackege();
     /**
      * @brief Write - sends a message to the network.
+     * @param driverFlag
      * @return true if all done else false.
      */
-    bool Write(const QByteArray&);
+    bool Write(const QByteArray&, signed char driverFlag = IS_GENERAL);
 
     /**
      * @brief getDifferenceTime

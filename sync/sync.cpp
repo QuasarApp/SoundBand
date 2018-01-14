@@ -204,7 +204,7 @@ bool Sync::createPackage(Type type, package &pac){
     pac.type = type;
 
     if(type & TypePackage::t_sync){
-        if(lastSyncTime)
+        if(fbroadcaster)
             pac.playdata.seek = player->position();
         else
             lastSyncTime = ChronoTime::now();

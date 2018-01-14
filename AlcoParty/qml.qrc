@@ -1,9 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>Page1Form.ui.qml</file>
-        <file>PlayerMainPage.qml</file>
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>Header.qml</file>
+        <file>MainPage.qml</file>
+    </qresource>
+    <qresource prefix="/image">
+        <file>res/logo.png</file>
     </qresource>
 </RCC>

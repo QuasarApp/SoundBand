@@ -12,7 +12,7 @@ ApplicationWindow {
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
 
-        PlayerMainPage {
+        MainPage {
         }
     }
 

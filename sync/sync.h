@@ -29,6 +29,8 @@ private:
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     int resyncCount;
+    int lastSyncTime;
+    int ping;
     LocalScanner deepScaner;
     MySql *sql;
     int port;

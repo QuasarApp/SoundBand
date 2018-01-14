@@ -25,6 +25,8 @@ Sync::Sync(const QString address, int port, const QString &datadir):
 
     fbroadcaster = false;
     resyncCount = 0;
+    lastSyncTime = 0;
+    ping = 0;
 
     sql = new MySql(datadir);
     sql->updateAvailableSongs(playList);
@@ -201,8 +203,11 @@ bool Sync::createPackage(Type type, package &pac){
 
     pac.type = type;
 
-    if(type & TypePackage::t_sync && fbroadcaster){
-        pac.playdata.seek = player->position();
+    if(type & TypePackage::t_sync){
+        if(lastSyncTime)
+            pac.playdata.seek = player->position();
+        else
+            lastSyncTime = ChronoTime::now();
 
     }
 
@@ -253,16 +258,20 @@ void Sync::packageRender(ETcpSocket *socket){
             emit networkStateChange();
         }
 
-//        if(fbroadcaster == (pkg.getType() & t_brodcaster)){
-//            throw BrodcastConflict();
-//            socket->nextItem();
-//            continue;
-//        }
-
         if(pkg.getType() & t_brodcaster){
 
 //            if requst from server
-            if(pkg.getType() & t_sync && !sync(pkg.getPlayData(), 10)){
+
+            // calc ping for sync
+            bool fFromRequst = false;
+            if(lastSyncTime){
+                ping = ChronoTime::now() - lastSyncTime;
+                lastSyncTime = 0;
+                fFromRequst = true;
+            }
+
+            if(pkg.getType() & t_sync &&
+                    !sync(pkg.getPlayData(), (fFromRequst)? ping: ping/2)){
 
                 QTimer::singleShot(RESYNC_TIME, [=]() {
                     package pac;

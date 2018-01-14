@@ -9,10 +9,7 @@ Player::Player(const QString &bufferFile, QObject *parent, Flags flags):
     QMediaPlayer(parent, flags)
 {
    buffer = bufferFile;
-   playDelay = 0;
-   predState = state();
-   fSynced = false;
-   connect(this, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(_stateChanged(QMediaPlayer::State)));
+   bufferVolume = 0;
 }
 
 bool Player::setMediaFromBytes(const QByteArray &array){
@@ -26,36 +23,33 @@ bool Player::setMediaFromBytes(const QByteArray &array){
         f.close();
         return false;
     }
-
-
-
     f.close();
 
     setMedia(QUrl::fromLocalFile(QDir("./").absoluteFilePath(buffer)));
-    play();
-    pause();
-    playDelay = ChronoTime::now();
-    play();
-
 
     return true;
+}
+
+void Player::syncBegin(){
+
+    bufferVolume = volume();
+    setVolume(0);
+
+    play();
 
 }
 
-void Player::_stateChanged(QMediaPlayer::State state){
-    if(!fSynced && state == QMediaPlayer::PlayingState && predState == QMediaPlayer::PausedState){
-        playDelay = ChronoTime::now() - playDelay;
-        pause();
-        fSynced = true;
+void Player::syncEnd(){
+
+    if(bufferVolume){
+        setVolume(bufferVolume);
+        bufferVolume = 0;
     }
-    predState = state;
+
 }
 
-milliseconds Player::getPlayDelay(){
-    if(fSynced)
-        return playDelay;
-    return -1;
-
+bool Player::isSynced()const{
+    return !bufferVolume;
 }
 
 Player::~Player(){

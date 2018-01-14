@@ -39,6 +39,14 @@ public:
     }
 };
 
+class SyncCountError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("Could not sync audio.");
+    }
+};
+
 class BadAnswerExaption:public std::exception
 {
 public:
@@ -68,6 +76,14 @@ class InitDBError:public std::exception
 public:
     QString what(){
         return QObject::tr("Error creating database.");
+    }
+};
+
+class NetworkError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("There was an error on the socket, the connection will be closed.");
     }
 };
 

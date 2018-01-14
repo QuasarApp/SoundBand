@@ -17,10 +17,6 @@ struct Syncer
      * @brief seek - wher is play media file
      */
     milliseconds seek;
-    /**
-     * @brief run when is play media file (milliseconds)
-     */
-    milliseconds run;
 };
 
 /**

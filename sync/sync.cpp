@@ -3,7 +3,6 @@
 #include <QMultimedia>
 #include <QSqlQuery>
 #include "exaptions.h"
-#include "thread"
 #include "chronotime.h"
 
 #ifdef QT_DEBUG
@@ -25,6 +24,9 @@ Sync::Sync(const QString address, int port, const QString &datadir):
     }
 
     fbroadcaster = false;
+    resyncCount = 0;
+    lastSyncTime = 0;
+    ping = 0;
 
     sql = new MySql(datadir);
     sql->updateAvailableSongs(playList);
@@ -47,19 +49,19 @@ bool Sync::findHeader(const Song &song){
     return false;
 }
 
-bool Sync::play(const SongHeader &header, const Syncer *syncdata){
+bool Sync::play(const SongHeader &header, bool fbroadcast){
 
     Song song;
     SongHeader newheader = header;
     newheader.id = -1;
-    if(!sql->load(newheader,song)){
+    if(!sql->load(newheader, song)){
         return false;
     }
 
-    return Sync::play(song, syncdata);
+    return Sync::play(song, fbroadcast);
 }
 
-bool Sync::play(const Song &song, const Syncer *syncdata){
+bool Sync::play(const Song &song, bool fbroadcast){
 
     if(!song.isValid()){
         return false;
@@ -69,38 +71,32 @@ bool Sync::play(const Song &song, const Syncer *syncdata){
         return false;
     }
 
-    fbroadcaster = !bool(syncdata);
-    if(!findHeader(song) && sql->save(song) > -1 && !findHeader(song)){
+    fbroadcaster = fbroadcast;
+
+    if(!findHeader(song) && sql->save(song) > -1 &&
+            sql->updateAvailableSongs(playList) && !findHeader(song)){
+
         return false;
     }
 
     if(fbroadcaster){
-        package pac;
-        if(!createPackage(t_play, pac)){
-            throw CreatePackageExaption();
-        }
-        node->WriteAll(pac.parseTo());
+        player->play();
+        sync();
+    }else{
+        player->syncBegin();
     }
-
-    sql->updateAvailableSongs(playList);
-
-    if(syncdata && !sync(*syncdata)){
-        return false;
-    }
-
-    player->play();
 
     return true;
 }
 
-bool Sync::play(int id_song, Syncer *syncdata){
+bool Sync::play(int id_song, bool fbroadcast){
 
     SongHeader header;
     header.id = id_song;
     Song song;
     sql->load(header, song);
 
-    return Sync::play(song, syncdata);
+    return Sync::play(song, fbroadcast);
 }
 
 bool Sync::play(QString url){
@@ -112,12 +108,20 @@ bool Sync::play(QString url){
     return Sync::play(id);
 }
 
-void Sync::pause(bool state){
+bool Sync::pause(bool state){
+
+    if(!fbroadcaster)
+        return false;
+
     if(state){
         player->pause();
     }else{
         player->play();
+        sync();
+
     }
+
+    return true;
 }
 
 void Sync::stop(){
@@ -128,22 +132,35 @@ void Sync::jump(const qint64 seek){
     player->setPosition(seek);
 }
 
-bool Sync::sync(const Syncer &sync){
-    milliseconds sync_time  = sync.run - ChronoTime::now();
-    if(sync_time > MAX_SYNC_TIME && sync_time <= 0)
+bool Sync::isReadyToSync()const{
+    return  !fbroadcaster && player->isSeekable()
+            && (player->state() == QMediaPlayer::PlayingState);
+
+}
+
+bool Sync::sync(const Syncer &sync, milliseconds ping){
+    if(!isReadyToSync()){
         return false;
-
-    milliseconds delay = player->getPlayDelay();
-    if(delay < 0)
-        return false;
-
-    player->setPosition(sync.seek + delay);
-
-    QTimer::singleShot(sync_time, [=]() {
-        player->play();
-    });
+    }
+    player->setPosition(sync.seek + ping);
+    player->syncEnd();
 
     return true;
+
+}
+
+void Sync::sync(){
+
+    if(fbroadcaster)
+        QTimer::singleShot(SYNC_TIME, [=]() {
+
+            package pac;
+            if(!createPackage(t_sync, pac)){
+                throw CreatePackageExaption();
+                return;
+            }
+            node->WriteAll(pac.parseTo());
+        });
 }
 
 bool Sync::addNode(const QString ip, int port){
@@ -173,26 +190,24 @@ bool Sync::listen(ETcpSocket *server){
     }
     package pac;
 
-    if(!createPackage(t_sync, pac)){
+    if(!createPackage(t_play, pac)){
         return false;
     }
 
     return server->Write(pac.parseTo());
 }
 
-bool Sync::createPackage(Type type, package &pac, const ETcpSocket *for_){
+bool Sync::createPackage(Type type, package &pac){
+
     pac.clear();
 
     pac.type = type;
 
-    if(type & TypePackage::t_sync && fbroadcaster){
-
-        if(!for_  || !for_->isSynced()){
-            return false;
-        }
-
-        pac.playdata.run = ChronoTime::now(for_->getDifferenceTime()) + SYNC_TIME;
-        pac.playdata.seek = player->position() + SYNC_TIME;
+    if(type & TypePackage::t_sync){
+        if(lastSyncTime)
+            pac.playdata.seek = player->position();
+        else
+            lastSyncTime = ChronoTime::now();
 
     }
 
@@ -243,26 +258,47 @@ void Sync::packageRender(ETcpSocket *socket){
             emit networkStateChange();
         }
 
-        if(fbroadcaster == (pkg.getType() & t_brodcaster)){
-            throw BrodcastConflict();
-            socket->nextItem();
-            continue;
-        }
-
         if(pkg.getType() & t_brodcaster){
 
 //            if requst from server
 
-            if(pkg.getType() & t_play){
-
-                package answer;
-                if(!createPackage(t_sync, answer)){
-                    throw CreatePackageExaption();
-                }
-                socket->Write(answer.parseTo());
+            // calc ping for sync
+            bool fFromRequst = false;
+            if(lastSyncTime){
+                ping = ChronoTime::now() - lastSyncTime;
+                lastSyncTime = 0;
+                fFromRequst = true;
             }
 
-            if(pkg.getType() & t_sync && !play(pkg.getHeader(), &pkg.getPlayData()) && !play(pkg.getSong(), &pkg.getPlayData())){
+            if(pkg.getType() & t_sync &&
+                    !sync(pkg.getPlayData(), (fFromRequst)? ping: ping/2)){
+
+                QTimer::singleShot(RESYNC_TIME, [=]() {
+                    package pac;
+
+                    if(resyncCount < MAX_RESYNC_COUNT){
+
+                        if(!createPackage(t_sync, pac)){
+                            throw CreatePackageExaption();
+                            return;
+                        }
+                        resyncCount++;
+
+                    }else{
+                        resyncCount = 0;
+                        throw SyncCountError();
+                        return;
+                    }
+
+                    node->WriteAll(pac.parseTo());
+                });
+
+            }
+            else if (pkg.getType() & t_sync){
+                resyncCount = 0;
+            }
+
+            if(pkg.getType() & t_play && !play(pkg.getHeader(), false) && !play(pkg.getSong(), false)){
 
                 Type requestType = t_song_h;
 
@@ -270,13 +306,25 @@ void Sync::packageRender(ETcpSocket *socket){
                     requestType = t_song;
 
                 package answer;
-                if(!createPackage(requestType | t_sync, answer)){
+                if(!createPackage(requestType | t_play, answer)){
                     throw CreatePackageExaption();
                     socket->nextItem();
                     continue;
                 }
                 socket->Write(answer.parseTo());
             }
+            else if(pkg.getType() & t_play){
+
+                package answer;
+                if(!createPackage(t_sync, answer)){
+                    throw CreatePackageExaption();
+                    socket->nextItem();
+                    continue;
+                }
+                socket->Write(answer.parseTo());
+            }
+
+
 
             if(pkg.getType() & t_close){
                 socket->getSource()->close();
@@ -295,23 +343,19 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->Write(answer.parseTo());
             }
 
-
         }else{
 
-            if(pkg.getType() & t_sync){
+//            if requst from client
+            if(pkg.getType() & t_play & t_sync){
                 if(!curentSong){
                     throw SyncError();
                     socket->nextItem();
                     continue;
                 }
-
-                if(!socket->isSynced()){
-                    socket->calibration();
-                }
             }
 
             package answer;
-            if(!createPackage(pkg.getType() & ~t_what & ~t_play & ~t_stop & ~t_brodcaster, answer, socket)){
+            if(!createPackage(pkg.getType() & ~t_what & ~t_stop & ~t_brodcaster, answer)){
                 throw CreatePackageExaption();
                 socket->nextItem();
                 continue;
@@ -347,7 +391,7 @@ void Sync::rescan(bool deep){
 
 void Sync::deepScaned(QList<ETcpSocket *> * list){
     package pac;
-    if(!createPackage(t_what,pac)){
+    if(!createPackage(t_what, pac)){
         throw CreatePackageExaption();
         return;
     }
@@ -370,7 +414,7 @@ QString Sync::getVersion(){
 }
 
 bool Sync::setValume(unsigned int valume){
-    if(valume > 100)
+    if(valume > 100 || !player->isSynced())
         return false;
 
     player->setVolume(valume);

@@ -6,12 +6,6 @@
 #include <QDataStream>
 #include "chronotime.h"
 
-#define CALIBRATION_SENDER qint32(-1)
-#define CALIBRATION_RECEIVER qint32(-2)
-#define CALIBRATION_SENDER_DONE qint32(-3)
-#define CALIBRATION_RECEIVER_DONE qint32(-4)
-
-
 
 /**
  * @brief The ETcpSocket class
@@ -44,19 +38,9 @@ private:
     qint32 size;
     QList<QByteArray*> ReadyStack;
     void init();
-    /**
-     * @brief differenceTime - local time difference in milliseconds
-     * on milliseconds
-     */
-    milliseconds differenceTime;
-    /**
-     * @brief fSynced - whether a time difference was found.
-     */
-    bool fSynced;
-    milliseconds lastTime;
-    milliseconds ping;
 
 private slots:
+
     void connected_();
     void disconnected_();
     void error_(QAbstractSocket::SocketError socketError);
@@ -68,6 +52,24 @@ public:
     explicit ETcpSocket();
     explicit ETcpSocket(QTcpSocket*);
     explicit ETcpSocket(const QString& addres,int port);
+
+    /**
+     * @brief setCheckInterval - set new interval of chking ping
+     * Check will be conducted within this interval
+     */
+    void setCheckInterval(int newInterval);
+
+    /**
+     * @brief getCheckInterval
+     * @return interval of cheking network ping.
+     */
+    int getCheckInterval()const;
+
+    /**
+     * @brief getPing
+     * @return ping of soccket;
+     */
+    int getPing()const;
     /**
      * @brief getSource
      * @return Qt TCP socket
@@ -84,30 +86,17 @@ public:
      * @param free - clear memory of top stack (true by default)
      */
     void nextItem(bool free = true);
+
+    /**
+     * @brief sizeDescriptPackege
+     * @return size of Descript of Packege
+     */
     int sizeDescriptPackege();
     /**
      * @brief Write - sends a message to the network.
      * @return true if all done else false.
      */
     bool Write(const QByteArray&);
-
-    /**
-     * @brief getDifferenceTime
-     * @return Difference Time of remoute node.
-     */
-    milliseconds getDifferenceTime()const;
-
-    /**
-     * @brief isSynced
-     * @return
-     */
-    bool isSynced()const;
-
-    /**
-     * @brief calibration - will calculate the difference in time between the connected node
-     *  and the current node.
-     */
-    void calibration();
 
     ~ETcpSocket();
 public slots:

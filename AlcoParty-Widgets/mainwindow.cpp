@@ -72,7 +72,7 @@ void MainWindow::on_Search_clicked()
     else{
         ETcpSocket * server = source->getServersList().front();
         if(!source->listen(server)){
-            QMessageBox::critical(this,tr("Error"),tr("Сould not listen the finded server - %0").arg(server->name()));
+            QMessageBox::critical(this,tr("Error"),tr("Сould not listen the finded server - %0").arg(server->peerName()));
         }
     }
 

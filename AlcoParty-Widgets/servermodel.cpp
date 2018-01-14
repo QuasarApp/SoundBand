@@ -23,7 +23,7 @@ QVariant ServerModel::data(const QModelIndex &index, int role) const{
     case Qt::DisplayRole:{
         switch (index.column()) {
         case 1:
-            return  (*idItem)->name();
+            return  (*idItem)->peerName();
         default:
             return "no suported";
 

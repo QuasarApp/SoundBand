@@ -6,22 +6,6 @@
 #include <QDataStream>
 #include "chronotime.h"
 
-/*
- * Driver options
-*/
-#define IS_GENERAL                 0
-#define IS_DRIVER                  1
-#define CALIBRATION_SENDER         2
-#define CALIBRATION_RECEIVER       4
-#define CALIBRATION_SENDER_DONE    8
-#define CALIBRATION_RECEIVER_DONE  16
-#define CALIBRATION_PING           32
-#define CALIBRATION_PING_DONE      64
-
-typedef signed char driver_flag;
-
-
-
 
 /**
  * @brief The ETcpSocket class
@@ -53,31 +37,9 @@ private:
     QByteArray *array;
     qint32 size;
     QList<QByteArray*> ReadyStack;
-    QTimer *pingTimer;
-    int checInterval;
     void init();
-    /**
-     * @brief differenceTime - local time difference in milliseconds
-     * on milliseconds
-     */
-    milliseconds differenceTime;
-    /**
-     * @brief fSynced - whether a time difference was found.
-     */
-    bool fSynced;
-    milliseconds lastTime;
-    milliseconds ping;
-
-    bool readDriverFlags(const driver_flag driverFlag);
-    bool driver();
-
 
 private slots:
-    /**
-     * @brief calcPing flag of calibration (CALIBRATION_PING (default)
-     *  or CALIBRATION_PING_DONE)
-     */
-    void calcPing(driver_flag flag = CALIBRATION_PING | IS_DRIVER);
 
     void connected_();
     void disconnected_();
@@ -132,28 +94,9 @@ public:
     int sizeDescriptPackege();
     /**
      * @brief Write - sends a message to the network.
-     * @param driverFlag
      * @return true if all done else false.
      */
-    bool Write(const QByteArray&, signed char driverFlag = IS_GENERAL);
-
-    /**
-     * @brief getDifferenceTime
-     * @return Difference Time of remoute node.
-     */
-    milliseconds getDifferenceTime()const;
-
-    /**
-     * @brief isSynced
-     * @return
-     */
-    bool isSynced()const;
-
-    /**
-     * @brief calibration - will calculate the difference in time between the connected node
-     *  and the current node.
-     */
-    void calibration();
+    bool Write(const QByteArray&);
 
     ~ETcpSocket();
 public slots:

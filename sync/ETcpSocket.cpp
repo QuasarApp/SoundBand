@@ -11,7 +11,6 @@ ETcpSocket::ETcpSocket(QTcpSocket*ptr)
 {
     source=ptr;
     init();
-    pingTimer->start(0);
 }
 
 ETcpSocket::ETcpSocket(const QString& address, int port){
@@ -25,14 +24,7 @@ ETcpSocket::ETcpSocket(const QString& address, int port){
 
 void ETcpSocket::init(){
     array = new QByteArray;
-    fSynced = false;
-    differenceTime = 0;
-    pingTimer = new QTimer();
-    checInterval = CHECK_PING_INTERVAL;
 
-    srand(time(0));
-
-    connect(pingTimer, SIGNAL(timeout()), SLOT(calcPing()));
     connect(source,SIGNAL(connected()),this,SLOT(connected_()));
     connect(source,SIGNAL(disconnected()),this,SLOT(disconnected_()));
     connect(source,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error_(QAbstractSocket::SocketError)));
@@ -42,137 +34,11 @@ void ETcpSocket::init(){
     connect(source,SIGNAL(readyRead()),this,SLOT(readReady_()));
 }
 
-/**
- * @todo remove from array is sloy
-*/
-
-bool ETcpSocket::readDriverFlags(const driver_flag driverFlag){
-
-    if(driverFlag & CALIBRATION_SENDER){
-        milliseconds ms;
-
-        source->read((char*)(&ms), sizeof(ms));
-
-        milliseconds range = ChronoTime::now() - ms;
-
-        QByteArray cArray;
-        QDataStream stream(&cArray,QIODevice::ReadWrite);
-
-        char answer = IS_DRIVER;
-        if(range < MIN_DIFFERENCE){
-            answer = CALIBRATION_RECEIVER_DONE | answer;
-            fSynced = true;
-
-        }else{
-            answer = CALIBRATION_RECEIVER | answer;
-            stream << range;
-
-        }
-
-        source->write(cArray, answer);
-
-    }
-
-    if(driverFlag & CALIBRATION_RECEIVER){
-        ping = ChronoTime::now() - lastTime;
-        milliseconds ms;
-
-        if(sizeof(ms) != source->read((char*)(&ms), sizeof(ms))){
-            return false;
-        }
-
-        differenceTime += ms + ping / 2;
-
-        QByteArray cArray;
-
-        QDataStream stream(&cArray, QIODevice::ReadWrite);
-        stream << milliseconds(ChronoTime::now() + differenceTime);
-
-        lastTime = ChronoTime::now();
-        source->write(cArray, CALIBRATION_SENDER | IS_DRIVER);
-    }
-
-    if(driverFlag & CALIBRATION_RECEIVER_DONE){
-        QByteArray cArray;
-        QDataStream stream(&cArray, QIODevice::ReadWrite);
-
-        stream << milliseconds(-differenceTime);
-        fSynced = true;
-
-        source->write(cArray, CALIBRATION_SENDER_DONE | IS_DRIVER);
-    }
-
-    if(driverFlag & CALIBRATION_SENDER_DONE){
-
-        if(sizeof(differenceTime) !=
-                source->read((char*)differenceTime, sizeof(differenceTime))){
-            return false;
-        }
-
-    }
-
-    if(driverFlag & CALIBRATION_PING_DONE){
-        ping = ChronoTime::now() - lastTime;
-
-    }
-
-    if(driverFlag & CALIBRATION_PING){
-        calcPing(CALIBRATION_PING_DONE | IS_DRIVER);
-
-    }
-
-    if(source->readAll().size()){
-        return false;
-    }
-    return true;
-
-}
-
-
-bool ETcpSocket::driver(){
-
-    driver_flag driverFlag;
-    source->read((char*)&driverFlag, 1);
-
-    if(driverFlag & IS_DRIVER){
-
-        if(!readDriverFlags(driverFlag)){
-            throw NetworkError();
-            source->close();
-        }
-
-        return false;
-    }
-
-    return true;
-
-}
-
-int ETcpSocket::getPing()const{
-    return ping;
-}
-
-void ETcpSocket::calcPing(driver_flag flag){
-    pingTimer->setInterval(rand() % checInterval);
-    lastTime = ChronoTime::now();
-
-    Write(QByteArray(), flag);
-}
-
-void ETcpSocket::setCheckInterval(int newInterval){
-    checInterval = newInterval;
-}
-
-int ETcpSocket::getCheckInterval()const{
-    return checInterval;
-}
-
 void ETcpSocket::error_(QAbstractSocket::SocketError i){
     emit Error(this,i);
 }
 
 void ETcpSocket::connected_(){
-    pingTimer->start(0);
     emit Connected(this);
 }
 
@@ -194,9 +60,6 @@ void ETcpSocket::stateChanged_(QAbstractSocket::SocketState socketState){
 
 void ETcpSocket::readReady_(){
 
-    if(!driver())
-        return ;
-
     bool sizewrite = array->isEmpty();
     array->append(source->readAll());
     QDataStream stream(array, QIODevice::ReadOnly);
@@ -214,6 +77,11 @@ void ETcpSocket::readReady_(){
         array=new QByteArray();
         emit Message(this);
     }else{
+
+        if(size < array->size()){
+            array->clear();
+        }
+
         emit donwload(array->size(), size);
     }
 }
@@ -254,25 +122,16 @@ QString ETcpSocket::toStringTcp(){
     return source->peerAddress().toString();
 }
 
-milliseconds ETcpSocket::getDifferenceTime() const{
-    return differenceTime;
-}
-
-bool ETcpSocket::isSynced()const{
-    return fSynced;
-}
-
-bool ETcpSocket::Write(const QByteArray&data , signed char driverFlag){
+bool ETcpSocket::Write(const QByteArray&data){
     if(source->state()==QTcpSocket::ConnectedState){
        QByteArray array;
        QDataStream stream(&array, QIODevice::ReadWrite);
 
-       stream << driverFlag;
        stream << qint32(0);
-
        array.append(data);
-       stream.device()->seek(1);
-       stream<<qint32(array.size() - 1);
+       stream.device()->seek(0);
+       stream<<qint32(array.size());
+
 #ifdef QT_DEBUG
        qDebug() << "size :" << array.size();
        qint64 temp = source->write(array);
@@ -283,19 +142,6 @@ bool ETcpSocket::Write(const QByteArray&data , signed char driverFlag){
 #endif
    }
     return false;
-}
-
-void ETcpSocket::calibration(){
-    if(!fSynced){
-        QByteArray cArray;
-        QDataStream stream(&cArray,QIODevice::ReadWrite);
-        stream << (CALIBRATION_SENDER | IS_DRIVER);
-        stream << milliseconds(ChronoTime::now());
-        lastTime = ChronoTime::now();
-
-        source->write(cArray);
-    }
-
 }
 
 ETcpSocket::~ETcpSocket()

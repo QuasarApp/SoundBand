@@ -29,16 +29,14 @@ public:
     bool setMediaFromBytes(const QByteArray& array);
 
     /**
-     * @brief syncBegin
-     * @return true if palyer waiting for sunced.
+     * @brief syncBegin - palyer waiting for sunced.
      */
-    bool syncBegin();
+    void syncBegin();
 
     /**
-     * @brief syncEnd
-     * @return true if player waiting for finished sync.
+     * @brief syncEnd ending synced
      */
-    bool syncEnd();
+    void syncEnd();
 
     /**
      * @brief isSynced

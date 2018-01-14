@@ -39,6 +39,14 @@ public:
     }
 };
 
+class SyncCountError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("Could not sync audio.");
+    }
+};
+
 class BadAnswerExaption:public std::exception
 {
 public:

@@ -24,6 +24,7 @@ Sync::Sync(const QString address, int port, const QString &datadir):
     }
 
     fbroadcaster = false;
+    resyncCount = 0;
 
     sql = new MySql(datadir);
     sql->updateAvailableSongs(playList);
@@ -69,7 +70,10 @@ bool Sync::play(const Song &song, bool fbroadcast){
     }
 
     fbroadcaster = fbroadcast;
-    if(!findHeader(song) && sql->save(song) > -1 && !findHeader(song)){
+
+    if(!findHeader(song) && sql->save(song) > -1 &&
+            sql->updateAvailableSongs(playList) && !findHeader(song)){
+
         return false;
     }
 
@@ -77,12 +81,8 @@ bool Sync::play(const Song &song, bool fbroadcast){
         player->play();
         sync();
     }else{
-        if(!player->syncBegin()){
-            return false;
-        }
+        player->syncBegin();
     }
-
-    sql->updateAvailableSongs(playList);
 
     return true;
 }
@@ -130,14 +130,21 @@ void Sync::jump(const qint64 seek){
     player->setPosition(seek);
 }
 
+bool Sync::isReadyToSync()const{
+    return  !fbroadcaster && player->isSeekable()
+            && (player->state() == QMediaPlayer::PlayingState);
+
+}
+
 bool Sync::sync(const Syncer &sync, milliseconds ping){
-    if(!fbroadcaster && (!player->isSeekable() || !(player->state() == QMediaPlayer::PlayingState))){
+    if(!isReadyToSync()){
         return false;
     }
     player->setPosition(sync.seek + ping);
+    player->syncEnd();
 
-    return  player->syncEnd();
-;
+    return true;
+
 }
 
 void Sync::sync(){
@@ -246,24 +253,40 @@ void Sync::packageRender(ETcpSocket *socket){
             emit networkStateChange();
         }
 
-        if(fbroadcaster == (pkg.getType() & t_brodcaster)){
-            throw BrodcastConflict();
-            socket->nextItem();
-            continue;
-        }
+//        if(fbroadcaster == (pkg.getType() & t_brodcaster)){
+//            throw BrodcastConflict();
+//            socket->nextItem();
+//            continue;
+//        }
 
         if(pkg.getType() & t_brodcaster){
 
 //            if requst from server
             if(pkg.getType() & t_sync && !sync(pkg.getPlayData(), 10)){
-                package answer;
-                if(!createPackage(t_play, answer)){
-                    throw CreatePackageExaption();
-                    socket->nextItem();
-                    continue;
-                }
-                socket->Write(answer.parseTo());
 
+                QTimer::singleShot(RESYNC_TIME, [=]() {
+                    package pac;
+
+                    if(resyncCount < MAX_RESYNC_COUNT){
+
+                        if(!createPackage(t_sync, pac)){
+                            throw CreatePackageExaption();
+                            return;
+                        }
+                        resyncCount++;
+
+                    }else{
+                        resyncCount = 0;
+                        throw SyncCountError();
+                        return;
+                    }
+
+                    node->WriteAll(pac.parseTo());
+                });
+
+            }
+            else if (pkg.getType() & t_sync){
+                resyncCount = 0;
             }
 
             if(pkg.getType() & t_play && !play(pkg.getHeader(), false) && !play(pkg.getSong(), false)){
@@ -281,7 +304,7 @@ void Sync::packageRender(ETcpSocket *socket){
                 }
                 socket->Write(answer.parseTo());
             }
-            else if(player->state() == QMediaPlayer::PlayingState){
+            else if(pkg.getType() & t_play){
 
                 package answer;
                 if(!createPackage(t_sync, answer)){

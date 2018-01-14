@@ -28,6 +28,7 @@ private:
     SongHeader *curentSong;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
+    int resyncCount;
     LocalScanner deepScaner;
     MySql *sql;
     int port;
@@ -117,6 +118,12 @@ public:
      * @param sync - data of sync
      */
     bool sync(const Syncer& sync, milliseconds ping);
+
+    /**
+     * @brief isReadyToSync
+     * @return true if node ready to sync;
+     */
+    bool isReadyToSync()const;
 
     /**
      * @brief sync with clients

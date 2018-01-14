@@ -30,29 +30,21 @@ bool Player::setMediaFromBytes(const QByteArray &array){
     return true;
 }
 
-bool Player::syncBegin(){
+void Player::syncBegin(){
 
-    if(!isAudioAvailable()){
-        return false;
-    }
     bufferVolume = volume();
     setVolume(0);
 
     play();
 
-    return true;
-
 }
 
-bool Player::syncEnd(){
+void Player::syncEnd(){
 
-    if(!bufferVolume){
-        return false;
+    if(bufferVolume){
+        setVolume(bufferVolume);
+        bufferVolume = 0;
     }
-    setVolume(bufferVolume);
-    bufferVolume = 0;
-
-    return true;
 
 }
 

@@ -255,7 +255,7 @@ void Sync::packageRender(ETcpSocket *socket){
         if(pkg.getType() & t_brodcaster){
 
 //            if requst from server
-            if(pkg.getType() & t_sync && !sync(pkg.getPlayData(), socket->getPing())){
+            if(pkg.getType() & t_sync && !sync(pkg.getPlayData(), 10)){
                 package answer;
                 if(!createPackage(t_play, answer)){
                     throw CreatePackageExaption();

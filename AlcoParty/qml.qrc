@@ -4,6 +4,8 @@
         <file>qtquickcontrols2.conf</file>
         <file>Header.qml</file>
         <file>MainPage.qml</file>
+        <file>CurentPlayList.qml</file>
+        <file>SongDelegate.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>res/logo.png</file>

@@ -10,7 +10,7 @@ Item {
         anchors.top: parent.top
         anchors.bottom: groupBox.top
         anchors.left: parent.right
-        source: "image/res/logo.png"
+        source: "/image/res/logo.png"
     }
     Text {
         id: songName

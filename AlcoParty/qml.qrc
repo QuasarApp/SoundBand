@@ -6,6 +6,8 @@
         <file>MainPage.qml</file>
         <file>CurentPlayList.qml</file>
         <file>SongDelegate.qml</file>
+        <file>PlayListsControl.qml</file>
+        <file>PlayListDelegate.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>res/logo.png</file>

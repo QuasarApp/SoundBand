@@ -14,6 +14,8 @@ ApplicationWindow {
 
         MainPage {
         }
+        PlayListsControl{
+        }
     }
 
     footer: TabBar {
@@ -22,6 +24,9 @@ ApplicationWindow {
 
         TabButton {
             text: qsTr("Main Page")
+        }
+        TabButton {
+            text: qsTr("Play Lists Control Page")
         }
     }
 }

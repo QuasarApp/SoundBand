@@ -6,7 +6,18 @@ Page {
     width: 600
     height: 400
     Header{
-        anchors.fill: parent;
+        id:header
+        height: 300
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.right: parent.right
+}
+    CurentPlayList{
+        id:curentPlayList
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: header.bottom
+        anchors.bottom: parent.bottom
     }
 
 }

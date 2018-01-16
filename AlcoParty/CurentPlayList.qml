@@ -9,6 +9,8 @@ ListView {
 
     }
 
-    delegate: SongDelegate
+    delegate: SongDelegate{
+
+    }
 
 }

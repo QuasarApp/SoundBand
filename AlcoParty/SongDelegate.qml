@@ -1,7 +1,6 @@
 import QtQuick 2.10
 
 Item {
-    x: 5
     width: parent.width
     height: 40
     Row {

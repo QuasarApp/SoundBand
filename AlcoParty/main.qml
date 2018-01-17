@@ -10,17 +10,26 @@ ApplicationWindow {
     SwipeView {
         id: swipeView
         anchors.fill: parent
-        currentIndex: tabBar.currentIndex
+        currentIndex: 1
+
+        ServerListPage{
+        }
 
         MainPage {
         }
+
         PlayListsControl{
         }
+
     }
 
     footer: TabBar {
         id: tabBar
         currentIndex: swipeView.currentIndex
+
+        TabButton {
+            text: qsTr("Servers Page")
+        }
 
         TabButton {
             text: qsTr("Main Page")

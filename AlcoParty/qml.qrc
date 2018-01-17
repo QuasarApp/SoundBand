@@ -8,6 +8,10 @@
         <file>SongDelegate.qml</file>
         <file>PlayListsControl.qml</file>
         <file>PlayListDelegate.qml</file>
+        <file>SongDelegateSelection.qml</file>
+        <file>PlayListEditPane.qml</file>
+        <file>ServerListPage.qml</file>
+        <file>ServerDelegate.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>res/logo.png</file>

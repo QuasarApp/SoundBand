@@ -1,9 +1,9 @@
-# Welcome to the AlcoParty!
+# Welcome to the SoundBand!
 # ![AlcoParty Logo](/resurses/icons/logo.png)
 
 ***************************
-## What is AlcoParty
-AlcoParty is a cross-platform application for synchronous music playback on all your devices.
+## What is SoundBand
+SoundBand is a cross-platform application for synchronous music playback on all your devices.
 supported platform: 
 1. Linux
 2. Android 

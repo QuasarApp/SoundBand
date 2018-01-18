@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>Header.qml</file>
+        <file>MainPage.qml</file>
+        <file>CurentPlayList.qml</file>
+        <file>SongDelegate.qml</file>
+        <file>PlayListsControl.qml</file>
+        <file>PlayListDelegate.qml</file>
+        <file>SongDelegateSelection.qml</file>
+        <file>PlayListEditPane.qml</file>
+        <file>ServerListPage.qml</file>
+        <file>ServerDelegate.qml</file>
+    </qresource>
+    <qresource prefix="/image">
+        <file>res/logo.png</file>
+    </qresource>
+</RCC>

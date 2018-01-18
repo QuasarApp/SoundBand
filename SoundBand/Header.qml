@@ -37,7 +37,7 @@ Item {
         anchors.rightMargin: 0
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
-        title: qsTr("AlcoParty")
+        title: qsTr("SoundBand")
 
         Button {
             id: prev

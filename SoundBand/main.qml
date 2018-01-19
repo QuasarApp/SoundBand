@@ -23,19 +23,13 @@ ApplicationWindow {
 
     }
 
-    footer: TabBar {
-        id: tabBar
+    PageIndicator {
+        id: indicator
+
+        count: swipeView.count
         currentIndex: swipeView.currentIndex
 
-        TabButton {
-            text: qsTr("Servers Page")
-        }
-
-        TabButton {
-            text: qsTr("Main Page")
-        }
-        TabButton {
-            text: qsTr("Play Lists Control Page")
-        }
+        anchors.bottom: swipeView.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 }

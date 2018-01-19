@@ -11,7 +11,7 @@ Page {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.right: parent.right
-}
+    }
     CurentPlayList{
         id:curentPlayList
         anchors.left: parent.left

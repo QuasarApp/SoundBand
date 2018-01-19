@@ -126,6 +126,17 @@ public:
      */
     bool getPlayLists(QStringList &list);
 
+    /**
+     * @brief getSongId get song id by name
+     * @param name - name of song
+     * @return true if finded song,
+     *  bud if count of finded songs is greater than 1 return false
+     */
+    int getSongId(const QString& name);
+
+    /**
+     * @brief clear - clear free space in local database
+     */
     void clear();
 
     ~MySql();

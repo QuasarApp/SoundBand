@@ -95,6 +95,10 @@ bool Sync::play(const Song &song, bool fbroadcast){
 
 bool Sync::play(int id_song, bool fbroadcast){
 
+    if(id_song < 0){
+        return false;
+    }
+
     SongHeader header;
     header.id = id_song;
     Song song;

@@ -1,4 +1,5 @@
 #include "syncengine.h"
+#include <QPicture>
 
 SyncEngine::SyncEngine()
 {
@@ -29,7 +30,24 @@ const QString& SyncEngine::curentPlayListName() const{
 }
 
 const QStringList& SyncEngine::allPlayLists()const{
+    QStringList &result = tempList;
+    result.clear();
 
+    sqlApi->getPlayLists(result);
+
+    return result;
+}
+
+const QPixmap& SyncEngine::curentSongImage() const{
+    return QPixmap(1, 1);
+}
+
+const QPixmap& SyncEngine::songImageById(int ) const{
+    return QPixmap(1, 1);
+}
+
+bool SyncEngine::play(){
+    return sync->play(sqlApi->getSongId(_curentPlayListName));
 }
 
 SyncEngine::~SyncEngine(){

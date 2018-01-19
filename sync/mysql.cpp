@@ -339,6 +339,27 @@ bool MySql::getPlayLists(QStringList &list){
     return true;
 }
 
+int MySql::getSongId(const QString &name){
+    if(name.isEmpty()){
+        return -1;
+    }
+
+    QString qyer = QString("SELECT id from songs where name='%0'").arg(name);
+    if(!qyery->exec(qyer)){
+        return -1;
+    }
+
+    if(qyery->size() != 1){
+        throw DataBaseError();
+    }
+
+    if(!qyery->next()){
+        return -1;
+    }
+
+    return qyery->value(0).toInt();;
+}
+
 void MySql::clear(){
     qyery->exec("vacuum");
 }

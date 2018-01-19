@@ -2,7 +2,7 @@
 #define SYNCENGINE_H
 #include "../sync/sync.h"
 #include <QObject>
-#include <QPainter>
+#include <QPixmap>
 
 
 /**
@@ -54,14 +54,14 @@ public slots:
      * @brief curentSongImage
      * @return Image of curent song
      */
-    const QPicture& curentSongImage()const;
+    const QPixmap& curentSongImage()const;
 
     /**
      * @brief songImageById
      * @param id - id of playingSong;
      * @return
      */
-    const QPicture& songImageById(int id)const;
+    const QPixmap& songImageById(int id)const;
 
     /**
      * @brief play - play curent music

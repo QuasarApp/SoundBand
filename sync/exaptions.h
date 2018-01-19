@@ -87,4 +87,12 @@ public:
     }
 };
 
+class DataBaseError:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("Find duplicate of database item.");
+    }
+};
+
 #endif // EXAPTIONS_H

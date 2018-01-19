@@ -73,7 +73,7 @@ public slots:
      * @brief pause - set pause for curent song
      * @return true if all done.
      */
-    bool pause();
+    bool pause(bool state);
 
     /**
      * @brief next - switch to next music

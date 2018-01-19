@@ -95,4 +95,12 @@ public:
     }
 };
 
+class NotSupported:public std::exception
+{
+public:
+    QString what(){
+        return QObject::tr("This option not supported.");
+    }
+};
+
 #endif // EXAPTIONS_H

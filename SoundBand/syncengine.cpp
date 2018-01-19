@@ -1,5 +1,6 @@
 #include "syncengine.h"
 #include <QPicture>
+#include "../sync/exaptions.h"
 
 SyncEngine::SyncEngine()
 {
@@ -39,15 +40,39 @@ const QStringList& SyncEngine::allPlayLists()const{
 }
 
 const QPixmap& SyncEngine::curentSongImage() const{
+
+    throw NotSupported();
+
     return QPixmap(1, 1);
 }
 
 const QPixmap& SyncEngine::songImageById(int ) const{
+
+    throw NotSupported();
+
     return QPixmap(1, 1);
 }
 
 bool SyncEngine::play(){
     return sync->play(sqlApi->getSongId(_curentPlayListName));
+}
+
+bool SyncEngine::pause(bool state){
+    return sync->pause(state);
+}
+
+bool SyncEngine::next(){
+
+    throw NotSupported();
+
+    return false;
+}
+
+bool SyncEngine::prev(){
+
+    throw NotSupported();
+
+    return false;
 }
 
 SyncEngine::~SyncEngine(){

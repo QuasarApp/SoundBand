@@ -2,11 +2,11 @@
 
 ## 1. Purpose
 
-A primary goal of Alco Party is to be inclusive to the largest number of contributors, with the most varied and diverse backgrounds possible. As such, we are committed to providing a friendly, safe and welcoming environment for all, regardless of gender, sexual orientation, ability, ethnicity, socioeconomic status, and religion (or lack thereof).
+A primary goal of SoundBand is to be inclusive to the largest number of contributors, with the most varied and diverse backgrounds possible. As such, we are committed to providing a friendly, safe and welcoming environment for all, regardless of gender, sexual orientation, ability, ethnicity, socioeconomic status, and religion (or lack thereof).
 
 This code of conduct outlines our expectations for all those who participate in our community, as well as the consequences for unacceptable behavior.
 
-We invite all those who participate in Alco Party to help us create safe and positive experiences for everyone.
+We invite all those who participate in SoundBand to help us create safe and positive experiences for everyone.
 
 ## 2. Open Source Citizenship
 
@@ -55,7 +55,7 @@ If a community member engages in unacceptable behavior, the community organizers
 
 If you are subject to or witness unacceptable behavior, or have any other concerns, please notify a community organizer as soon as possible. EndrIIMail@gmail.com.
 
-[Reporting Guidelines](https://github.com/EndrII/AlcoParty/issues/new)
+[Reporting Guidelines](https://github.com/EndrII/SoundBand/issues/new)
 
 Additionally, community organizers are available to help community members engage with local law enforcement or to otherwise help those experiencing unacceptable behavior feel safe. In the context of in-person events, organizers will also provide escorts as desired by the person experiencing distress.
 

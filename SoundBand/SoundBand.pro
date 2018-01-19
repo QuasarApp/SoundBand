@@ -13,7 +13,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
-    syncengine.cpp
+    syncengine.cpp \
+    ../sync/chronotime.cpp \
+    ../sync/ETcpSocket.cpp \
+    ../sync/LocalScanner.cpp \
+    ../sync/mysql.cpp \
+    ../sync/node.cpp \
+    ../sync/player.cpp \
+    ../sync/song.cpp \
+    ../sync/sync.cpp
 
 RESOURCES += qml.qrc
 
@@ -31,4 +39,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES +=
 
 HEADERS += \
-    syncengine.h
+    syncengine.h \
+    ../sync/chronotime.h \
+    ../sync/config.h \
+    ../sync/ETcpSocket.h \
+    ../sync/exaptions.h \
+    ../sync/LocalScanner.h \
+    ../sync/mysql.h \
+    ../sync/node.h \
+    ../sync/player.h \
+    ../sync/song.h \
+    ../sync/sync.h

@@ -72,6 +72,13 @@ private slots:
     void endPlay(QMediaPlayer::State state);
 
 public:
+
+    /**
+     * @brief getSqlApi
+     * @return pointer of sql api
+     */
+    MySql* getSqlApi();
+
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param header of song
@@ -152,6 +159,11 @@ public:
      */
     const QList<ETcpSocket*>& getServersList() const;
 
+    /**
+     * @brief listen - a server
+     * @param server - host
+     * @return true id all done
+     */
     bool listen(ETcpSocket* server);
 
     /**
@@ -206,7 +218,7 @@ public:
      */
     int addNewSong(const QString &url);
 
-    Sync(const QString address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
+    Sync(const QString &address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
 
 signals:

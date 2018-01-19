@@ -1,33 +1,37 @@
 #include "syncengine.h"
 
-/*QPixmap ColorImageProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize){
-
-    QStringList params;
-
-    int index = 0;
-    int oldIndex;
-    while((index = id.indexOf('/', index + 1)) != -1){
-        index ++;
-        params.push_back(id.mid(oldIndex, index));
-        oldIndex = index;
-    }
-
-    QString comand = params.first();
-
-    if(comand == CURENT_SONG){
-
-    }
-
-    if(comand == SONG_BY_ID && params.size() > ){
-
-    }
-}
-
-*/
 SyncEngine::SyncEngine()
 {
+    sync = new syncLib::Sync();
+    sqlApi = sync->getSqlApi();
+}
+
+const QString& SyncEngine::curentSong()const{
+    return sync->getCurentSong()->name;
+}
+
+const QStringList& SyncEngine::curentPlayList() const{
+
+    QStringList &result = tempList;
+    result.clear();
+
+    QList<syncLib::SongHeader> *list = sync->getPlayList();
+
+    for(QString & name : list){
+        result.push_back(name);
+    }
+
+    return result;
+}
+
+const QString& SyncEngine::curentPlayListName() const{
+    return _curentPlayListName;
+}
+
+const QStringList& SyncEngine::allPlayLists()const{
 
 }
-const QString& SyncEngine::curentSong()const{
-    return "";
+
+SyncEngine::~SyncEngine(){
+    delete sync;
 }

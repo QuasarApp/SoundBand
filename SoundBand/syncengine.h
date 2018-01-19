@@ -19,9 +19,12 @@ class SyncEngine : public QObject
 
 private:
     syncLib::Sync *sync;
-
+    syncLib::MySql * sqlApi;
+    QString _curentPlayListName;
+    QStringList tempList;
 public:
     SyncEngine();
+    ~SyncEngine();
 public slots:
     /**
      * @brief curentSong
@@ -33,7 +36,7 @@ public slots:
      * @brief curentPlayList
      * @return return curent Play List
      */
-    const QStringList& curentPlayList()const;
+    const QStringList &curentPlayList()const;
 
     /**
      * @brief curentPlayListName
@@ -45,7 +48,7 @@ public slots:
      * @brief allPlayLists
      * @return names of all play lists
      */
-    const QStringList allPlayLists();
+    const QStringList &allPlayLists()const;
 
     /**
      * @brief curentSongImage
@@ -127,7 +130,7 @@ public slots:
      * @brief pos
      * @return posistion of curent song on double
      */
-    const double pos()const;
+    double pos()const;
 
 signals:
 

@@ -64,6 +64,14 @@ public:
     bool updateAvailableSongs(QList<SongHeader>& list, const QString &playList = "");
 
     /**
+     * @brief updateAvelableSongs will update the list of participants of songs.
+     * @param list - [out value] list of avelable song.
+     * @param playList - play list of songs (string).
+     * @return true if all done
+     */
+    bool updateAvailableSongs(QStringList& list, const QString &playList = "");
+
+    /**
      * @brief removeSong - remove song from local database.
      * @param header - heder removing song. first : song removed by id,
      * if id of head = -1 then song removed by name and size, and if song no finded this finction return false.

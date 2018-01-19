@@ -11,7 +11,7 @@
 
 namespace syncLib{
 
-Sync::Sync(const QString address, int port, const QString &datadir):
+Sync::Sync(const QString &address, int port, const QString &datadir):
     node(nullptr),
     player(nullptr),
     curentSong(nullptr)
@@ -35,6 +35,10 @@ Sync::Sync(const QString address, int port, const QString &datadir):
     connect(&deepScaner, SIGNAL(scaned(QList<ETcpSocket*>*)), SLOT(deepScaned(QList<ETcpSocket*>*)));
     connect(player, SIGNAL(positionChanged(qint64)), SIGNAL(seekChanged(qint64)));
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(endPlay(QMediaPlayer::State)));
+}
+
+MySql* Sync::getSqlApi(){
+    return sql;
 }
 
 bool Sync::findHeader(const Song &song){

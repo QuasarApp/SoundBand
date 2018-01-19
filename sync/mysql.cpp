@@ -228,6 +228,20 @@ bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playLis
     return true;
 }
 
+bool MySql::updateAvailableSongs(QStringList& list, const QString& playList){
+
+    QList<SongHeader> tempList;
+
+    if(!updateAvailableSongs(tempList, playList))
+        return false;
+
+    for(SongHeader &header : tempList){
+        list.push_back(header.name);
+    }
+
+    return true;
+}
+
 bool MySql::removeSong(const SongHeader &header){
     if(header.id > -1){
         QString qyer = QString("DELETE from songs where id=%0").arg(header.id);

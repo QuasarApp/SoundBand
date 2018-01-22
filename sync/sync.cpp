@@ -456,6 +456,22 @@ int Sync::addNewSong(const QString &url){
     return result;
 }
 
+bool Sync::updatePlayList(const QString &_playList){
+    if(!sql->updateAvailableSongs(playList, _playList)){
+        return false;
+    }
+
+    if(!playList.size())
+        return false;
+
+    if(fbroadcaster){
+        play(playList.first());
+    }
+
+    return true;
+
+}
+
 Sync::~Sync(){
     delete node;
     delete player;

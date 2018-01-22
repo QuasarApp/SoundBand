@@ -12,15 +12,15 @@ const QString& SyncEngine::curentSong()const{
     return sync->getCurentSong()->name;
 }
 
-const QStringList& SyncEngine::curentPlayList() const{
+const QStringList& SyncEngine::curentPlayList(){
 
     QStringList &result = tempList;
     result.clear();
 
-    QList<syncLib::SongHeader> *list = sync->getPlayList();
+    const QList<syncLib::SongHeader> *list = sync->getPlayList();
 
-    for(QString & name : list){
-        result.push_back(name);
+    for(syncLib::SongHeader song : *list){
+        result.push_back(song.name);
     }
 
     return result;
@@ -30,7 +30,7 @@ const QString& SyncEngine::curentPlayListName() const{
     return _curentPlayListName;
 }
 
-const QStringList& SyncEngine::allPlayLists()const{
+const QStringList& SyncEngine::allPlayLists(){
     QStringList &result = tempList;
     result.clear();
 
@@ -39,14 +39,14 @@ const QStringList& SyncEngine::allPlayLists()const{
     return result;
 }
 
-const QPixmap& SyncEngine::curentSongImage() const{
+QPixmap SyncEngine::curentSongImage() const{
 
     throw NotSupported();
 
     return QPixmap(1, 1);
 }
 
-const QPixmap& SyncEngine::songImageById(int ) const{
+QPixmap SyncEngine::songImageById(int ) const{
 
     throw NotSupported();
 
@@ -75,6 +75,57 @@ bool SyncEngine::prev(){
     return false;
 }
 
+bool SyncEngine::listen(int index){
+
+    const QList<ETcpSocket*> &servers = sync->getServersList();
+
+    if(servers.size() <= index){
+        return false;
+    }
+
+    return sync->listen( servers[index]);
+}
+
+const QStringList& SyncEngine::getServerList(){
+    const QList<ETcpSocket*>& list = sync->getServersList();
+
+    tempList.clear();
+
+    for(ETcpSocket* socket : list){
+        tempList.push_back(socket->peerName());
+    }
+
+    return tempList;
+
+}
+
+int SyncEngine::repeat()const{
+    return _repeat;
+}
+
+void SyncEngine::setRepeat(int flag){
+    _repeat = (Repeat)flag;
+}
+
+bool SyncEngine::setPlayList(const QString& name){
+
+    return sync->updatePlayList(name);
+}
+
+const QString& SyncEngine::lastError() const{
+    return _lastError;
+}
+
+double SyncEngine::pos()const{
+
+    if(!sync->seek())
+        return 0.0;
+
+    return sync->getEndPoint() / (double)sync->seek();
+}
+
 SyncEngine::~SyncEngine(){
     delete sync;
 }
+
+

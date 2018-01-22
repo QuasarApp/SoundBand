@@ -21,7 +21,9 @@ private:
     syncLib::Sync *sync;
     syncLib::MySql * sqlApi;
     QString _curentPlayListName;
+    QString _lastError;
     QStringList tempList;
+    Repeat _repeat;
 public:
     SyncEngine();
     ~SyncEngine();
@@ -36,7 +38,7 @@ public slots:
      * @brief curentPlayList
      * @return return curent Play List
      */
-    const QStringList &curentPlayList()const;
+    const QStringList &curentPlayList();
 
     /**
      * @brief curentPlayListName
@@ -48,20 +50,20 @@ public slots:
      * @brief allPlayLists
      * @return names of all play lists
      */
-    const QStringList &allPlayLists()const;
+    const QStringList &allPlayLists();
 
     /**
      * @brief curentSongImage
      * @return Image of curent song
      */
-    const QPixmap& curentSongImage()const;
+    QPixmap curentSongImage()const;
 
     /**
      * @brief songImageById
      * @param id - id of playingSong;
      * @return
      */
-    const QPixmap& songImageById(int id)const;
+    QPixmap songImageById(int id)const;
 
     /**
      * @brief play - play curent music
@@ -89,10 +91,10 @@ public slots:
 
     /**
      * @brief listen corent server
-     * @param host of server
+     * @param index of server
      * @return true if all done
      */
-    bool listen(const QString &host);
+    bool listen(int index);
 
     /**
      * @brief repeat
@@ -108,17 +110,10 @@ public slots:
 
     /**
      * @brief setPlayList - select new play list.
-     * @param id of selected play list
-     * @return true if all done
-     */
-    bool setPlayList(int id);
-
-    /**
-     * @brief setPlayList - select new play list.
      * @param name of selected play list
      * @return true if all done
      */
-    bool setPlayList(QString name);
+    bool setPlayList(const QString &name);
 
     /**
      * @brief lastError - message of last error
@@ -131,6 +126,12 @@ public slots:
      * @return posistion of curent song on double
      */
     double pos()const;
+
+    /**
+     * @brief getServerList
+     * @return list of servers
+     */
+    const QStringList& getServerList();
 
 signals:
 

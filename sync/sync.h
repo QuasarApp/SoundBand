@@ -218,6 +218,13 @@ public:
      */
     int addNewSong(const QString &url);
 
+    /**
+     * @brief updatePlayList this method set a new playlist
+     * @param id - id of playlist
+     * @return true if all don
+     */
+    bool updatePlayList(const QString& _playList);
+
     Sync(const QString &address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
 

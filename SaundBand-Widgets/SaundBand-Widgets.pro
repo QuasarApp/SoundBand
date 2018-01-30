@@ -35,7 +35,8 @@ SOURCES += \
     songmodel.cpp \
     ../sync/player.cpp \
     ../sync/chronotime.cpp \
-    ../sync/mysql.cpp
+    ../sync/mysql.cpp \
+    ../sync/Log.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -50,7 +51,8 @@ HEADERS += \
     songmodel.h \
     ../sync/player.h \
     ../sync/chronotime.h \
-    ../sync/mysql.h
+    ../sync/mysql.h \
+    ../sync/Log.h
 
 FORMS += \
         mainwindow.ui

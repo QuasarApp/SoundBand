@@ -5,7 +5,7 @@
 #include <QTextStream>
 #include <QDateTime>
 
-enum LogType{ERROR, WARNING, INFORMATION};
+enum LogType{ERROR, WARNING, INFORMATION, NONE};
 
 class Log
 {
@@ -13,7 +13,7 @@ public:
     explicit Log(const QString &fileName);
     ~Log();
     void setShowDateTime(bool value);
-    void write(const QString &value, LogType logType = INFORMATION);
+    void write(const QString &value, LogType logType = NONE);
 
 private:
     QFile *file;

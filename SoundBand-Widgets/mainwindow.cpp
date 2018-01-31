@@ -86,7 +86,7 @@ void MainWindow::on_horizontalSlider_Value_valueChanged(int value)
 void MainWindow::on_listen_clicked()
 {
     int curentServer = ui->ServersView->currentIndex().row();
-    if(!source->listen((*playList)[curentServer])){
+    if(curentServer >= 0 && !source->listen((*playList)[curentServer])){
           QMessageBox::critical(this,tr("Error"),tr("Сould not play the file you selected."));
     }
 }

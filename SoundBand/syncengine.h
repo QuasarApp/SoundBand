@@ -56,14 +56,14 @@ public slots:
      * @brief curentSongImage
      * @return Image of curent song
      */
-    QPixmap curentSongImage()const;
+    QPixmap curentSongImage();
 
     /**
      * @brief songImageById
      * @param id - id of playingSong;
      * @return
      */
-    QPixmap songImageById(int id)const;
+    QPixmap songImageById(int id);
 
     /**
      * @brief play - play curent music

@@ -21,7 +21,10 @@ SOURCES += main.cpp \
     ../sync/node.cpp \
     ../sync/player.cpp \
     ../sync/song.cpp \
-    ../sync/sync.cpp
+    ../sync/sync.cpp \
+    ../sync/Log.cpp\
+    ../sync/exaptions.cpp
+
 
 RESOURCES += qml.qrc
 
@@ -49,4 +52,6 @@ HEADERS += \
     ../sync/node.h \
     ../sync/player.h \
     ../sync/song.h \
-    ../sync/sync.h
+    ../sync/sync.h \
+    ../sync/Log.h
+

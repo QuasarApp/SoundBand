@@ -39,38 +39,57 @@ const QStringList& SyncEngine::allPlayLists(){
     return result;
 }
 
-QPixmap SyncEngine::curentSongImage() const{
+QPixmap SyncEngine::curentSongImage() {
 
-    throw NotSupported();
+    _lastError = tr("This option not supported.");
+    emit error();
 
     return QPixmap(1, 1);
 }
 
-QPixmap SyncEngine::songImageById(int ) const{
+QPixmap SyncEngine::songImageById(int ) {
 
-    throw NotSupported();
+    _lastError = tr("This option not supported.");
+    emit error();
 
     return QPixmap(1, 1);
 }
 
 bool SyncEngine::play(){
-    return sync->play(sqlApi->getSongId(_curentPlayListName));
+    try{
+        return sync->play(sqlApi->getSongId(_curentPlayListName));
+    }catch(BaseException e){
+
+        _lastError = e.what();
+        emit error();
+        return false;
+    }
 }
 
 bool SyncEngine::pause(bool state){
-    return sync->pause(state);
+
+    try{
+        return sync->pause(state);
+    }catch(BaseException e){
+
+        _lastError = e.what();
+        emit error();
+        return false;
+    }
 }
 
 bool SyncEngine::next(){
 
-    throw NotSupported();
+    _lastError = tr("This option not supported.");
+    emit error();
 
     return false;
 }
 
 bool SyncEngine::prev(){
 
-    throw NotSupported();
+    _lastError = tr("This option not supported.");
+    emit error();
 
     return false;
 }
@@ -83,7 +102,14 @@ bool SyncEngine::listen(int index){
         return false;
     }
 
-    return sync->listen( servers[index]);
+    try{
+        return sync->listen( servers[index]);
+    }catch(BaseException e){
+
+        _lastError = e.what();
+        emit error();
+        return false;
+    }
 }
 
 const QStringList& SyncEngine::getServerList(){

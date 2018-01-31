@@ -4,102 +4,145 @@
 #include <exception>
 #include <QString>
 #include <QTranslator>
+#include "config.h"
+
+#ifdef  LOGER
+#include "Log.h"
+#endif
+
+#ifdef  LOGER
+   extern Log debug_log;
+#endif
+
 /**
  * @brief The MediaException class
  */
-class MediaException:public std::exception
+
+class BaseException
 {
+protected:
+    QString _what;
+
 public:
-    QString what(){
-        return QObject::tr("Your operating system or platform has not supported media files.");
+    virtual const char* what()
+    {
+        return _what.toLatin1().data();
+    }
+
+    void log()const{
+#ifdef  LOGER
+        debug_log.write(_what, ERROR);
+#endif
+        return;
     }
 };
 
-class AddNodeExaption:public std::exception
+class MediaException:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("Address not available");
+    MediaException(){
+        _what = QObject::tr("Your operating system or platform has not supported media files.");
+        log();
+
     }
 };
 
-class initNodeError:public std::exception
+class AddNodeExaption:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("The node on this device could not be deployed.");
+    AddNodeExaption(){
+        _what = QObject::tr("Address not available");
+        log();
     }
 };
 
-class CreatePackageExaption:public std::exception
+class initNodeError:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("Сould not generate network packet");
+    initNodeError(){
+        _what = QObject::tr("The node on this device could not be deployed.");
+        log();
     }
 };
 
-class SyncCountError:public std::exception
+class CreatePackageExaption:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("Could not sync audio.");
+    CreatePackageExaption(){
+        _what = QObject::tr("Сould not generate network packet");
+        log();
     }
 };
 
-class BadAnswerExaption:public std::exception
+class SyncCountError:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("could not parse message nodes.");
+    SyncCountError(){
+        _what = QObject::tr("Could not sync audio.");
+        log();
     }
 };
 
-class BrodcastConflict:public std::exception
+class BadAnswerExaption:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("The server received the packet from the server.");
+    BadAnswerExaption(){
+        _what = QObject::tr("could not parse message nodes.");
+        log();
     }
 };
 
-class SyncError:public std::exception
+class BrodcastConflict:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("The playlist is empty, the player has nothing to play.");
+    BrodcastConflict(){
+        _what = QObject::tr("The server received the packet from the server.");
+        log();
     }
 };
 
-class InitDBError:public std::exception
+class SyncError:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("Error creating database.");
+    SyncError(){
+        _what = QObject::tr("The playlist is empty, the player has nothing to play.");
+        log();
     }
 };
 
-class NetworkError:public std::exception
+class InitDBError:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("There was an error on the socket, the connection will be closed.");
+    InitDBError(){
+        _what = QObject::tr("Error creating database.");
+        log();
     }
 };
 
-class DataBaseError:public std::exception
+class NetworkError:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("Find duplicate of database item.");
+    NetworkError(){
+        _what = QObject::tr("There was an error on the socket, the connection will be closed.");
+        log();
     }
 };
 
-class NotSupported:public std::exception
+class DataBaseError:public BaseException
 {
 public:
-    QString what(){
-        return QObject::tr("This option not supported.");
+    DataBaseError(){
+        _what = QObject::tr("Find duplicate of database item.");
+        log();
+    }
+};
+
+class NotSupported:public BaseException
+{
+public:
+    NotSupported(){
+        _what = QObject::tr("This option not supported.");
+        log();
     }
 };
 

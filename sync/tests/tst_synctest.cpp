@@ -2,6 +2,8 @@
 #include "../sync.h"
 #include <thread>
 #include <QMediaPlayer>
+#include "../Log.h"
+
 // add necessary includes here
 
 class SyncTest : public QObject
@@ -21,6 +23,8 @@ private slots:
     void database_tests();
 
     void network_tests();
+
+    void log_tests();
 
 };
 
@@ -184,6 +188,20 @@ void SyncTest::network_tests(){
     node1.close();
     socket.getSource()->close();
 
+}
+
+void SyncTest::log_tests(){
+    Log log("test.log");
+    log.setShowDateTime(false);
+
+    log.write("test");
+    QVERIFY(QFile("test.log").size() == 18);
+
+    log.setShowDateTime(true);
+    log.write("test2");
+    QVERIFY(QFile("test.log").size() == 57);
+
+    QFile("test.log").remove();
 }
 
 QTEST_APPLESS_MAIN(SyncTest)

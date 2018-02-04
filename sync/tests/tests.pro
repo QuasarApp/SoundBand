@@ -15,7 +15,8 @@ SOURCES += \
     ../player.cpp \
     ../song.cpp \
     ../sync.cpp \
-    ../mysql.cpp
+    ../mysql.cpp \
+    ../Log.cpp
 
 
 RESOURCES += \
@@ -31,6 +32,7 @@ HEADERS += \
     ../player.h \
     ../song.h \
     ../sync.h \
-    ../mysql.h
+    ../mysql.h \
+    ../Log.h
 
 

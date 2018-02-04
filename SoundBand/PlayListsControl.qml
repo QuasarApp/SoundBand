@@ -14,6 +14,20 @@ Item {
         model.clear()
     }
 
+    function init(){
+        var playlists = [];
+        playlists = syncEngine.allPlayLists();
+
+        for(var i = 0; i < playlists.length; i++){
+            var temp = Qt.createComponent("PlayListDelegate.qml");
+            if(temp.status === Component.Ready){
+                var obj = temp.createObject();
+                obj.init(playlists[i]);
+                parent.addItem(obj);
+            }
+        }
+    }
+
     GroupBox {
         id: controlBox
         title: qsTr("Your playlists")
@@ -28,6 +42,10 @@ Item {
             text: qsTr("Add")
             anchors.top:parent.top
             anchors.left: parent.left
+
+            onClicked: {
+
+            }
 
         }
 

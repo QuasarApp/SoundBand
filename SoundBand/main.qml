@@ -2,34 +2,21 @@ import QtQuick 2.10
 import QtQuick.Controls 2.3
 
 ApplicationWindow {
+
     visible: true
     width: 340
     height: 480
     title: qsTr("Tabs")
 
-    SwipeView {
-        id: swipeView
+    Loader {
+        id: core
+        source: "MainPage.qml"
         anchors.fill: parent
-        currentIndex: 1
-
-        ServerListPage{
+        onLoaded: {
+            item.onLoaded()
         }
-
-        MainPage {
-        }
-
-        PlayListsControl{
-        }
-
     }
 
-    PageIndicator {
-        id: indicator
 
-        count: swipeView.count
-        currentIndex: swipeView.currentIndex
 
-        anchors.bottom: swipeView.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-    }
 }

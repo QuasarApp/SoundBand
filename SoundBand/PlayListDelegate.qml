@@ -7,6 +7,11 @@ Item {
     width: 80
     height: 40
     property bool isSelected: false
+
+    function init(name){
+        text.text = name;
+    }
+
     Row {
         id: row1
         spacing: 10
@@ -17,7 +22,8 @@ Item {
         }
 
         Text {
-            text: name
+            id: text
+            text: ""
             anchors.verticalCenter: parent.verticalCenter
             font.bold: true
         }

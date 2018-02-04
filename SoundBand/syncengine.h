@@ -22,7 +22,6 @@ private:
     syncLib::MySql * sqlApi;
     QString _curentPlayListName;
     QString _lastError;
-    QStringList tempList;
     Repeat _repeat;
 public:
     SyncEngine();
@@ -38,7 +37,7 @@ public slots:
      * @brief curentPlayList
      * @return return curent Play List
      */
-    const QStringList &curentPlayList();
+    QStringList curentPlayList();
 
     /**
      * @brief curentPlayListName
@@ -50,7 +49,7 @@ public slots:
      * @brief allPlayLists
      * @return names of all play lists
      */
-    const QStringList &allPlayLists();
+    QStringList allPlayLists();
 
     /**
      * @brief curentSongImage
@@ -64,6 +63,13 @@ public slots:
      * @return
      */
     QPixmap songImageById(int id);
+
+    /**
+     * @brief songImageById
+     * @param name - name of Song;
+     * @return image of song
+     */
+    QPixmap songImageByName(const QString & name);
 
     /**
      * @brief play - play curent music
@@ -131,7 +137,7 @@ public slots:
      * @brief getServerList
      * @return list of servers
      */
-    const QStringList& getServerList();
+    QStringList getServerList();
 
 signals:
 
@@ -158,6 +164,7 @@ signals:
      * This signal can be emitted when repeat state changed
      */
     void repeatChanged();
+
 };
 
 #endif // SYNCENGINE_H

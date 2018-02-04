@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.10
 import QtQuick.Controls 2.3
 
 Item {
@@ -11,6 +11,7 @@ Item {
         anchors.bottom: groupBox.top
         anchors.left: parent.right
         source: "/image/res/logo.png"
+        visible: true;
     }
     Text {
         id: songName

@@ -2,6 +2,18 @@ import QtQuick 2.4
 import QtQuick.Controls 2.3
 
 Item {
+    function addItem(obj){
+        model.append(obj);
+    }
+
+    function removeItem(obj){
+        model.remove(obj);
+    }
+
+    function clear(){
+        model.clear()
+    }
+
     GroupBox {
         id: controlBox
         title: qsTr("Your playlists")
@@ -49,6 +61,7 @@ Item {
         }
 
         model: ListModel {
+            id: model;
 
         }
     }

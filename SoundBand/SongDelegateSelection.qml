@@ -20,10 +20,7 @@ SongDelegate {
         active: parent.isSelected
     }
 
-    MouseArea{
-        anchors.fill: parent
-        onClicked: {
-            isSelected = !isSelected;
-        }
+    onClicked: {
+        isSelected = !isSelected;
     }
 }

@@ -12,9 +12,9 @@ const QString& SyncEngine::curentSong()const{
     return sync->getCurentSong()->name;
 }
 
-const QStringList& SyncEngine::curentPlayList(){
+QStringList SyncEngine::curentPlayList(){
 
-    QStringList &result = tempList;
+    QStringList result;
     result.clear();
 
     const QList<syncLib::SongHeader> *list = sync->getPlayList();
@@ -30,8 +30,8 @@ const QString& SyncEngine::curentPlayListName() const{
     return _curentPlayListName;
 }
 
-const QStringList& SyncEngine::allPlayLists(){
-    QStringList &result = tempList;
+QStringList SyncEngine::allPlayLists(){
+    QStringList result;
     result.clear();
 
     sqlApi->getPlayLists(result);
@@ -48,6 +48,14 @@ QPixmap SyncEngine::curentSongImage() {
 }
 
 QPixmap SyncEngine::songImageById(int ) {
+
+    _lastError = tr("This option not supported.");
+    emit error();
+
+    return QPixmap(1, 1);
+}
+
+QPixmap SyncEngine::songImageByName(const QString& name) {
 
     _lastError = tr("This option not supported.");
     emit error();
@@ -112,10 +120,10 @@ bool SyncEngine::listen(int index){
     }
 }
 
-const QStringList& SyncEngine::getServerList(){
+ QStringList SyncEngine::getServerList(){
     const QList<ETcpSocket*>& list = sync->getServersList();
 
-    tempList.clear();
+    QStringList tempList;
 
     for(ETcpSocket* socket : list){
         tempList.push_back(socket->peerName());

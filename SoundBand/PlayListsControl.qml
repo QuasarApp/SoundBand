@@ -1,7 +1,8 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.2
 
 Item {
+    id: playListsControl
     function addItem(obj){
         model.append(obj);
     }
@@ -14,16 +15,29 @@ Item {
         model.clear()
     }
 
+    function createPlaylistForAllSongs(){
+        // crrate all play listts item with empty string
+        var temp = Qt.createComponent("PlayListDelegate.qml");
+        if(temp.status === Component.Ready){
+            var obj = temp.createObject();
+            obj.init("all");
+            addItem(obj);
+
+        }
+    }
+
     function init(){
         var playlists = [];
         playlists = syncEngine.allPlayLists();
+
+        createPlaylistForAllSongs();
 
         for(var i = 0; i < playlists.length; i++){
             var temp = Qt.createComponent("PlayListDelegate.qml");
             if(temp.status === Component.Ready){
                 var obj = temp.createObject();
                 obj.init(playlists[i]);
-                parent.addItem(obj);
+                addItem(obj);
             }
         }
     }
@@ -31,7 +45,7 @@ Item {
     GroupBox {
         id: controlBox
         title: qsTr("Your playlists")
-        height: 50
+        height: 100;
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -56,6 +70,10 @@ Item {
             anchors.top:parent.top
             anchors.left: add.right
 
+            onClicked: {
+                editPlayList.visible = true;
+            }
+
         }
 
         Button{
@@ -64,6 +82,10 @@ Item {
             text: qsTr("remove")
             anchors.top:parent.top
             anchors.left: edit.right
+
+            onClicked: {
+
+            }
 
         }
     }
@@ -82,6 +104,15 @@ Item {
             id: model;
 
         }
+
     }
+
+    PlayListEditPane{
+        id: editPlayList;
+        visible: false;
+        anchors.fill: playListsControl;
+    }
+
+
 
 }

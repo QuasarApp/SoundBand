@@ -1,5 +1,5 @@
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 
 Item {
     id: headerForm
@@ -42,11 +42,7 @@ Item {
 
         Button {
             id: prev
-            Image {
-                id: _Iprev
-                source: "file"
-                anchors.fill: parent
-            }
+
             width: parent.width/4
             text: qsTr("<<")
             anchors.left: parent.left
@@ -68,10 +64,6 @@ Item {
 
         Button {
             id: next
-            Image {
-                id: _Inext
-                source: "file"
-            }
             width: parent.width/4
             text: qsTr(">>")
             anchors.right: parent.right

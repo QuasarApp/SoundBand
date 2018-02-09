@@ -1,4 +1,4 @@
-import QtQuick 2.10
+import QtQuick 2.9
 
 Item {
     width: parent.width
@@ -6,6 +6,10 @@ Item {
     function init(image, name){
         img.source = image;
         text.text = name;
+    }
+
+    function getName(){
+        return text.text;
     }
 
     signal clicked();
@@ -20,7 +24,7 @@ Item {
 
         Text {
             id:text
-            text: name
+            text: "name"
             anchors.verticalCenter: parent.verticalCenter
             font.bold: true
         }
@@ -31,5 +35,6 @@ Item {
                 clicked();
             }
         }
+        anchors.fill: parent;
     }
 }

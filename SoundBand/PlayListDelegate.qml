@@ -1,32 +1,37 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.3
+import QtQuick.Controls 2.2
 import QtQuick.Extras 1.4
 
 Item {
     x: 5
-    width: 80
-    height: 40
+    width: playLists.width
+    height: 20
     property bool isSelected: false
+    property string text: "name not changed"
 
     function init(name){
-        text.text = name;
+        text = name;
     }
 
-    Row {
-        id: row1
-        spacing: 10
-        StatusIndicator{
-            anchors.centerIn: parent
-            color: "#4fc1e9"
-            active: parent.isSelected
-        }
+    StatusIndicator{
+        id: indicator
+        width: parent.height
+        color: "#4fc1e9"
+        active: isSelected;
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+    }
 
-        Text {
-            id: text
-            text: ""
-            anchors.verticalCenter: parent.verticalCenter
-            font.bold: true
-        }
+    Label {
+        id: label
+        text: parent.text;
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        anchors.left: indicator.right
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
     }
 
     MouseArea{

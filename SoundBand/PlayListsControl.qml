@@ -15,28 +15,15 @@ Item {
         model.clear()
     }
 
-    function createPlaylistForAllSongs(){
-        // crrate all play listts item with empty string
-        var temp = Qt.createComponent("PlayListDelegate.qml");
-        if(temp.status === Component.Ready){
-            var obj = temp.createObject();
-            obj.init("all");
-            addItem(obj);
-
-        }
-    }
-
     function init(){
         var playlists = [];
         playlists = syncEngine.allPlayLists();
-
-        createPlaylistForAllSongs();
 
         for(var i = 0; i < playlists.length; i++){
             var temp = Qt.createComponent("PlayListDelegate.qml");
             if(temp.status === Component.Ready){
                 var obj = temp.createObject();
-                obj.init(playlists[i]);
+                obj.init(playlists[i], i);
                 addItem(obj);
             }
         }
@@ -72,6 +59,7 @@ Item {
 
             onClicked: {
                 editPlayList.visible = true;
+                editPlayList.name = model.get(playLists.selectedItem).text;
             }
 
         }
@@ -93,6 +81,7 @@ Item {
     ListView {
         id: playLists
 
+        property int selectedItem: 0
         anchors.top: controlBox.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -108,6 +97,7 @@ Item {
     }
 
     PlayListEditPane{
+
         id: editPlayList;
         visible: false;
         anchors.fill: playListsControl;

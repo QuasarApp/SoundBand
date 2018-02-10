@@ -3,41 +3,44 @@ import QtQuick.Controls 2.2
 import QtQuick.Extras 1.4
 
 Item {
+    id:playListDelegate;
     x: 5
     width: playLists.width
     height: 20
-    property bool isSelected: false
+    property bool isSelected: playLists.selectedItem == number
+    property int number: 0
     property string text: "name not changed"
 
-    function init(name){
+    function init(name , n){
         text = name;
+        number = n;
     }
 
     StatusIndicator{
         id: indicator
         width: parent.height
         color: "#4fc1e9"
-        active: isSelected;
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        active: playListDelegate.isSelected;
+        anchors.left: playListDelegate.left
+        anchors.top: playListDelegate.top
+        anchors.bottom: playListDelegate.bottom
     }
 
     Label {
         id: label
-        text: parent.text;
+        text: playListDelegate.text;
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.left: indicator.right
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        anchors.right: playListDelegate.right
+        anchors.top: playListDelegate.top
+        anchors.bottom: playListDelegate.bottom
     }
 
     MouseArea{
-        anchors.fill: parent
+        anchors.fill: playListDelegate
         onClicked: {
-            isSelected = !isSelected;
+            clicked;
         }
     }
 }

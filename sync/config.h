@@ -11,6 +11,7 @@
 // sqlite config
 #define DATABASE_NAME               "songdata.dat"
 #define BUFFER_NAME                 "buffer"
+#define ALL_SONGS_LIST              "all songs"
 
 // network config
 #define DEFAULT_ADRESS              "DEFAULT_ADRESS"

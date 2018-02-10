@@ -16,7 +16,7 @@ Item{
 
     function init(){
         var listOfSong = [];
-        listOfSong = syncEngine.curentPlayList();
+        listOfSong = syncEngine.curentPlayList(mainPage.curentPlayListName);
 
         for(var i = 0; i < listOfSong.length; i++){
             var temp = Qt.createComponent("SongDelegate.qml");

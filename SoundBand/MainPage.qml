@@ -3,9 +3,11 @@ import QtQuick.Controls 2.2
 import SyncEngine 1.0
 
 Page {
-    id: page
+    id: mainPage
     width: 600
     height: 400
+
+    property string curentPlayListName: "all"
 
     function onLoaded(){
         playListsControl.init();

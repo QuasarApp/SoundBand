@@ -25,7 +25,26 @@ Rectangle {
     function view(curentPlayListName){
         name = curentPlayListName;
         playListPane.visible = true;
-        //var temp = syncEngine.
+        var added = [], all = [];
+        added = syncEngine.getPlayList(name);
+        all = syncEngine.getPlayList("");
+        for(var i = 0; i < all.lenght; i++){
+
+            var temp = Qt.createComponent("SongDelegateSelection.qml");
+            if(temp.status === Component.Ready){
+                var obj = temp.createObject();
+                obj.init("/image/res/logo.png", all[i]);
+
+                if(added.indexOf(all[i]) >= 0){
+                    obj.isSelected = true;
+                }
+
+                addItem(obj);
+            }
+
+
+        }
+
     }
 
     Text{

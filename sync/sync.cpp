@@ -13,8 +13,7 @@ namespace syncLib{
 
 Sync::Sync(const QString &address, int port, const QString &datadir):
     node(nullptr),
-    player(nullptr),
-    curentSong(nullptr)
+    player(nullptr)
 {
     node = new Node(address , this->port = port);
 
@@ -43,9 +42,9 @@ MySql* Sync::getSqlApi(){
 
 bool Sync::findHeader(const Song &song){
 
-    for(SongHeader & header: playList){
-        if(header == static_cast<SongHeader>(song)){
-            curentSong = &header;
+    for(int i = 0; i < playList.size(); i++){
+        if(playList[i] == static_cast<SongHeader>(song)){
+            curentSongIndex = i;
             return true;
         }
     }
@@ -220,18 +219,18 @@ bool Sync::createPackage(Type type, package &pac){
     }
 
     if(type & TypePackage::t_song_h && fbroadcaster){
-        if(!curentSong)
+        if(curentSongIndex < 0)
             return false;
 
-        pac.header = *curentSong;
+        pac.header = playList[curentSongIndex];
 
     }
 
     if(type & TypePackage::t_song && fbroadcaster){
-        if(!curentSong)
+        if(curentSongIndex < 0)
             return false;
 
-        if(!sql->load(*curentSong, pac.source))
+        if(!sql->load(playList[curentSongIndex], pac.source))
             return false;
 
     }
@@ -355,7 +354,7 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from client
             if(pkg.getType() & t_play & t_sync){
-                if(!curentSong){
+                if(curentSongIndex < 0){
                     throw SyncError();
                     socket->nextItem();
                     continue;
@@ -412,7 +411,7 @@ void Sync::deepScaned(QList<ETcpSocket *> * list){
 
 void Sync::endPlay(QMediaPlayer::State state){
     if(state == QMediaPlayer::StoppedState){
-        curentSong = nullptr;
+        curentSongIndex = -1;
         fbroadcaster = false;
     }
 }
@@ -442,8 +441,15 @@ const QList<SongHeader>* Sync::getPlayList() const{
     return &playList;
 }
 
+int Sync::getCurentSongIndex()const{
+    return curentSongIndex;
+}
+
 const SongHeader* Sync::getCurentSong() const{
-    return curentSong;
+    if(curentSongIndex < 0){
+        return nullptr;
+    }
+    return &playList[curentSongIndex];
 }
 
 qint64 Sync::getEndPoint() const {

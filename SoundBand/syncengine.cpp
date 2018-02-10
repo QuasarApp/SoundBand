@@ -8,8 +8,25 @@ SyncEngine::SyncEngine()
     sqlApi = sync->getSqlApi();
 }
 
+int SyncEngine::curentSongIndex()const{
+    return sync->getCurentSongIndex();
+}
+
 const QString& SyncEngine::curentSong()const{
     return sync->getCurentSong()->name;
+}
+
+QStringList SyncEngine::getPlayList(const QString &list){
+    QStringList result;
+    result.clear();
+
+    if(!sqlApi->updateAvailableSongs(result, list)){
+        _lastError = tr("play list not found!");
+        emit error();
+        return result;
+    }
+
+    return result;
 }
 
 QStringList SyncEngine::curentPlayList(){

@@ -22,6 +22,12 @@ Rectangle {
         model.clear()
     }
 
+    function view(curentPlayListName){
+        name = curentPlayListName;
+        playListPane.visible = true;
+        //var temp = syncEngine.
+    }
+
     Text{
         id:namePalyList
         height: 30

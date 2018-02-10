@@ -27,6 +27,13 @@ public:
     SyncEngine();
     ~SyncEngine();
 public slots:
+
+    /**
+     * @brief curentSongIndex
+     * @return index of curent cong in selected playlist.
+     */
+    int curentSongIndex()const;
+
     /**
      * @brief curentSong
      * @return  curent song name
@@ -38,6 +45,13 @@ public slots:
      * @return return curent Play List
      */
     QStringList curentPlayList();
+
+    /**
+     * @brief getPlayList
+     * @param list - name of play list
+     * @return list of songs
+     */
+    QStringList getPlayList(const QString& list);
 
     /**
      * @brief curentPlayListName

@@ -25,7 +25,7 @@ private:
     Node *node;
     Player *player;
     QList<SongHeader> playList;
-    SongHeader *curentSong;
+    int curentSongIndex;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     int resyncCount;
@@ -198,6 +198,12 @@ public:
      * @return list of available songs
      */
     const QList<SongHeader> *getPlayList() const;
+
+    /**
+     * @brief SongHeader::getCurentSongIndex
+     * @return
+     */
+    int getCurentSongIndex()const;
 
     /**
      * @brief getCurentSong

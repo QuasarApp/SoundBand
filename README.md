@@ -20,4 +20,4 @@ Build instructions will appear later for each of the platforms.
 ## Donate
 If you want to help the project, then you can donate a small amount to our bitcoin wallet.
 
-Bitcoin address - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q
+### Bitcoin address - 1NJNbDKmezcUcHRfzpBeq2fHeG21oEKX8Q

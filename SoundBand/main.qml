@@ -8,15 +8,14 @@ ApplicationWindow {
     height: 480
     title: qsTr("Tabs")
 
-    Loader {
+    MainPage {
         id: core
-        source: "MainPage.qml"
         anchors.fill: parent
-        onLoaded: {
-            item.onLoaded()
-        }
     }
 
+    Component.onCompleted: {
+        core.onLoaded();
+    }
 
 
 }

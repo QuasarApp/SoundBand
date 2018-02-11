@@ -84,9 +84,30 @@ Rectangle {
             onClicked: {
                 editPlayList.visible = false;
             }
+            anchors.left: ok.right
+            anchors.leftMargin: 10;
+        }
+
+        Button{
+            id: add;
+            text: qsTr("add")
+            onClicked: {
+                editPlayList.visible = false;
+            }
+            anchors.right: remove.left
+            anchors.rightMargin: 10
+        }
+
+        Button{
+            id: remove;
+            text: qsTr("remove")
+            onClicked: {
+                editPlayList.visible = false;
+            }
             anchors.right: parent.right
             anchors.rightMargin: 10
         }
+
         anchors.bottom: listView.top
         anchors.left: parent.left
         anchors.right: parent.right

@@ -1,5 +1,7 @@
 QT += quick core gui network multimedia sql
-CONFIG += c++11
+android: QT += androidextras
+mac: QT += macextras
+CONFIG += c++14
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -23,7 +25,8 @@ SOURCES += main.cpp \
     ../sync/song.cpp \
     ../sync/sync.cpp \
     ../sync/Log.cpp\
-    ../sync/exaptions.cpp
+    ../sync/exaptions.cpp \
+    androidfiledialog.cpp
 
 
 RESOURCES += qml.qrc
@@ -53,5 +56,6 @@ HEADERS += \
     ../sync/player.h \
     ../sync/song.h \
     ../sync/sync.h \
-    ../sync/Log.h
+    ../sync/Log.h \
+    androidfiledialog.h
 

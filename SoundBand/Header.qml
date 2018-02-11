@@ -31,7 +31,7 @@ Item {
     GroupBox {
         id: groupBox
         y: 149
-        height: 200
+        height: 160
         anchors.left: parent.left
         anchors.leftMargin: 0
         anchors.right: parent.right
@@ -69,17 +69,25 @@ Item {
             anchors.right: parent.right
         }
 
-        Text {
-            id: description
-            color: "#b5abab"
-            text: qsTr("Song is not selected")
-            styleColor: "#a29a9a"
-            font.pointSize: 12
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
+        Slider {
+            id: valume
+            value: 0.5
+            width: parent.width / 4;
             anchors.bottom: progress.top
             anchors.top: next.bottom
             anchors.left: parent.left
+        }
+
+        Text {
+            id: valumeText
+            color: "#b5abab"
+            text: qsTr("Valume")
+            styleColor: "#a29a9a"
+            font.pointSize: 12
+            verticalAlignment: Text.AlignVCenter
+            anchors.bottom: progress.top
+            anchors.top: next.bottom
+            anchors.left: valume.right
             anchors.right: parent.right
         }
 

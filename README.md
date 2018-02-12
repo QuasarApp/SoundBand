@@ -11,7 +11,7 @@ supported platform:
 
 ## Build
 
-### Build for Linux (snap)
+### Build for Linux (static)
 
 * donwload [qt creator](https://www.qt.io/download-thank-you?os=linux)
 * install qt 5.9.x or later

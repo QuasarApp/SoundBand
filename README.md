@@ -10,7 +10,26 @@ supported platform:
 3. Windows 
 
 ## Build
-Build instructions will appear later for each of the platforms.
+
+### Build for Linux (snap)
+
+* donwload [qt creator](https://www.qt.io/download-thank-you?os=linux)
+* install qt 5.9.x or later
+* build release version
+* use [qt linux static build](https://github.com/EndrII/QtCrossPlatformBuildScript)
+
+
+### Build Windows 
+* donwload [qt creator](https://www.qt.io/download-thank-you?os=windows)
+* install qt 5.9.x or later
+* build release version
+* use [qt win deploy](http://doc.qt.io/qt-5/windows-deployment.html)
+
+### Build Android 
+* donwload [qt creator](https://www.qt.io/download-thank-you?os=linux)
+* install qt 5.9.x or later
+* install android sdk and ndk
+* install jdk
 
 ## Оther documents
 	

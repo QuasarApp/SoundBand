@@ -3,6 +3,8 @@ android: QT += androidextras
 mac: QT += macextras
 CONFIG += c++14
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -26,7 +28,8 @@ SOURCES += main.cpp \
     ../sync/sync.cpp \
     ../sync/Log.cpp\
     ../sync/exaptions.cpp \
-    androidfiledialog.cpp
+    androidfiledialog.cpp \
+    filedialog.cpp
 
 
 RESOURCES += qml.qrc
@@ -57,5 +60,6 @@ HEADERS += \
     ../sync/song.h \
     ../sync/sync.h \
     ../sync/Log.h \
-    androidfiledialog.h
+    androidfiledialog.h \
+    filedialog.h
 

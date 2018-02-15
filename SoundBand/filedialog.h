@@ -11,6 +11,10 @@ class FileDialog: public QObject
     Q_OBJECT
     Q_PROPERTY(QStringList filesUrl READ filesUrl NOTIFY loadComlete)
     Q_PROPERTY(QString saveUrl READ saveUrl NOTIFY saveComplete)
+    Q_PROPERTY(QString title READ title WRITE setTitle)
+    Q_PROPERTY(QString dir READ dir WRITE setDir)
+    Q_PROPERTY(QString filter READ filter WRITE setfilter)
+
 private:
 
 #ifdef Q_OS_ANDROID
@@ -20,7 +24,7 @@ private:
 #endif
 
 public:
-    FileDialog();
+    FileDialog(QObject *ptr = nullptr);
     ~FileDialog();
 public slots:
 
@@ -34,6 +38,7 @@ public slots:
      * @brief save get save file url
      */
     void save();
+
 signals:
 
     /**

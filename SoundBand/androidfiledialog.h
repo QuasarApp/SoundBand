@@ -2,8 +2,6 @@
 #define FILEDIALOG_H
 
 #ifdef Q_OS_ANDROID
-#ifndef ANDROIDFILEDIALOG_H
-#define ANDROIDFILEDIALOG_H
 
 #include <QObject>
 #include <QAndroidJniObject>

@@ -13,7 +13,7 @@ class FileDialog: public QObject
     Q_PROPERTY(QString saveUrl READ saveUrl NOTIFY saveComplete)
     Q_PROPERTY(QString title READ title WRITE setTitle)
     Q_PROPERTY(QString dir READ dir WRITE setDir)
-    Q_PROPERTY(QString filter READ filter WRITE setfilter)
+    Q_PROPERTY(QStringList filter READ filter WRITE setfilter)
 
 private:
 
@@ -38,6 +38,51 @@ public slots:
      * @brief save get save file url
      */
     void save();
+
+    /**
+     * @brief filesUrl
+     * @return
+     */
+    QStringList filesUrl();
+
+    /**
+     * @brief saveUrl
+     * @return
+     */
+    QString saveUrl();
+
+    /**
+     * @brief title
+     * @return
+     */
+    QString title();
+
+    /**
+     * @brief dir
+     * @return
+     */
+    QString dir();
+
+    /**
+     * @brief filter
+     * @return
+     */
+    QStringList filter();
+
+    /**
+     * @brief setTitle
+     */
+    void setTitle(const QString&);
+
+    /**
+     * @brief setDir
+     */
+    void setDir(const QString&);
+
+    /**
+     * @brief setfilter
+     */
+    void setfilter(const QStringList&);
 
 signals:
 

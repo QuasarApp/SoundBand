@@ -1,6 +1,6 @@
-#ifdef Q_OS_ANDROID
 
 #include "androidfiledialog.h"
+#ifdef Q_OS_ANDROID
 
 AndroidFileDialog::ResultReceiver::ResultReceiver(AndroidFileDialog *dialog) : _dialog(dialog) {}
 AndroidFileDialog::ResultReceiver::~ResultReceiver() {}

@@ -1,7 +1,8 @@
 #ifndef FILEDIALOG_H
 #define FILEDIALOG_H
-#include <QFileDialog>
 #include "androidfiledialog.h"
+
+#include <QFileDialog>
 
 /**
  * @brief The FileDialog class general crossplatform dialog window
@@ -9,19 +10,26 @@
 class FileDialog: public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList filesUrl READ filesUrl NOTIFY loadComlete)
-    Q_PROPERTY(QString saveUrl READ saveUrl NOTIFY saveComplete)
     Q_PROPERTY(QString title READ title WRITE setTitle)
     Q_PROPERTY(QString dir READ dir WRITE setDir)
-    Q_PROPERTY(QStringList filter READ filter WRITE setfilter)
+    Q_PROPERTY(QString filter READ filter WRITE setFilter)
+    Q_PROPERTY(QStringList filesUrls READ filesUrls NOTIFY filesUrlsDone)
+    Q_PROPERTY(QString fileUrl READ fileUrl NOTIFY fileUrlDone)
+
 
 private:
 
 #ifdef Q_OS_ANDROID
     AndroidFileDialog *dialog;
-#else
-    QFileDialog *dialog;
 #endif
+    QString _fileUrl;
+    QString _title;
+    QString _dir;
+    QString _filter;
+    QStringList _filesUrls;
+
+private slots:
+    void done(QString);
 
 public:
     FileDialog(QObject *ptr = nullptr);
@@ -35,39 +43,40 @@ public slots:
     void open();
 
     /**
-     * @brief save get save file url
+     * @brief save - get default save file url
+     * return file url
      */
-    void save();
-
-    /**
-     * @brief filesUrl
-     * @return
-     */
-    QStringList filesUrl();
-
-    /**
-     * @brief saveUrl
-     * @return
-     */
-    QString saveUrl();
+    QString save(const QString &name);
 
     /**
      * @brief title
      * @return
      */
-    QString title();
+    QString title() const;
 
     /**
      * @brief dir
      * @return
      */
-    QString dir();
+    QString dir() const;
 
     /**
      * @brief filter
      * @return
      */
-    QStringList filter();
+    QString filter() const;
+
+    /**
+     * @brief filesUrls
+     * @return list of files urls
+     */
+    QStringList filesUrls()const;
+
+    /**
+     * @brief fileUrl
+     * @return file url
+     */
+    QString fileUrl()const;
 
     /**
      * @brief setTitle
@@ -82,19 +91,22 @@ public slots:
     /**
      * @brief setfilter
      */
-    void setfilter(const QStringList&);
+    void setFilter(const QString &);
 
 signals:
 
     /**
-     * @brief loadComlete emited then load is complete
+     * @brief filesUrlsDone
+     * Emited when files selected
      */
-    void loadComlete();
+    void filesUrlsDone();
 
     /**
-     * @brief saveComplete emited then load is complete
+     * @brief filesUrlDone
+     * Emited when files selected
      */
-    void saveComplete();
+    void fileUrlDone();
+
 
 };
 

@@ -1,6 +1,8 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.2
 import QtQuick.Extras 1.4
+import "./abstract" as Abstract
+
 
 Item {
     id:playListDelegate;
@@ -26,7 +28,7 @@ Item {
         anchors.bottom: playListDelegate.bottom
     }
 
-    Label {
+    Abstract.BaseText {
         id: label
         text: playListDelegate.text;
         verticalAlignment: Text.AlignVCenter

@@ -1,5 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
+import "./abstract" as Abstract
 
 Item {
     id: headerForm
@@ -13,7 +14,7 @@ Item {
         source: "/image/res/logo.png"
         visible: true;
     }
-    Text {
+    Abstract.BaseText {
         id: songName
         color: "#5e5858"
         height: 20
@@ -78,12 +79,11 @@ Item {
             anchors.left: parent.left
         }
 
-        Text {
+        Abstract.BaseText {
             id: valumeText
             color: "#b5abab"
             text: qsTr("Valume")
             styleColor: "#a29a9a"
-            font.pointSize: 12
             verticalAlignment: Text.AlignVCenter
             anchors.bottom: progress.top
             anchors.top: next.bottom

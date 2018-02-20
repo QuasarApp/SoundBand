@@ -12,6 +12,8 @@
         <file>PlayListEditPane.qml</file>
         <file>ServerListPage.qml</file>
         <file>ServerDelegate.qml</file>
+        <file>abstract/BaseText.qml</file>
+        <file>abstract/Theme.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>res/logo.png</file>

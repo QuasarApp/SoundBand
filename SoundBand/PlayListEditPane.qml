@@ -1,5 +1,6 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.2
+import "./abstract" as Abstract
 
 Rectangle {
 
@@ -47,7 +48,7 @@ Rectangle {
 
     }
 
-    Text{
+    Abstract.BaseText{
         id:namePalyList
         height: 30
         text: (parent.name)

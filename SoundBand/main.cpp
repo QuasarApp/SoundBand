@@ -1,6 +1,7 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QQmlApplicationEngine>
 #include "syncengine.h"
+#include "filedialog.h"
 
 int main(int argc, char *argv[])
 {
@@ -8,10 +9,12 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
     qmlRegisterType<SyncEngine>("SyncEngine",1,0,"SyncEngine");
+    qmlRegisterType<FileDialog>("FileDialog",1,0,"FileDialog");
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

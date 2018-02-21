@@ -12,6 +12,9 @@ FileDialog::FileDialog(QObject *ptr):
 #ifdef Q_OS_ANDROID
     dialog = new AndroidFileDialog(this);
 #endif
+    _title = tr("open File");
+    _dir = QDir::homePath();
+    _filter = "Songs(*.mp3 *.ogg)";
 
 }
 
@@ -37,7 +40,6 @@ void FileDialog::open(){
     _filesUrls = QFileDialog::getOpenFileNames(nullptr, _title, _dir, _filter);
     if(!_filesUrls.isEmpty())
         emit filesUrlsDone();
-
 #endif
 }
 

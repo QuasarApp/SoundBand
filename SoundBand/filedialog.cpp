@@ -2,6 +2,10 @@
 #include <QEventLoop>
 #include <QTimer>
 
+#ifdef QT_DEBUG
+#include <QDebug>
+#endif
+
 FileDialog::FileDialog(QObject *ptr):
     QObject(ptr)
 {
@@ -22,7 +26,9 @@ void FileDialog::open(){
     connect(dialog,SIGNAL(existingFileNameReady(QString)),SLOT(done(QString)));
     bool success = dialog->provideExistingFileName();
     if (!success) {
+#ifdef QT_DEBUG
         qDebug() << "Problem with JNI or sth like that...";
+#endif
         disconnect(dialog, SIGNAL(existingFileNameReady(QString)), this, SLOT(done(QString)));
         //or just delete fileDialog instead of disconnect
     }

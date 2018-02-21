@@ -1,5 +1,5 @@
-#ifndef FILEDIALOG_H
-#define FILEDIALOG_H
+#ifndef AndroidFileDialog_H
+#define AndroidFileDialog_H
 #include <QObject>
 
 #ifdef Q_OS_ANDROID

@@ -1,7 +1,6 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.2
 import "./abstract" as Abstract
-import FileDialog 1.0
 
 Rectangle {
 
@@ -62,18 +61,6 @@ Rectangle {
 
     Item{
 
-        FileDialog{
-            id: fileDialog
-
-            onFilesUrlsDone:{
-
-            }
-
-            onFileUrlDone:{
-
-            }
-        }
-
         id: buttons;
         height: 30
         Button{
@@ -107,8 +94,8 @@ Rectangle {
             id: add;
             text: qsTr("add")
             onClicked: {
-                fileDialog.open();
-                editPlayList.visible = false;
+                fileDialog.visible = true;
+
             }
             anchors.right: remove.left
             anchors.rightMargin: 10
@@ -146,7 +133,4 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
     }
-
-
-
 }

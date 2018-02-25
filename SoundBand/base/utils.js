@@ -19,7 +19,7 @@ function textAltColor() {
 }
 
 function backgroundColor() {
-	return "#e7e8e9"
+    return "#444444"
 }
 
 function backgroundAltColor() {

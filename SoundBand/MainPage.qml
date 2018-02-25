@@ -1,5 +1,5 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick 2.7
+import QtQuick.Controls 2.0
 import SyncEngine 1.0
 
 Page {
@@ -52,7 +52,6 @@ Page {
         }
 
         PageIndicator {
-            id: indicator
 
             count: swipeView.count
             currentIndex: swipeView.currentIndex

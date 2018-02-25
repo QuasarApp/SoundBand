@@ -27,9 +27,7 @@ SOURCES += main.cpp \
     ../sync/song.cpp \
     ../sync/sync.cpp \
     ../sync/Log.cpp\
-    ../sync/exaptions.cpp \
-    androidfiledialog.cpp \
-    filedialog.cpp
+    ../sync/exaptions.cpp
 
 
 RESOURCES += qml.qrc
@@ -59,7 +57,5 @@ HEADERS += \
     ../sync/player.h \
     ../sync/song.h \
     ../sync/sync.h \
-    ../sync/Log.h \
-    androidfiledialog.h \
-    filedialog.h
+    ../sync/Log.h
 

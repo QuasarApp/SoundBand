@@ -1,7 +1,7 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.2
+import QtQuick.Controls 2.0
 import QtQuick.Extras 1.4
-import "./abstract" as Abstract
+import "./base" as Base
 
 
 Item {
@@ -18,7 +18,7 @@ Item {
         number = n;
     }
 
-    StatusIndicator{
+    Base.StatusIndicator{
         id: indicator
         width: parent.height
         color: "#4fc1e9"
@@ -28,7 +28,7 @@ Item {
         anchors.bottom: playListDelegate.bottom
     }
 
-    Abstract.BaseText {
+    Base.BaseText {
         id: label
         text: playListDelegate.text;
         verticalAlignment: Text.AlignVCenter

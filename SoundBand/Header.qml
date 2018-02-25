@@ -1,6 +1,6 @@
-import QtQuick 2.9
-import QtQuick.Controls 2.2
-import "./abstract" as Abstract
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import "./base" as Base
 
 Item {
     id: headerForm
@@ -14,7 +14,7 @@ Item {
         source: "/image/res/logo.png"
         visible: true;
     }
-    Abstract.BaseText {
+    Base.BaseText {
         id: songName
         color: "#5e5858"
         height: 20
@@ -79,7 +79,7 @@ Item {
             anchors.left: parent.left
         }
 
-        Abstract.BaseText {
+        Base.BaseText {
             id: valumeText
             color: "#b5abab"
             text: qsTr("Valume")

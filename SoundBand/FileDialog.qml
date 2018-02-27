@@ -10,7 +10,7 @@ import "base/utils.js" as Utils
 
 Item {
 	id:picker
-    signal filesSelected(string fileName)
+    signal filesSelected;
 	readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
 	readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
 	readonly property real headerTextSize: Utils.dp(Screen.pixelDensity, 12)
@@ -39,10 +39,12 @@ Item {
 
     function map(obj){
         var index = selectedFiles.indexOf(obj);
-        if(index !== -1){
+        if(index === -1){
             selectedFiles.push(obj);
+            return true;
         }else{
             selectedFiles.splice(index,1);
+            return false
         }
     }
 
@@ -53,8 +55,7 @@ Item {
 	function onItemClick(fileName) {
 
         if(!isFolder(fileName)){
-            map(fileName);
-            return;
+            return map(fileName);
         }
 
 		if(fileName === ".." && canMoveUp()) {
@@ -67,6 +68,7 @@ Item {
 			}
 		}
         selectedFiles = [];
+        return false;
 	}
 
     ListView {
@@ -93,7 +95,7 @@ Item {
                     MouseArea {
                         anchors.fill: rectangle
                         onClicked: {
-                            onItemClick(fileNameText.text)
+                            indicator.active = onItemClick(fileNameText.text)
                         }
                     }
 
@@ -109,11 +111,11 @@ Item {
                         verticalAlignment: Text.AlignVCenter
                     }
 
-                    Base.StatusIndicator{
+                    StatusIndicator{
                         id: indicator
-                        width: height
+                        width: height * 0.9
                         color: "#4fc1e9"
-//                        baseColor: Utils.baseColor();
+                        visible: !isFolder(fileName)
                         active: isSelected(fileName);
                         anchors.right: rectangle.right
                         anchors.leftMargin: textmargin

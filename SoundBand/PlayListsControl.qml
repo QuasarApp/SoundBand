@@ -126,9 +126,12 @@ Item {
         showHidden: false;
         visible: false;
         showDotAndDotDot: false
-        nameFilters: "*"
+        nameFilters: "*.mp3"
         onFilesSelected: {
-
+            for(var i = 0; i< selectedFiles.length; i++){
+                syncEngine.play(selectedFiles[i]);
+            }
+            switch_pane(editPlayList);
           //  messageDialog.text = "Cannot open file "+ currentFolder() + "/" + fileName
           //  messageDialog.open()
         }

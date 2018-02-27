@@ -18,7 +18,7 @@ Item {
         number = n;
     }
 
-    Base.StatusIndicator{
+    StatusIndicator{
         id: indicator
         width: parent.height
         color: "#4fc1e9"

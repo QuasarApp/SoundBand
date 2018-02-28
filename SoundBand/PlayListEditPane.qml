@@ -1,7 +1,7 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.2
-import "./abstract" as Abstract
-import FileDialog 1.0
+import QtQuick.Controls 2.0
+import "./base" as Base
+import "base/utils.js" as Utils
 
 Rectangle {
 
@@ -10,7 +10,7 @@ Rectangle {
     property var selectedSongs : []
 
     signal select();
-    color: "#5e5c5c"
+    color: Utils.backgroundColor()
 
     function addItem(obj){
         model.append(obj);
@@ -49,7 +49,7 @@ Rectangle {
 
     }
 
-    Abstract.BaseText{
+    Base.BaseText{
         id:namePalyList
         height: 30
         text: (parent.name)
@@ -61,18 +61,6 @@ Rectangle {
     }
 
     Item{
-
-        FileDialog{
-            id: fileDialog
-
-            onFilesUrlsDone:{
-
-            }
-
-            onFileUrlDone:{
-
-            }
-        }
 
         id: buttons;
         height: 30
@@ -86,7 +74,8 @@ Rectangle {
                     }
                 }
                 select();
-                editPlayList.visible = false;
+                switch_pane(playListsControlSource);
+
             }
             anchors.left: parent.left
             anchors.leftMargin: 10
@@ -97,7 +86,7 @@ Rectangle {
             id: cancel;
             text: qsTr("cancel")
             onClicked: {
-                editPlayList.visible = false;
+                switch_pane(playListsControlSource);
             }
             anchors.left: ok.right
             anchors.leftMargin: 10;
@@ -107,8 +96,7 @@ Rectangle {
             id: add;
             text: qsTr("add")
             onClicked: {
-                fileDialog.open();
-                editPlayList.visible = false;
+                switch_pane(fileDialog);
             }
             anchors.right: remove.left
             anchors.rightMargin: 10
@@ -118,7 +106,6 @@ Rectangle {
             id: remove;
             text: qsTr("remove")
             onClicked: {
-                editPlayList.visible = false;
             }
             anchors.right: parent.right
             anchors.rightMargin: 10
@@ -146,7 +133,4 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
     }
-
-
-
 }

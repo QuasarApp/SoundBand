@@ -1,7 +1,6 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include "syncengine.h"
-#include "filedialog.h"
 
 int main(int argc, char *argv[])
 {
@@ -13,7 +12,6 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     qmlRegisterType<SyncEngine>("SyncEngine",1,0,"SyncEngine");
-    qmlRegisterType<FileDialog>("FileDialog",1,0,"FileDialog");
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())

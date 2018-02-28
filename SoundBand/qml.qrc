@@ -12,10 +12,17 @@
         <file>PlayListEditPane.qml</file>
         <file>ServerListPage.qml</file>
         <file>ServerDelegate.qml</file>
-        <file>abstract/BaseText.qml</file>
-        <file>abstract/Theme.qml</file>
+        <file>base/BaseText.qml</file>
+        <file>base/Theme.qml</file>
+        <file>FileDialog.qml</file>
+        <file>base/utils.js</file>
+        <file>base/StatusIndicator.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>res/logo.png</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>res/file.png</file>
+        <file>res/folder.png</file>
     </qresource>
 </RCC>

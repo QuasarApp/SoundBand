@@ -1,5 +1,6 @@
-import QtQuick 2.9
-import "./abstract" as Abstract
+import QtQuick 2.7
+import "./base" as Base
+
 
 Item {
     width: parent.width
@@ -23,7 +24,7 @@ Item {
             height: 40
         }
 
-        Abstract.BaseText {
+        Base.BaseText {
             id:text
             text: "name"
             anchors.verticalCenter: parent.verticalCenter

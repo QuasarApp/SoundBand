@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     ../sync/sync.cpp \
     ../sync/Log.cpp\
     ../sync/exaptions.cpp \
-    imageprovider.cpp
+    imageprovider.cpp \
+    app.cpp
 
 
 RESOURCES += qml.qrc
@@ -59,5 +60,6 @@ HEADERS += \
     ../sync/song.h \
     ../sync/sync.h \
     ../sync/Log.h \
-    imageprovider.h
+    imageprovider.h \
+    app.h
 

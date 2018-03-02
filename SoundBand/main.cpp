@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
-#include "syncengine.h"
+#include "app.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,12 +9,9 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication app(argc, argv);
-
-    QQmlApplicationEngine engine;
-    qmlRegisterType<SyncEngine>("SyncEngine",1,0,"SyncEngine");
-
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    if (engine.rootObjects().isEmpty())
+    App soundBand;
+    if(!soundBand.run())
         return -1;
+
     return app.exec();
 }

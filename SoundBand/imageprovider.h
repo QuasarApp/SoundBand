@@ -3,10 +3,14 @@
 #include <QPixmap>
 #include <QQuickImageProvider>
 
+class SyncEngine;
+
 class ImageProvider: public QQuickImageProvider
 {
+private:
+    SyncEngine *syncEngine;
 public:
-    explicit ImageProvider();
+    explicit ImageProvider(SyncEngine * engine);
 
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
 };

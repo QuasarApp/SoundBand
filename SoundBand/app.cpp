@@ -1,12 +1,14 @@
 #include "app.h"
 #include <QQmlApplicationEngine>
 #include "syncengine.h"
+#include "imageprovider.h"
 
 App::App(QObject* ptr):
     QObject(ptr)
 {
     qmlEngine = new QQmlApplicationEngine();
     syncEngine = new SyncEngine();
+    imageProvider = new ImageProvider(syncEngine);
 }
 
 bool App::run(){

@@ -1,20 +1,24 @@
 #include "imageprovider.h"
+#include "syncengine.h"
 
-ImageProvider::ImageProvider():
+ImageProvider::ImageProvider(SyncEngine *engine):
     QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
-
+    syncEngine = engine;
 }
 
 QPixmap ImageProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize){
-//    int width = 100;
-//    int height = 50;
+    short width = 100;
+    short height = 50;
 
-//    if (size)
-//        *size = QSize(width, height);
-//    QPixmap pixmap(requestedSize.width() > 0 ? requestedSize.width() : width,
-//                   requestedSize.height() > 0 ? requestedSize.height() : height);
-//    pixmap.fill(QColor(id).rgba());
+    QPixmap result;
 
-    return QPixmap();
+    if (size)
+        *size = QSize(width, height);
+    if(!syncEngine->songImageByName(id, result)){
+       return QPixmap(1,1);
+    }
+
+    return result.scaled(requestedSize);
 }
+

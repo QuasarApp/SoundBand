@@ -40,6 +40,12 @@ public:
      */
     bool songImageByName(const QString & name, QPixmap &image);
 
+    /**
+     * @brief allPlayLists
+     * @return names of all play lists
+     */
+    void allPlayLists(QStringList& playList) const;
+
     ~SyncEngine();
 public slots:
 
@@ -73,12 +79,6 @@ public slots:
      * @return name of curent play list
      */
     const QString& curentPlayListName()const;
-
-    /**
-     * @brief allPlayLists
-     * @return names of all play lists
-     */
-    QStringList allPlayLists();
 
     /**
      * @brief play - play curent music
@@ -184,6 +184,12 @@ signals:
      * This signal can be emitted when finded new servers or removed old servers
      */
     void serversCountChanged();
+
+    /**
+     * @brief playListsCountChanged
+     * This signal can be emitted when finded new servers or removed old servers
+     */
+    void playListsCountChanged();
 
 };
 

@@ -8,6 +8,7 @@ class SyncEngine;
 class QQmlApplicationEngine;
 class ImageProvider;
 class ServerListModel;
+class PlayListsModel;
 
 
 /**
@@ -21,6 +22,7 @@ private:
     QQmlApplicationEngine *qmlEngine;
     ImageProvider *imageProvider;
     ServerListModel *serverListModel;
+    PlayListsModel *playListsModel;
 
 public:
     explicit App(QObject *ptr = nullptr);

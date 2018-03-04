@@ -22,7 +22,7 @@ private slots:
     /**
      * @brief onPlayListsChanged check new playLists
      */
-    void onPlayListsChanged();
+    void onServersListsChanged();
 protected:
     bool canFetchMore(const QModelIndex &parent) const override;
     void fetchMore(const QModelIndex &parent) override;

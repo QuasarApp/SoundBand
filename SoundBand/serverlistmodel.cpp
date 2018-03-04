@@ -11,9 +11,9 @@ ServerListModel::ServerListModel(QObject *parent) :
 
 void ServerListModel::setSource(const SyncEngine *engine){
     if(syncEngine)
-        disconnect(syncEngine, SIGNAL(serversCountChanged()) ,this, SLOT(onPlayListsChanged()));
+        disconnect(syncEngine, SIGNAL(serversCountChanged()) ,this, SLOT(onServersListsChanged()));
     syncEngine = engine;
-    connect(syncEngine, SIGNAL(serversCountChanged()),this ,SLOT(onPlayListsChanged()));
+    connect(syncEngine, SIGNAL(serversCountChanged()),this ,SLOT(onServersListsChanged()));
 }
 
 QHash<int, QByteArray> ServerListModel::roleNames()const{
@@ -22,7 +22,7 @@ QHash<int, QByteArray> ServerListModel::roleNames()const{
     return roles;
 }
 
-void ServerListModel::onPlayListsChanged(){
+void ServerListModel::onServersListsChanged(){
     beginResetModel();
     servers = syncEngine->getServerList();
     endResetModel();

@@ -4,6 +4,7 @@
 #include "syncengine.h"
 #include "imageprovider.h"
 #include "serverlistmodel.h"
+#include "playlistsmodel.h"
 
 
 App::App(QObject* ptr):
@@ -14,6 +15,9 @@ App::App(QObject* ptr):
     imageProvider = new ImageProvider(syncEngine);
     serverListModel = new ServerListModel();
     serverListModel->setSource(syncEngine);
+
+    playListsModel = new PlayListsModel();
+    playListsModel->setSource(syncEngine);
 }
 
 bool App::run(){
@@ -24,6 +28,8 @@ bool App::run(){
     QQmlContext *ctxt = qmlEngine->rootContext();
     ctxt->setContextProperty("syncEngine", syncEngine);
     ctxt->setContextProperty("serverListModel", serverListModel);
+    ctxt->setContextProperty("playListsModel", playListsModel);
+
 
     qmlEngine->load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (qmlEngine->rootObjects().isEmpty())

@@ -7,11 +7,9 @@
         <file>CurentPlayList.qml</file>
         <file>SongDelegate.qml</file>
         <file>PlayListsControl.qml</file>
-        <file>PlayListDelegate.qml</file>
         <file>SongDelegateSelection.qml</file>
         <file>PlayListEditPane.qml</file>
         <file>ServerListPage.qml</file>
-        <file>ServerDelegate.qml</file>
         <file>base/BaseText.qml</file>
         <file>base/Theme.qml</file>
         <file>FileDialog.qml</file>

@@ -49,13 +49,8 @@ const QString& SyncEngine::curentPlayListName() const{
     return _curentPlayListName;
 }
 
-QStringList SyncEngine::allPlayLists(){
-    QStringList result;
-    result.clear();
-
-    sqlApi->getPlayLists(result);
-
-    return result;
+void SyncEngine::allPlayLists(QStringList &playList)const{
+    sqlApi->getPlayLists(playList);
 }
 
 bool SyncEngine::songImageById(int id , QPixmap & image) {

@@ -19,7 +19,7 @@ private:
      * @brief sqlErrorLog show sql error
      * @param qyery
      */
-    void sqlErrorLog(const QString& qyery);
+    void sqlErrorLog(const QString& qyery) const;
 
 public:
     MySql(const QString& databasename);
@@ -124,7 +124,7 @@ public:
      * @param list - list of play lists.
      * @return trye if all done
      */
-    bool getPlayLists(QStringList &list);
+    bool getPlayLists(QStringList &list) const;
 
     /**
      * @brief getSongId get song id by name

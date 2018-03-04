@@ -10,7 +10,12 @@ Item {
 
     readonly property real rowHeight: Utils.dp(Screen.pixelDensity, 36)
     readonly property real rowWidth: parent.width;
-    function onItemClick() {
+    readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
+    readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
+    readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
+
+    function onItemClick(index) {
+        syncEngine.listen(index);
     }
 
     Button{
@@ -44,11 +49,15 @@ Item {
                     id: rectangle;
                     anchors.fill: item
 
-                    MouseArea {
-                        anchors.fill: rectangle
+                    Button {
+                        text: qsTr("listen")
                         onClicked: {
-                            indicator.active = onItemClick()
+                            onItemClick(index)
                         }
+
+                        anchors.right: rectangle.right
+                        anchors.leftMargin: textmargin
+                        anchors.verticalCenter: rectangle.verticalCenter
                     }
 
                     Text {

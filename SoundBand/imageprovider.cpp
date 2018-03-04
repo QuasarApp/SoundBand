@@ -15,7 +15,14 @@ QPixmap ImageProvider::requestPixmap(const QString &id, QSize *size, const QSize
 
     if (size)
         *size = QSize(width, height);
-    if(!syncEngine->songImageByName(id, result)){
+
+    bool ok;
+    int songId = id.toShort(&ok);
+
+    if(!ok)
+        return QPixmap(1,1);
+
+    if(!syncEngine->songImageById(songId, result)){
        return QPixmap(1,1);
     }
 

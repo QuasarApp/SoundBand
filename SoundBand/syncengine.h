@@ -146,7 +146,7 @@ public slots:
      * @brief getServerList
      * @return list of servers
      */
-    QStringList getServerList();
+    const QList<ETcpSocket *> *getServerList() const;
 
 signals:
 
@@ -173,6 +173,12 @@ signals:
      * This signal can be emitted when repeat state changed
      */
     void repeatChanged();
+
+    /**
+     * @brief serversCountChanged
+     * This signal can be emitted when finded new servers or removed old servers
+     */
+    void serversCountChanged();
 
 };
 

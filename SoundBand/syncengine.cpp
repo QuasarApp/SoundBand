@@ -6,6 +6,8 @@ SyncEngine::SyncEngine()
 {
     sync = new syncLib::Sync();
     sqlApi = sync->getSqlApi();
+
+    connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
 }
 
 int SyncEngine::curentSongIndex()const{
@@ -129,16 +131,8 @@ bool SyncEngine::listen(int index){
     }
 }
 
- QStringList SyncEngine::getServerList(){
-    const QList<ETcpSocket*>& list = sync->getServersList();
-
-    QStringList tempList;
-
-    for(ETcpSocket* socket : list){
-        tempList.push_back(socket->peerName());
-    }
-
-    return tempList;
+ const QList<ETcpSocket*>* SyncEngine::getServerList() const{
+    return &sync->getServersList();
 
 }
 
@@ -168,6 +162,7 @@ double SyncEngine::pos()const{
 }
 
 SyncEngine::~SyncEngine(){
+    disconnect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
     delete sync;
 }
 

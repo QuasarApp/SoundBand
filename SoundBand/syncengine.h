@@ -148,6 +148,11 @@ public slots:
      */
     const QList<ETcpSocket *> *getServerList() const;
 
+    /**
+     * @brief scan
+     */
+    void scan();
+
 signals:
 
     /**

@@ -18,7 +18,7 @@ void ServerListModel::setSource(const SyncEngine *engine){
 
 QHash<int, QByteArray> ServerListModel::roleNames()const{
     QHash<int, QByteArray> roles;
-    roles[nameRole] = "name";
+    roles[nameRole] = "serverName";
     return roles;
 }
 
@@ -30,7 +30,7 @@ void ServerListModel::onPlayListsChanged(){
 
 bool ServerListModel::canFetchMore(const QModelIndex & /* index */) const
 {
-    if (itemCount < servers->size())
+    if (servers && itemCount < servers->size())
         return true;
     else
         return false;

@@ -131,9 +131,19 @@ bool SyncEngine::listen(int index){
     }
 }
 
- const QList<ETcpSocket*>* SyncEngine::getServerList() const{
+const QList<ETcpSocket*>* SyncEngine::getServerList() const{
     return &sync->getServersList();
 
+}
+
+void SyncEngine::scan(){
+    try{
+        sync->scan();
+    }catch(BaseException e){
+
+        _lastError = e.what();
+        emit error();
+    }
 }
 
 int SyncEngine::repeat()const{

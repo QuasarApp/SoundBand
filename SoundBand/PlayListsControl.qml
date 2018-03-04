@@ -5,33 +5,6 @@ import "./base" as Base
 
 Item {
     id: playListsControl
-    function addItem(obj){
-        model.append(obj);
-    }
-
-    function removeItem(obj){
-        model.remove(obj);
-    }
-
-    function clear(){
-        model.clear()
-    }
-
-    function init(){
-        var playlists = [];
-        playlists = syncEngine.allPlayLists();
-
-        switch_pane(playListsControlSource);
-
-        for(var i = 0; i < playlists.length; i++){
-            var temp = Qt.createComponent("PlayListDelegate.qml");
-            if(temp.status === Component.Ready){
-                var obj = temp.createObject();
-                obj.init(playlists[i], i);
-                addItem(obj);
-            }
-        }
-    }
 
     function switch_pane(object){
         for(var i = 0; i < playListsControl.children.length; i++){
@@ -72,7 +45,6 @@ Item {
 
                 onClicked: {
                     editPlayList.visible = true;
-                    editPlayList.name = model.get(playLists.selectedItem).text;
                 }
 
             }
@@ -128,9 +100,6 @@ Item {
         showDotAndDotDot: false
         nameFilters: "*.mp3"
         onFilesSelected: {
-            for(var i = 0; i< selectedFiles.length; i++){
-                syncEngine.play(selectedFiles[i]);
-            }
             switch_pane(editPlayList);
           //  messageDialog.text = "Cannot open file "+ currentFolder() + "/" + fileName
           //  messageDialog.open()

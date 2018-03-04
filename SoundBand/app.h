@@ -7,6 +7,8 @@
 class SyncEngine;
 class QQmlApplicationEngine;
 class ImageProvider;
+class ServerListModel;
+
 
 /**
  * @brief The App class
@@ -18,6 +20,7 @@ private:
     SyncEngine *syncEngine;
     QQmlApplicationEngine *qmlEngine;
     ImageProvider *imageProvider;
+    ServerListModel *serverListModel;
 
 public:
     explicit App(QObject *ptr = nullptr);

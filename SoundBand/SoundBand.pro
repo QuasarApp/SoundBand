@@ -28,6 +28,8 @@ SOURCES += main.cpp \
     ../sync/sync.cpp \
     ../sync/Log.cpp\
     ../sync/exaptions.cpp \
+    imageprovider.cpp \
+    app.cpp \
     playlistmodel.cpp \
     serverlistmodel.cpp \
     playlistsmodel.cpp
@@ -61,6 +63,8 @@ HEADERS += \
     ../sync/song.h \
     ../sync/sync.h \
     ../sync/Log.h \
+    imageprovider.h \
+    app.h \
     playlistmodel.h \
     serverlistmodel.h \
     playlistsmodel.h

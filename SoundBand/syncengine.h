@@ -25,6 +25,21 @@ private:
     Repeat _repeat;
 public:
     SyncEngine();
+
+    /**
+     * @brief songImageById
+     * @param id - id of playingSong;
+     * @return true if all done
+     */
+    bool songImageById(int id , QPixmap& image);
+
+    /**
+     * @brief songImageById
+     * @param name - name of Song;
+     * @return image of song
+     */
+    bool songImageByName(const QString & name, QPixmap &image);
+
     ~SyncEngine();
 public slots:
 
@@ -64,26 +79,6 @@ public slots:
      * @return names of all play lists
      */
     QStringList allPlayLists();
-
-    /**
-     * @brief curentSongImage
-     * @return Image of curent song
-     */
-    QPixmap curentSongImage();
-
-    /**
-     * @brief songImageById
-     * @param id - id of playingSong;
-     * @return
-     */
-    QPixmap songImageById(int id);
-
-    /**
-     * @brief songImageById
-     * @param name - name of Song;
-     * @return image of song
-     */
-    QPixmap songImageByName(const QString & name);
 
     /**
      * @brief play - play curent music

@@ -56,28 +56,20 @@ QStringList SyncEngine::allPlayLists(){
     return result;
 }
 
-QPixmap SyncEngine::curentSongImage() {
+bool SyncEngine::songImageById(int id , QPixmap & image) {
 
     _lastError = tr("This option not supported.");
     emit error();
 
-    return QPixmap(1, 1);
+    return false;
 }
 
-QPixmap SyncEngine::songImageById(int ) {
+bool SyncEngine::songImageByName(const QString& name, QPixmap &image) {
 
     _lastError = tr("This option not supported.");
     emit error();
 
-    return QPixmap(1, 1);
-}
-
-QPixmap SyncEngine::songImageByName(const QString& name) {
-
-    _lastError = tr("This option not supported.");
-    emit error();
-
-    return QPixmap(1, 1);
+    return false;
 }
 
 bool SyncEngine::play(){

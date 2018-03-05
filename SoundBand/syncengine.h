@@ -25,6 +25,27 @@ private:
     Repeat _repeat;
 public:
     SyncEngine();
+
+    /**
+     * @brief songImageById
+     * @param id - id of playingSong;
+     * @return true if all done
+     */
+    bool songImageById(int id , QPixmap& image);
+
+    /**
+     * @brief songImageById
+     * @param name - name of Song;
+     * @return image of song
+     */
+    bool songImageByName(const QString & name, QPixmap &image);
+
+    /**
+     * @brief allPlayLists
+     * @return names of all play lists
+     */
+    void allPlayLists(QStringList& playList) const;
+
     ~SyncEngine();
 public slots:
 
@@ -44,46 +65,20 @@ public slots:
      * @brief curentPlayList
      * @return return curent Play List
      */
-    QStringList curentPlayList();
+    const QList<syncLib::SongHeader> *curentPlayList() const;
 
     /**
-     * @brief getPlayList
+     * @brief selectPlayList - selected a ne play list for player
      * @param list - name of play list
-     * @return list of songs
+     * @return true if all done;
      */
-    QStringList getPlayList(const QString& list);
+    bool selectPlayList(const QString& list);
 
     /**
      * @brief curentPlayListName
      * @return name of curent play list
      */
     const QString& curentPlayListName()const;
-
-    /**
-     * @brief allPlayLists
-     * @return names of all play lists
-     */
-    QStringList allPlayLists();
-
-    /**
-     * @brief curentSongImage
-     * @return Image of curent song
-     */
-    QPixmap curentSongImage();
-
-    /**
-     * @brief songImageById
-     * @param id - id of playingSong;
-     * @return
-     */
-    QPixmap songImageById(int id);
-
-    /**
-     * @brief songImageById
-     * @param name - name of Song;
-     * @return image of song
-     */
-    QPixmap songImageByName(const QString & name);
 
     /**
      * @brief play - play curent music
@@ -151,7 +146,12 @@ public slots:
      * @brief getServerList
      * @return list of servers
      */
-    QStringList getServerList();
+    const QList<ETcpSocket *> *getServerList() const;
+
+    /**
+     * @brief scan
+     */
+    void scan();
 
 signals:
 
@@ -178,6 +178,24 @@ signals:
      * This signal can be emitted when repeat state changed
      */
     void repeatChanged();
+
+    /**
+     * @brief serversCountChanged
+     * This signal can be emitted when finded new servers or removed old servers
+     */
+    void serversCountChanged();
+
+    /**
+     * @brief playListsCountChanged
+     * This signal can be emitted when finded new playlists or removed old playlists
+     */
+    void playListsCountChanged();
+
+    /**
+     * @brief curentPlayListCountChanged
+     * This signal can be emitted when finded new songs or removed old songs
+     */
+    void curentPlayListCountChanged();
 
 };
 

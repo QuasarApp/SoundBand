@@ -12,43 +12,6 @@ Rectangle {
     signal select();
     color: Utils.backgroundColor()
 
-    function addItem(obj){
-        model.append(obj);
-    }
-
-    function removeItem(obj){
-        model.remove(obj);
-    }
-
-    function clear(){
-        model.clear()
-    }
-
-    function view(curentPlayListName){
-        name = curentPlayListName;
-        playListPane.visible = true;
-        var added = [], all = [];
-        added = syncEngine.getPlayList(name);
-        all = syncEngine.getPlayList("");
-        for(var i = 0; i < all.lenght; i++){
-
-            var temp = Qt.createComponent("SongDelegateSelection.qml");
-            if(temp.status === Component.Ready){
-                var obj = temp.createObject();
-                obj.init("/image/res/logo.png", all[i]);
-
-                if(added.indexOf(all[i]) >= 0){
-                    obj.isSelected = true;
-                }
-
-                addItem(obj);
-            }
-
-
-        }
-
-    }
-
     Base.BaseText{
         id:namePalyList
         height: 30

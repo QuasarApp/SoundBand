@@ -6,6 +6,8 @@ SyncEngine::SyncEngine()
 {
     sync = new syncLib::Sync();
     sqlApi = sync->getSqlApi();
+
+    connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
 }
 
 int SyncEngine::curentSongIndex()const{
@@ -16,68 +18,44 @@ const QString& SyncEngine::curentSong()const{
     return sync->getCurentSong()->name;
 }
 
-QStringList SyncEngine::getPlayList(const QString &list){
-    QStringList result;
-    result.clear();
+bool SyncEngine::selectPlayList(const QString &list){
 
-    if(!sqlApi->updateAvailableSongs(result, list)){
+    if(!sync->updatePlayList(list)){
         _lastError = tr("play list not found!");
         emit error();
-        return result;
+        return false;
     }
 
-    return result;
+    return true;
 }
 
-QStringList SyncEngine::curentPlayList(){
+const QList<syncLib::SongHeader>* SyncEngine::curentPlayList() const{
 
-    QStringList result;
-    result.clear();
-
-    const QList<syncLib::SongHeader> *list = sync->getPlayList();
-
-    for(syncLib::SongHeader song : *list){
-        result.push_back(song.name);
-    }
-
-    return result;
+    return sync->getPlayList();
 }
 
 const QString& SyncEngine::curentPlayListName() const{
     return _curentPlayListName;
 }
 
-QStringList SyncEngine::allPlayLists(){
-    QStringList result;
-    result.clear();
-
-    sqlApi->getPlayLists(result);
-
-    return result;
+void SyncEngine::allPlayLists(QStringList &playList)const{
+    sqlApi->getPlayLists(playList);
 }
 
-QPixmap SyncEngine::curentSongImage() {
+bool SyncEngine::songImageById(int id , QPixmap & image) {
 
     _lastError = tr("This option not supported.");
     emit error();
 
-    return QPixmap(1, 1);
+    return false;
 }
 
-QPixmap SyncEngine::songImageById(int ) {
+bool SyncEngine::songImageByName(const QString& name, QPixmap &image) {
 
     _lastError = tr("This option not supported.");
     emit error();
 
-    return QPixmap(1, 1);
-}
-
-QPixmap SyncEngine::songImageByName(const QString& name) {
-
-    _lastError = tr("This option not supported.");
-    emit error();
-
-    return QPixmap(1, 1);
+    return false;
 }
 
 bool SyncEngine::play(){
@@ -137,17 +115,19 @@ bool SyncEngine::listen(int index){
     }
 }
 
- QStringList SyncEngine::getServerList(){
-    const QList<ETcpSocket*>& list = sync->getServersList();
+const QList<ETcpSocket*>* SyncEngine::getServerList() const{
+    return &sync->getServersList();
 
-    QStringList tempList;
+}
 
-    for(ETcpSocket* socket : list){
-        tempList.push_back(socket->peerName());
+void SyncEngine::scan(){
+    try{
+        sync->scan();
+    }catch(BaseException e){
+
+        _lastError = e.what();
+        emit error();
     }
-
-    return tempList;
-
 }
 
 int SyncEngine::repeat()const{
@@ -176,6 +156,7 @@ double SyncEngine::pos()const{
 }
 
 SyncEngine::~SyncEngine(){
+    disconnect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
     delete sync;
 }
 

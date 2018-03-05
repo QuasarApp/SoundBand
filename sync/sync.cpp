@@ -384,7 +384,7 @@ void Sync::packageRender(ETcpSocket *socket){
 
 void Sync::rescan(bool deep){
     package pac;
-    if(!createPackage(t_what,pac)){
+    if(!createPackage(t_what, pac)){
         throw CreatePackageExaption();
         return;
     }

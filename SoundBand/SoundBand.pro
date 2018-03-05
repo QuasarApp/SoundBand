@@ -28,7 +28,11 @@ SOURCES += main.cpp \
     ../sync/sync.cpp \
     ../sync/Log.cpp\
     ../sync/exaptions.cpp \
-    app.cpp
+    imageprovider.cpp \
+    app.cpp \
+    playlistmodel.cpp \
+    serverlistmodel.cpp \
+    playlistsmodel.cpp
 
 
 RESOURCES += qml.qrc
@@ -59,5 +63,9 @@ HEADERS += \
     ../sync/song.h \
     ../sync/sync.h \
     ../sync/Log.h \
-    app.h
+    imageprovider.h \
+    app.h \
+    playlistmodel.h \
+    serverlistmodel.h \
+    playlistsmodel.h
 

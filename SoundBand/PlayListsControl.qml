@@ -1,36 +1,22 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.0
+import QtQuick.Window 2.0
+
 import "./base" as Base
+import "base/utils.js" as Utils
 
 
 Item {
     id: playListsControl
-    function addItem(obj){
-        model.append(obj);
-    }
 
-    function removeItem(obj){
-        model.remove(obj);
-    }
+    readonly property real rowHeight: Utils.dp(Screen.pixelDensity, 36)
+    readonly property real rowWidth: parent.width;
+    readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
+    readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
+    readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
 
-    function clear(){
-        model.clear()
-    }
-
-    function init(){
-        var playlists = [];
-        playlists = syncEngine.allPlayLists();
-
-        switch_pane(playListsControlSource);
-
-        for(var i = 0; i < playlists.length; i++){
-            var temp = Qt.createComponent("PlayListDelegate.qml");
-            if(temp.status === Component.Ready){
-                var obj = temp.createObject();
-                obj.init(playlists[i], i);
-                addItem(obj);
-            }
-        }
+    function onItemClick(index) {
+        syncEngine.listen(index);
     }
 
     function switch_pane(object){
@@ -72,7 +58,6 @@ Item {
 
                 onClicked: {
                     editPlayList.visible = true;
-                    editPlayList.name = model.get(playLists.selectedItem).text;
                 }
 
             }
@@ -99,13 +84,59 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            delegate: PlayListDelegate{
+
+            Component {
+                id: playListsDelegate
+
+                Item {
+                    height: rowHeight
+                    width: playLists.width
+                    id: item
+
+                    Rectangle {
+                        color: Qt.rgba(0,0,0,0)
+                        id: rectangle;
+                        anchors.fill: item
+
+                        Button {
+                            text: qsTr("Edit")
+                            onClicked: {
+                                onItemClick(index)
+                            }
+
+                            anchors.right: rectangle.right
+                            anchors.leftMargin: textmargin
+                            anchors.verticalCenter: rectangle.verticalCenter
+                        }
+
+                        Text {
+                            id: serverNameText
+                            height: width
+                            anchors.left: image.right
+                            anchors.top: rectangle.top
+                            anchors.bottom: rectangle.bottom
+                            anchors.right: rectangle.right
+                            text: playListName !== undefined ? playListName : ""
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
+                        Image {
+                            id: image
+                            height: buttonHeight
+                            width: height
+                            anchors.left: rectangle.left
+                            anchors.leftMargin: textmargin
+                            anchors.verticalCenter: rectangle.verticalCenter
+                            source: "/icons/res/folder.png"
+                        }
+                    }
+                }
             }
 
-            model: ListModel {
-                id: model;
+            delegate: playListsDelegate;
 
-            }
+            model: playListsModel;
 
         }
         anchors.fill: playListsControl;
@@ -128,9 +159,6 @@ Item {
         showDotAndDotDot: false
         nameFilters: "*.mp3"
         onFilesSelected: {
-            for(var i = 0; i< selectedFiles.length; i++){
-                syncEngine.play(selectedFiles[i]);
-            }
             switch_pane(editPlayList);
           //  messageDialog.text = "Cannot open file "+ currentFolder() + "/" + fileName
           //  messageDialog.open()

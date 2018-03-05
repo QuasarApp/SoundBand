@@ -111,7 +111,7 @@ void MySql::initDB(const QString &database){
     }
 }
 
-void MySql::sqlErrorLog(const QString &qyery){
+void MySql::sqlErrorLog(const QString &qyery)const{
 #ifdef QT_DEBUG
             qDebug()<< qyery << ": fail:\n " <<this->qyery->lastError();
 #endif
@@ -335,7 +335,7 @@ bool MySql::removePlayList(const QString &playList){
     return true;
 }
 
-bool MySql::getPlayLists(QStringList &list){
+bool MySql::getPlayLists(QStringList &list)const{
     QString qyer = QString("SELECT name from playlists");
     if(!qyery->exec(qyer)){
         sqlErrorLog(qyer);

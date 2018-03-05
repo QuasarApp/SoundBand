@@ -9,6 +9,7 @@ class QQmlApplicationEngine;
 class ImageProvider;
 class ServerListModel;
 class PlayListsModel;
+class PlayListModel;
 
 
 /**
@@ -23,6 +24,8 @@ private:
     ImageProvider *imageProvider;
     ServerListModel *serverListModel;
     PlayListsModel *playListsModel;
+    PlayListModel *playListModel;
+
 
 public:
     explicit App(QObject *ptr = nullptr);

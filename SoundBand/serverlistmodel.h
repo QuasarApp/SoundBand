@@ -20,7 +20,7 @@ private:
 
 private slots:
     /**
-     * @brief onPlayListsChanged check new playLists
+     * @brief onServersListsChanged check new Servers
      */
     void onServersListsChanged();
 protected:

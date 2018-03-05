@@ -10,9 +10,9 @@ PlayListsModel::PlayListsModel(QObject *parent) :
 
 void PlayListsModel::setSource(const SyncEngine *engine){
     if(syncEngine)
-        disconnect(syncEngine, SIGNAL(serversCountChanged()) ,this, SLOT(onPlayListsChanged()));
+        disconnect(syncEngine, SIGNAL(playListsCountChanged()) ,this, SLOT(onPlayListsChanged()));
     syncEngine = engine;
-    connect(syncEngine, SIGNAL(serversCountChanged()),this ,SLOT(onPlayListsChanged()));
+    connect(syncEngine, SIGNAL(playListsCountChanged()),this ,SLOT(onPlayListsChanged()));
     onPlayListsChanged();
 }
 

@@ -65,14 +65,14 @@ public slots:
      * @brief curentPlayList
      * @return return curent Play List
      */
-    QStringList curentPlayList();
+    const QList<syncLib::SongHeader> *curentPlayList() const;
 
     /**
-     * @brief getPlayList
+     * @brief selectPlayList - selected a ne play list for player
      * @param list - name of play list
-     * @return list of songs
+     * @return true if all done;
      */
-    QStringList getPlayList(const QString& list);
+    bool selectPlayList(const QString& list);
 
     /**
      * @brief curentPlayListName
@@ -187,9 +187,15 @@ signals:
 
     /**
      * @brief playListsCountChanged
-     * This signal can be emitted when finded new servers or removed old servers
+     * This signal can be emitted when finded new playlists or removed old playlists
      */
     void playListsCountChanged();
+
+    /**
+     * @brief curentPlayListCountChanged
+     * This signal can be emitted when finded new songs or removed old songs
+     */
+    void curentPlayListCountChanged();
 
 };
 

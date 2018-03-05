@@ -18,31 +18,20 @@ const QString& SyncEngine::curentSong()const{
     return sync->getCurentSong()->name;
 }
 
-QStringList SyncEngine::getPlayList(const QString &list){
-    QStringList result;
-    result.clear();
+bool SyncEngine::selectPlayList(const QString &list){
 
-    if(!sqlApi->updateAvailableSongs(result, list)){
+    if(!sync->updatePlayList(list)){
         _lastError = tr("play list not found!");
         emit error();
-        return result;
+        return false;
     }
 
-    return result;
+    return true;
 }
 
-QStringList SyncEngine::curentPlayList(){
+const QList<syncLib::SongHeader>* SyncEngine::curentPlayList() const{
 
-    QStringList result;
-    result.clear();
-
-    const QList<syncLib::SongHeader> *list = sync->getPlayList();
-
-    for(syncLib::SongHeader song : *list){
-        result.push_back(song.name);
-    }
-
-    return result;
+    return sync->getPlayList();
 }
 
 const QString& SyncEngine::curentPlayListName() const{

@@ -2,11 +2,10 @@
 #define PLAYLISTSMODEL_H
 
 class SyncEngine;
-class ETcpSocket;
 #include <QAbstractListModel>
 
 /**
- * @brief The ServerListModel class
+ * @brief The PlayListsModel class
  */
 class PlayListsModel : public QAbstractListModel
 {
@@ -32,7 +31,7 @@ public:
     /**
      * @brief The ServerListRoles enum
      * nameRole - name of playlist
-     * imageRole - image of playlist
+     * descriptionRole - description of playlist
      */
     enum ServerListRoles {
         nameRole = Qt::UserRole + 1,

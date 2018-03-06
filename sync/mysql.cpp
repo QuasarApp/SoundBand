@@ -101,13 +101,15 @@ void MySql::initDB(const QString &database){
             return;
         }
 
-        qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS iplaylistsdata ON playlistsdata(playlist,song)");
+        qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS iplaylistsdata ON "
+                       "playlistsdata(playlist,song)");
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
             throw InitDBError();
             delete db;
             return;
         }
+
     }
 }
 
@@ -207,7 +209,8 @@ bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playLis
         qyer = QString("SELECT id,name,size from songs");
     }else{
         qyer = QString("SELECT id,name,size from songs where "
-                       "id = (select song from playlistsdata where playlist='%0')").arg(playList);
+                       "id = (select song from playlistsdata where "
+                       "playlist='%0')").arg(playList);
     }
 
     if(!qyery->exec(qyer)){
@@ -250,7 +253,8 @@ bool MySql::removeSong(const SongHeader &header){
             return false;
         }
     }else if(!header.name.isEmpty() && header.size > 0){
-        QString qyer = QString("DELETE from songs where name='%0' and size=%1").arg(header.name).arg(header.size);
+        QString qyer = QString("DELETE from songs where name='%0'"
+                               " and size=%1").arg(header.name).arg(header.size);
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
             return false;
@@ -265,7 +269,8 @@ bool MySql::addPlayList(const QString &newPlayList, const QString& desc){
     if(newPlayList == ALL_SONGS_LIST)
         return false;
 
-    QString qyer = QString("INSERT INTO playlists(name, description) VALUES('%0', '%1')").arg(newPlayList, desc);
+    QString qyer = QString("INSERT INTO playlists(name, description)"
+                           " VALUES('%0', '%1')").arg(newPlayList, desc);
     if(!qyery->exec(qyer)){
         sqlErrorLog(qyer);
         return false;
@@ -278,14 +283,16 @@ bool MySql::addToPlayList(const SongHeader &header, const QString &newPlaylist){
         return false;
 
     if(header.id > -1){
-        QString qyer = QString("INSERT INTO playlistsdata(song, playlist) VALUES(%0,'%1')").arg(header.id).arg(newPlaylist);
+        QString qyer = QString("INSERT INTO playlistsdata(song, playlist)"
+                               " VALUES(%0,'%1')").arg(header.id).arg(newPlaylist);
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
             return false;
         }
     }else if(!header.name.isEmpty() && header.size > 0){
         QString qyer = QString("INSERT INTO playlistsdata(song, playlist) "
-                               "VALUES((SELECT id from songs where name='%0' and size='%1'),'%2')")
+                               "VALUES((SELECT id from songs where name='%0'"
+                               " and size='%1'),'%2')")
                 .arg(header.name).arg(header.size).arg(newPlaylist);
 
         if(!qyery->exec(qyer)){
@@ -310,7 +317,8 @@ bool MySql::removeFromPlayList(const SongHeader &header, const QString &playList
         }
     }else if(!header.name.isEmpty() && header.size > 0){
         QString qyer = QString("DELETE from playlistsdata where "
-                               "song=(SELECT id from songs where name='%0' and size='%1') and playlist='%2'")
+                               "song=(SELECT id from songs where name='%0' and size='%1')"
+                               " and playlist='%2'")
                 .arg(header.name).arg(header.size).arg(playList);
 
         if(!qyery->exec(qyer)){

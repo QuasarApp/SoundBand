@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 // general otions
+#define CURRENT_PLAYLIST_KEY        "currentPlayList"
 
 // LIB VERSION
 #define MAJOR_VERSION               0

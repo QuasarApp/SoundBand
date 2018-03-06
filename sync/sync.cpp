@@ -28,7 +28,6 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
     ping = 0;
 
     sql = new MySql(datadir);
-    sql->updateAvailableSongs(playList);
 
     connect(node, SIGNAL(Message(ETcpSocket*)), SLOT(packageRender(ETcpSocket*)));
     connect(&deepScaner, SIGNAL(scaned(QList<ETcpSocket*>*)), SLOT(deepScaned(QList<ETcpSocket*>*)));

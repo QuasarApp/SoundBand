@@ -3,6 +3,7 @@
 #include "../sync/sync.h"
 #include <QObject>
 #include <QPixmap>
+#include <QSettings>
 
 
 /**
@@ -23,6 +24,8 @@ private:
     QString _curentPlayListName;
     QString _lastError;
     Repeat _repeat;
+    QSettings settings;
+
 public:
     SyncEngine();
 

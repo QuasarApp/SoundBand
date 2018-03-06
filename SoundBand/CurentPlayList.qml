@@ -23,7 +23,7 @@ Item{
         width: parent.width
         height: parent.height
 
-        model: playListModel;
+        model: currentPlayListModel;
 
         Component {
             id: playListDelegate

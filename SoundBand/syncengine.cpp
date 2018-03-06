@@ -58,9 +58,9 @@ bool SyncEngine::songImageByName(const QString& name, QPixmap &image) {
     return false;
 }
 
-bool SyncEngine::play(){
+bool SyncEngine::play(int id){
     try{
-        return sync->play(sqlApi->getSongId(_curentPlayListName));
+        return sync->play(id);
     }catch(BaseException e){
 
         _lastError = e.what();

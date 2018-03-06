@@ -39,8 +39,7 @@ public:
      */
     enum ServerListRoles {
         nameRole = Qt::UserRole + 1,
-        idRole,
-        imageRole
+        idRole
     };
 
     /**

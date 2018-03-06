@@ -84,7 +84,7 @@ public slots:
      * @brief play - play curent music
      * @return true if all done.
      */
-    bool play();
+    bool play(int id);
 
     /**
      * @brief pause - set pause for curent song

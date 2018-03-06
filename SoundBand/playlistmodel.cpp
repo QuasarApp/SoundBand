@@ -21,7 +21,6 @@ QHash<int, QByteArray> PlayListModel::roleNames()const{
     QHash<int, QByteArray> roles;
     roles[nameRole] = "songName";
     roles[idRole] = "songId";
-    roles[imageRole] = "songImage";
     return roles;
 }
 
@@ -72,9 +71,6 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
         break;
     case idRole:
         return playList->at(index.row()).id;
-        break;
-    case imageRole:
-        return tr("not supported");
         break;
     default:
         break;

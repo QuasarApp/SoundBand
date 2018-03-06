@@ -87,9 +87,9 @@ Rectangle {
 
         }
 
-        delegate: SongDelegateSelection{
+//        delegate: SongDelegateSelection{
 
-        }
+//        }
         anchors.top:name.bottom
         anchors.bottom: buttons.bottom
 

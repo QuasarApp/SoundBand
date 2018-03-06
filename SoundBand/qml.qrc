@@ -5,9 +5,7 @@
         <file>Header.qml</file>
         <file>MainPage.qml</file>
         <file>CurentPlayList.qml</file>
-        <file>SongDelegate.qml</file>
         <file>PlayListsControl.qml</file>
-        <file>SongDelegateSelection.qml</file>
         <file>PlayListEditPane.qml</file>
         <file>ServerListPage.qml</file>
         <file>base/BaseText.qml</file>

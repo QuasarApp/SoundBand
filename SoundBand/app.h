@@ -24,7 +24,6 @@ private:
     ImageProvider *imageProvider;
     ServerListModel *serverListModel;
     PlayListsModel *playListsModel;
-    PlayListModel *playListModel;
     PlayListModel *currentPlayListModel;
 
 

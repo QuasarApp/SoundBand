@@ -26,9 +26,7 @@ QHash<int, QByteArray> PlayListModel::roleNames()const{
 
 void PlayListModel::onPlayListChanged(){
     beginResetModel();
-    if(syncEngine->selectPlayList(playListName)){
-        playList = syncEngine->curentPlayList();
-    }
+    playList = syncEngine->curentPlayList();
     endResetModel();
 }
 
@@ -77,11 +75,6 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
-}
-
-void PlayListModel::setNewPlayList(const QString &playList){
-    playListName = playList;
-    onPlayListChanged();
 }
 
 bool PlayListModel::select(int id){

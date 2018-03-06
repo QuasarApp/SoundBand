@@ -9,7 +9,6 @@ SyncEngine::SyncEngine()
 
     sync->updatePlayList(settings.value(CURRENT_PLAYLIST_KEY, ALL_SONGS_LIST).toString());
 
-
     connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
 }
 

@@ -18,7 +18,6 @@ private:
     SyncEngine * syncEngine;
     const QList<syncLib::SongHeader> *playList;
     int itemCount;
-    QString playListName;
 
 private slots:
     /**
@@ -72,12 +71,6 @@ public:
 signals:
 
 public slots:
-
-    /**
-     * @brief setNewPlayList set new base play list
-     * @param playList - name of playlist
-     */
-    void setNewPlayList(const QString &playList);
 
     /**
      * @brief select a song from playList;

@@ -56,6 +56,12 @@ private:
 private slots:
 
     /**
+     * @brief updateSongs use method update avelable songs from sql database
+     * @return true if all done
+     */
+    bool updateSongs(QList<SongHeader> &list, const QString &playList = "");
+
+    /**
      * @brief packageRender - the handler of all messages received.
      * @param socket
      */
@@ -248,6 +254,12 @@ signals:
      * signal if changed count of activity servers.
      */
     void networkStateChange();
+
+    /**
+     * @brief curentPlayListChanged
+     * emited when added new songs into active playlist
+     */
+    void curentPlayListChanged();
 
 };
 }

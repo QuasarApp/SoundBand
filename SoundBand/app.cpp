@@ -20,9 +20,6 @@ App::App(QObject* ptr):
     playListsModel = new PlayListsModel();
     playListsModel->setSource(syncEngine);
 
-    playListModel = new PlayListModel();
-    playListModel->setSource(syncEngine);
-
     currentPlayListModel = new PlayListModel();
     currentPlayListModel->setSource(syncEngine);
 }
@@ -35,7 +32,6 @@ bool App::run(){
     ctxt->setContextProperty("syncEngine", syncEngine);
     ctxt->setContextProperty("serverListModel", serverListModel);
     ctxt->setContextProperty("playListsModel", playListsModel);
-    ctxt->setContextProperty("playListModel", playListModel);
     ctxt->setContextProperty("currentPlayListModel", currentPlayListModel);
 
     qmlEngine->load(QUrl(QStringLiteral("qrc:/main.qml")));
@@ -47,7 +43,6 @@ bool App::run(){
 
 App::~App(){
     delete playListsModel;
-    delete playListModel;
     delete currentPlayListModel;
     delete serverListModel;
     delete syncEngine;

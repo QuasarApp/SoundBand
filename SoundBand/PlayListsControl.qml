@@ -15,10 +15,6 @@ Item {
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
     readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
 
-    function onItemClick(index) {
-        syncEngine.listen(index);
-    }
-
     function switch_pane(object){
         for(var i = 0; i < playListsControl.children.length; i++){
             playListsControl.children[i].visible = false;
@@ -39,7 +35,7 @@ Item {
             Button{
                 id:add
                 width: parent.width / 3
-                text: qsTr("Add")
+                text: qsTr("Create")
                 anchors.top:parent.top
                 anchors.left: parent.left
 
@@ -49,31 +45,25 @@ Item {
 
             }
 
-            Button{
-                id:edit
-                width: parent.width / 3
-                text: qsTr("edit")
-                anchors.top:parent.top
-                anchors.left: add.right
+//            Rectangle{
+//                color: "#ffffff";
+//                width: parent.width / 3
+//                TextEdit{
 
-                onClicked: {
-                    editPlayList.visible = true;
-                }
+//                    id:edit
+//                    text: qsTr("Create")
+//                    verticalAlignment: Text.AlignVCenter
+//                    horizontalAlignment: Text.AlignHCenter
 
-            }
+//                    anchors.fill: parent;
 
-            Button{
-                id:remove
-                width: parent.width / 3
-                text: qsTr("remove")
-                anchors.top:parent.top
-                anchors.left: edit.right
+//                }
+//                anchors.top:parent.top
+//                anchors.left: add.right
+//                radius: width / 4;
+//                border.color: "black"
+//            }
 
-                onClicked: {
-
-                }
-
-            }
         }
 
         ListView {
@@ -99,13 +89,24 @@ Item {
                         anchors.fill: item
 
                         Button {
+                            id: editButton
                             text: qsTr("Edit")
                             onClicked: {
-                                onItemClick(index)
+                                switch_pane(editPlayList);
                             }
 
                             anchors.right: rectangle.right
                             anchors.leftMargin: textmargin
+                            anchors.verticalCenter: rectangle.verticalCenter
+                        }
+
+                        Button {
+                            text: qsTr("Remove")
+                            onClicked: {
+
+                            }
+
+                            anchors.right: editButton.left
                             anchors.verticalCenter: rectangle.verticalCenter
                         }
 

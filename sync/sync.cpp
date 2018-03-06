@@ -39,6 +39,14 @@ MySql* Sync::getSqlApi(){
     return sql;
 }
 
+bool Sync::updateSongs(QList<SongHeader>& list, const QString& playList){
+    if(!sql->updateAvailableSongs(list, playList)){
+        return false;
+    }
+    emit curentPlayListChanged();
+    return true;
+}
+
 bool Sync::findHeader(const Song &song){
 
     for(int i = 0; i < playList.size(); i++){
@@ -76,7 +84,7 @@ bool Sync::play(const Song &song, bool fbroadcast){
     fbroadcaster = fbroadcast;
 
     if(!findHeader(song) && sql->save(song) > -1 &&
-            sql->updateAvailableSongs(playList) && !findHeader(song)){
+            updateSongs(playList) && !findHeader(song)){
 
         return false;
     }
@@ -457,12 +465,12 @@ qint64 Sync::getEndPoint() const {
 
 int Sync::addNewSong(const QString &url){
     int result = sql->save(url);
-    sql->updateAvailableSongs(playList);
+    updateSongs(playList);
     return result;
 }
 
 bool Sync::updatePlayList(const QString &_playList){
-    if(!sql->updateAvailableSongs(playList, _playList)){
+    if(!updateSongs(playList, _playList)){
         return false;
     }
 

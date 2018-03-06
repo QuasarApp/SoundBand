@@ -87,3 +87,58 @@ void PlayListModel::setNewPlayList(const QString &playList){
     playListName = playList;
     onPlayListChanged();
 }
+
+bool PlayListModel::select(int id){
+    if(!playList)
+        return false;
+
+    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList->end(); i++){
+        if(i->id == id){
+           return i->isSelected = true;
+        }
+    }
+
+    return false;
+}
+
+bool PlayListModel::unSelect(int id){
+    if(!playList)
+        return false;
+
+    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList->end(); i++){
+        if(i->id == id){
+            i->isSelected = false;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+QList<int> PlayListModel::getSelected(){
+    QList<int> result;
+
+    if(!playList)
+        return result;
+
+    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList->end(); i++){
+        if(i->isSelected){
+            result.push_back(i->id);
+        }
+    }
+    return result;
+}
+
+bool PlayListModel::isSelected(int id){
+    if(!playList)
+        return false;
+
+    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList->end(); i++){
+        if(i->id == id){
+            return i->isSelected;
+        }
+    }
+
+    return false;
+}
+

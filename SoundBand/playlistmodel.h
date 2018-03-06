@@ -79,6 +79,33 @@ public slots:
      * @param playList - name of playlist
      */
     void setNewPlayList(const QString &playList);
+
+    /**
+     * @brief select a song from playList;
+     * @param id - if of song
+     * @return true if all done
+     */
+    bool select(int id);
+
+    /**
+     * @brief unselect a song from playList;
+     * @param id - if of song
+     * @return true if all done
+     */
+    bool unSelect(int id);
+
+    /**
+     * @brief getSelected
+     * @return list of selected songs
+     */
+    QList<int> getSelected();
+
+    /**
+     * @brief isSelected
+     * @param id - id of checked song
+     * @return true if song selected
+     */
+    bool isSelected(int id);
 };
 
 #endif // PLAYLISTMODEL_H

@@ -205,7 +205,7 @@ bool MySql::load(const SongHeader &song,Song &result){
 
 bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playList){
     QString qyer;
-    if(playList.isEmpty()){
+    if(playList.isEmpty() || playList == ALL_SONGS_LIST){
         qyer = QString("SELECT id,name,size from songs");
     }else{
         qyer = QString("SELECT id,name,size from songs where "

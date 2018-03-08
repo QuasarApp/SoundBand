@@ -38,7 +38,7 @@ bool App::run(){
     if (qmlEngine->rootObjects().isEmpty())
         return false;
 
-    return true;
+    return syncEngine->init();
 }
 
 App::~App(){

@@ -1,71 +1,85 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import QtQuick.Window 2.0
+
 import "./base" as Base
+import "base/utils.js" as Utils
 
 Item {
     id: headerForm
+
+    property int currentSongId: 0
+    property string curentSongName: qsTr("Song is not selected")
+
+    function changeSong(id, name){
+        currentSongId = id;
+        curentSongName = name;
+    }
+
     Image {
         id: viewSong
-        fillMode: Image.PreserveAspectFit
+        anchors.leftMargin: 0
+        fillMode: Image.PreserveAspectCrop
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.bottom: groupBox.top
-        anchors.left: parent.right
-        source: "/image/res/logo.png"
+        anchors.bottom: songName.top
+        anchors.left: parent.left
+        source: "image://collection/" + currentSongId;
         visible: true;
     }
+
     Base.BaseText {
         id: songName
         color: "#5e5858"
         height: 20
-        text: qsTr("Song is not selected")
+        text: curentSongName
         styleColor: "#554f4f"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.left: parent.left
-        anchors.top: parent.top
+        anchors.leftMargin: 0
         anchors.right: parent.right
-
+        anchors.rightMargin: 0
+        anchors.bottom: groupBox.top
+        anchors.bottomMargin: 0
         font.pixelSize:16
     }
 
     GroupBox {
+
         id: groupBox
-        y: 149
-        height: 160
+        height: 100
+        padding: 0;
         anchors.left: parent.left
         anchors.leftMargin: 0
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
-        title: qsTr("SoundBand")
+
+        Rectangle{
+            anchors.fill: parent;
+            color: Utils.backgroundColor()
+        }
 
         Button {
             id: prev
 
-            width: parent.width/4
+            width: parent.width/3
             text: qsTr("<<")
             anchors.left: parent.left
         }
 
         Button {
             id: play
-            width: parent.width/4
+            width: parent.width/3
             text: qsTr("Play")
             anchors.left: prev.right
         }
 
         Button {
-            id: stop
-            width: parent.width/4
-            text: qsTr("Stop")
-            anchors.right: next.left
-        }
-
-        Button {
             id: next
-            width: parent.width/4
+            width: parent.width/3
             text: qsTr(">>")
             anchors.right: parent.right
         }
@@ -99,4 +113,7 @@ Item {
             anchors.right: parent.right
         }
     }
+
+
+
 }

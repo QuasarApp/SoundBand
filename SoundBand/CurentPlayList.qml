@@ -14,7 +14,12 @@ Item{
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
     readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
 
-    function onItemClick(id) {
+    property int curentSongId: -1
+
+    signal cyrentsongChanged(int id, string name)
+
+    function onItemClick(id, name) {
+        cyrentsongChanged(id, name);
         syncEngine.play(id);
     }
 
@@ -34,14 +39,15 @@ Item{
                 id: item
 
                 Rectangle {
-                    color: Qt.rgba(0,0,0,0)
+                    color: (curentSongId === songId)? "#ffffff":Qt.rgba(0,0,0,0)
                     id: rectangle;
                     anchors.fill: item
 
                     MouseArea{
                         anchors.fill: parent;
                         onClicked: {
-                            onItemClick(songId);
+                            onItemClick(songId, songName);
+                            curentSongId = songId;
                         }
                     }
 
@@ -64,7 +70,7 @@ Item{
                         anchors.left: rectangle.left
                         anchors.leftMargin: textmargin
                         anchors.verticalCenter: rectangle.verticalCenter
-                        source: songId
+                        source: "image://collection/" + songId
                     }
                 }
             }

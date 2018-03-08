@@ -11,15 +11,6 @@ Page {
     function onLoaded(){
 
     }
-
-    Header{
-        id:header
-        height: 300
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.right: parent.right
-    }
-
     Item{
 
         SwipeView {
@@ -33,6 +24,10 @@ Page {
 
             CurentPlayList {
                 id:curentPlayList;
+
+                onCyrentsongChanged:{
+                    header.changeSong(id, name);
+                }
 
             }
 
@@ -56,6 +51,17 @@ Page {
         anchors.right: parent.right
         anchors.top: header.bottom
         anchors.bottom: parent.bottom
+
     }
+
+    Header{
+        id:header
+        height: 300
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.right: parent.right
+    }
+
+
 
 }

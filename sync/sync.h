@@ -25,6 +25,7 @@ private:
     Node *node;
     Player *player;
     QList<SongHeader> playList;
+    QString lastUsedPlayList;
     int curentSongIndex;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
@@ -260,6 +261,12 @@ signals:
      * emited when added new songs into active playlist
      */
     void curentPlayListChanged();
+
+    /**
+     * @brief curentPlayListChanged
+     * emited when selected a new playList
+     */
+    void selectedNewPlatList();
 
 };
 }

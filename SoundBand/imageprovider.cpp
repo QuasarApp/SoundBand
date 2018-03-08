@@ -23,7 +23,7 @@ QPixmap ImageProvider::requestPixmap(const QString &id, QSize *size, const QSize
         return QPixmap(1,1);
 
     if(!syncEngine->songImageById(songId, result)){
-       return QPixmap(1,1);
+       return QPixmap(":/image/res/logo.png");
     }
 
     return result.scaled(requestedSize);

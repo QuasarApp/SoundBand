@@ -49,6 +49,11 @@ public:
      */
     void allPlayLists(QStringList& playList) const;
 
+    /**
+     * @brief init - inited all avelable songs
+     */
+    bool init();
+
     ~SyncEngine();
 public slots:
 

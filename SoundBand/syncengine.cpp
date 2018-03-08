@@ -7,9 +7,8 @@ SyncEngine::SyncEngine()
     sync = new syncLib::Sync();
     sqlApi = sync->getSqlApi();
 
-    sync->updatePlayList(settings.value(CURRENT_PLAYLIST_KEY, ALL_SONGS_LIST).toString());
-
     connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
+    connect(sync, SIGNAL(curentPlayListChanged()), this, SIGNAL(curentPlayListCountChanged()));
 }
 
 int SyncEngine::curentSongIndex()const{
@@ -28,6 +27,11 @@ bool SyncEngine::selectPlayList(const QString &list){
         return false;
     }
 
+    return true;
+}
+
+bool SyncEngine::init(){
+    sync->updatePlayList(settings.value(CURRENT_PLAYLIST_KEY, ALL_SONGS_LIST).toString());
     return true;
 }
 

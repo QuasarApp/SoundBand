@@ -43,6 +43,12 @@ bool Sync::updateSongs(QList<SongHeader>& list, const QString& playList){
     if(!sql->updateAvailableSongs(list, playList)){
         return false;
     }
+
+    if(lastUsedPlayList != playList){
+        lastUsedPlayList = playList;
+        emit selectedNewPlatList();
+    }
+
     emit curentPlayListChanged();
     return true;
 }

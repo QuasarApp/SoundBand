@@ -9,6 +9,12 @@ SyncEngine::SyncEngine()
 
     connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
     connect(sync, SIGNAL(curentPlayListChanged()), this, SIGNAL(curentPlayListCountChanged()));
+    connect(sync, SIGNAL(seekChanged(qint64)), this, SLOT(seekChanged(qint64)));
+
+}
+
+void SyncEngine::seekChanged(qint64){
+    emit posChanged();
 }
 
 int SyncEngine::curentSongIndex()const{
@@ -158,12 +164,24 @@ const QString& SyncEngine::lastError() const{
     return _lastError;
 }
 
+void SyncEngine::setPos(double newPos){
+    sync->jump(sync->getEndPoint() * newPos);
+}
+
+void SyncEngine::setValume(int valume){
+    sync->setValume(valume);
+}
+
+int SyncEngine::getValume()const{
+    return sync->getValume();
+}
+
 double SyncEngine::pos()const{
 
     if(!sync->seek())
         return 0.0;
 
-    return sync->getEndPoint() / (double)sync->seek();
+    return (double)sync->seek() / sync->getEndPoint();
 }
 
 SyncEngine::~SyncEngine(){

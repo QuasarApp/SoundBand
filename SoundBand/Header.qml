@@ -10,6 +10,8 @@ Item {
 
     property int currentSongId: 0
     property string curentSongName: qsTr("Song is not selected")
+    property bool playState: false
+
 
     function changeSong(id, name){
         currentSongId = id;
@@ -48,7 +50,7 @@ Item {
     GroupBox {
 
         id: groupBox
-        height: 100
+        height: 120
         padding: 0;
         anchors.left: parent.left
         anchors.leftMargin: 0
@@ -68,13 +70,18 @@ Item {
             width: parent.width/3
             text: qsTr("<<")
             anchors.left: parent.left
+
+            onCanceled: {
+                syncEngine.prev();
+            }
         }
 
         Button {
             id: play
             width: parent.width/3
-            text: qsTr("Play")
+            text: (playState)? qsTr("Pause"): qsTr("Play")
             anchors.left: prev.right
+
         }
 
         Button {
@@ -82,15 +89,24 @@ Item {
             width: parent.width/3
             text: qsTr(">>")
             anchors.right: parent.right
+
+            onCanceled: {
+                syncEngine.next();
+            }
         }
 
         Slider {
             id: valume
-            value: 0.5
+            from: 0
+            to: 100
+            value: syncEngine.getValume()
             width: parent.width / 4;
             anchors.bottom: progress.top
             anchors.top: next.bottom
             anchors.left: parent.left
+            onMoved: {
+                syncEngine.setValume(value);
+            }
         }
 
         Base.BaseText {
@@ -107,10 +123,13 @@ Item {
 
         Slider {
             id: progress
-            value: 0.5
+            value: syncEngine.pos
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
+            onMoved:{
+                syncEngine.setPos(value);
+            }
         }
     }
 

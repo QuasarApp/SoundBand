@@ -13,7 +13,7 @@ class SyncEngine : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString lastError READ lastError NOTIFY error)
-    Q_PROPERTY(double pos READ pos NOTIFY posChanged)
+    Q_PROPERTY(double pos READ pos WRITE setPos NOTIFY posChanged)
     Q_PROPERTY(int repeat READ repeat WRITE setRepeat NOTIFY repeatChanged)
 
     enum Repeat{noRepeat, oneMusic, allPlayList};
@@ -25,6 +25,9 @@ private:
     QString _lastError;
     Repeat _repeat;
     QSettings settings;
+
+private slots:
+    void seekChanged(qint64);
 
 public:
     SyncEngine();
@@ -149,6 +152,23 @@ public slots:
      * @return posistion of curent song on double
      */
     double pos()const;
+
+    /**
+     * @brief setPos
+     * @param newPos
+     */
+    void setPos(double newPos);
+
+    /**
+     * @brief setValume - set a new valume of playin a song
+     */
+    void setValume(int);
+
+    /**
+     * @brief getValume
+     * @return valune of song
+     */
+    int getValume()const;
 
     /**
      * @brief getServerList

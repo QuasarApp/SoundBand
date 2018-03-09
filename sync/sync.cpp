@@ -102,6 +102,7 @@ bool Sync::play(const Song &song, bool fbroadcast){
         player->syncBegin();
     }
 
+    emit curentSongChanged();
     return true;
 }
 
@@ -459,7 +460,7 @@ int Sync::getCurentSongIndex()const{
 }
 
 const SongHeader* Sync::getCurentSong() const{
-    if(curentSongIndex < 0){
+    if(curentSongIndex < 0 || curentSongIndex >= playList.size()){
         return nullptr;
     }
     return &playList[curentSongIndex];
@@ -489,6 +490,24 @@ bool Sync::updatePlayList(const QString &_playList){
 
     return true;
 
+}
+
+bool Sync::next(){
+    if(playList.isEmpty())
+        return false;
+
+    curentSongIndex = (curentSongIndex + 1) % playList.size();
+    return play(playList[curentSongIndex]);
+}
+
+bool Sync::prev(){
+    if(playList.isEmpty())
+        return false;
+
+    --curentSongIndex;
+    if(curentSongIndex < 0)
+        curentSongIndex = playList.size() - 1;
+    return play(playList[curentSongIndex]);
 }
 
 Sync::~Sync(){

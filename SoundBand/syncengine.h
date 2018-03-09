@@ -61,10 +61,10 @@ public:
 public slots:
 
     /**
-     * @brief curentSongIndex
-     * @return index of curent cong in selected playlist.
+     * @brief curentSongName
+     * @return Name of curent cong in selected playlist.
      */
-    int curentSongIndex()const;
+    QString curentSongName()const;
 
     /**
      * @brief curentSong
@@ -234,12 +234,6 @@ public slots:
 signals:
 
     /**
-     * @brief curentSongChanged
-     * This signal can be emitted when curent Music changed
-     */
-    void curentSongChanged();
-
-    /**
      * @brief error
      * This signal can be emitted when error has been detected
      */
@@ -280,6 +274,12 @@ signals:
      * This signal can be emitted when finded new songs or removed old songs
      */
     void curentPlayListCountChanged();
+
+    /**
+     * @brief curentSongChanged
+     * emited when changed a playing song
+     */
+    void curentSongChanged();
 
 };
 

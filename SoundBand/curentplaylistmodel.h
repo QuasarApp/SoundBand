@@ -84,6 +84,12 @@ public slots:
      * @return id of curent song
      */
     int curentSongId();
+
+    /**
+     * @brief curentSongName
+     * @return name of curent song
+     */
+    QString curentSongName();
 };
 
 #endif // CURENTPLAYLISTMODEL_H

@@ -13,6 +13,7 @@ Item{
     readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
     readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
+    readonly property int curentSongId: currentPlayListModel.curentSongId;
 
     signal cyrentsongChanged(int id, string name)
 
@@ -20,10 +21,12 @@ Item{
 
     }
 
-    function onItemClick(id, name) {
-        syncEngine.play(id);
-        cyrentsongChanged(id, name);
+    onCurentSongIdChanged: {
+        cyrentsongChanged(curentSongId, currentPlayListModel.curentSongName());
+    }
 
+    function onItemClick(id) {
+        syncEngine.play(id);
     }
 
     ListView {
@@ -42,7 +45,7 @@ Item{
                 id: item
 
                 Rectangle {
-                    color: Qt.rgba(0,0,0,0)
+                    color: (curentSongId === songId)? Utils.primaryColor(): Utils.baseColor();
                     id: rectangle;
                     anchors.fill: item
 
@@ -50,7 +53,7 @@ Item{
                         id: playButton
                         text: qsTr("Play")
                         onClicked: {
-                            onItemClick(songId, songName);
+                            onItemClick(songId);
 
 
                         }

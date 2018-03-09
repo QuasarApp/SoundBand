@@ -71,7 +71,7 @@ Item {
             text: qsTr("<<")
             anchors.left: parent.left
 
-            onCanceled: {
+            onClicked: {
                 syncEngine.prev();
             }
         }
@@ -83,9 +83,8 @@ Item {
             anchors.left: prev.right
 
             onClicked: {
-                curentPlayList.playSelected();
-//                syncEngine.pause(playState);
-//                playState = !playState;
+                syncEngine.pause(playState);
+                playState = !playState;
             }
 
         }
@@ -96,7 +95,7 @@ Item {
             text: qsTr(">>")
             anchors.right: parent.right
 
-            onCanceled: {
+            onClicked: {
                 syncEngine.next();
             }
         }

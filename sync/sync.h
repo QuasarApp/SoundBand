@@ -54,6 +54,7 @@ private:
      * @return true if everything's done
      */
     bool createPackage(Type type , package& pac);
+
 private slots:
 
     /**
@@ -238,6 +239,18 @@ public:
      */
     bool updatePlayList(const QString& _playList);
 
+    /**
+     * @brief next
+     * @return true if all done;
+     */
+    bool next();
+
+    /**
+     * @brief prev
+     * @return true if all done;
+     */
+    bool prev();
+
     Sync(const QString &address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
 
@@ -267,6 +280,12 @@ signals:
      * emited when selected a new playList
      */
     void selectedNewPlatList();
+
+    /**
+     * @brief curentSongChanged
+     * emited when changed a playing song
+     */
+    void curentSongChanged();
 
 };
 }

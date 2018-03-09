@@ -11,10 +11,14 @@ CurentPlayListModel::CurentPlayListModel(QObject *parent) :
 }
 
 void CurentPlayListModel::setSource(SyncEngine *engine){
-    if(syncEngine)
-        disconnect(syncEngine, SIGNAL(curentPlayListCountChanged()) ,this, SLOT(onPlayListChanged()));
+    if(syncEngine){
+        disconnect(syncEngine, SIGNAL(curentPlayListCountChanged()) , this, SLOT(onPlayListChanged()));
+        disconnect(syncEngine, SIGNAL(curentSongChanged()), this, SIGNAL(curentSongIdChanged()));
+    }
+
     syncEngine = engine;
-    connect(syncEngine, SIGNAL(curentPlayListCountChanged()),this ,SLOT(onPlayListChanged()));
+    connect(syncEngine, SIGNAL(curentPlayListCountChanged()), this ,SLOT(onPlayListChanged()));
+    connect(syncEngine, SIGNAL(curentSongChanged()), this ,SIGNAL(curentSongIdChanged()));
 }
 
 QHash<int, QByteArray> CurentPlayListModel::roleNames()const{
@@ -79,4 +83,8 @@ QVariant CurentPlayListModel::data(const QModelIndex &index, int role) const
 
 int CurentPlayListModel::curentSongId(){
     return syncEngine->curentSongId();
+}
+
+QString CurentPlayListModel::curentSongName(){
+    return syncEngine->curentSongName();
 }

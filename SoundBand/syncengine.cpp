@@ -10,6 +10,7 @@ SyncEngine::SyncEngine()
     connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
     connect(sync, SIGNAL(curentPlayListChanged()), this, SIGNAL(curentPlayListCountChanged()));
     connect(sync, SIGNAL(seekChanged(qint64)), this, SLOT(seekChanged(qint64)));
+    connect(sync, SIGNAL(curentSongChanged()), this, SIGNAL(curentSongChanged()));
 
 }
 
@@ -17,12 +18,22 @@ void SyncEngine::seekChanged(qint64){
     emit posChanged();
 }
 
-int SyncEngine::curentSongIndex()const{
-    return sync->getCurentSongIndex();
+QString SyncEngine::curentSongName()const{
+    auto song = sync->getCurentSong();
+
+    if(!song)
+        return tr("none");
+
+    return song->name;
 }
 
 int SyncEngine::curentSongId()const{
-    return sync->getCurentSong()->id;
+    auto song = sync->getCurentSong();
+
+    if(!song)
+        return -1;
+
+    return song->id;
 }
 
 bool SyncEngine::selectPlayList(const QString &list){
@@ -94,19 +105,11 @@ bool SyncEngine::pause(bool state){
 }
 
 bool SyncEngine::next(){
-
-    _lastError = tr("This option not supported.");
-    emit error();
-
-    return false;
+    return sync->next();
 }
 
 bool SyncEngine::prev(){
-
-    _lastError = tr("This option not supported.");
-    emit error();
-
-    return false;
+    return sync->prev();
 }
 
 bool SyncEngine::listen(int index){

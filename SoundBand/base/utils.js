@@ -3,11 +3,11 @@ function dp(pixelDensity,x) {
 }
 
 function baseColor() {
-	return "#f26e35"
+    return "#303030"
 }
 
 function primaryColor() {
-	return "#d04828"
+    return "#acacac"
 }
 
 function textColor() {

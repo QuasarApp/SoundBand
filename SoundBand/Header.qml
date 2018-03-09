@@ -82,6 +82,12 @@ Item {
             text: (playState)? qsTr("Pause"): qsTr("Play")
             anchors.left: prev.right
 
+            onClicked: {
+                curentPlayList.playSelected();
+//                syncEngine.pause(playState);
+//                playState = !playState;
+            }
+
         }
 
         Button {

@@ -1,6 +1,5 @@
-#ifndef PLAYLISTMODEL_H
-#define PLAYLISTMODEL_H
-
+#ifndef CURENTPLAYLISTMODEL_H
+#define CURENTPLAYLISTMODEL_H
 #include <QAbstractListModel>
 #include <syncengine.h>
 
@@ -10,14 +9,15 @@ class SyncEngine;
 /**
  * @brief The PlayListsModel class
  */
-class PlayListModel : public QAbstractListModel
+class CurentPlayListModel : public QAbstractListModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(int curentSongId READ curentSongId NOTIFY curentSongIdChanged)
+
 private:
     SyncEngine * syncEngine;
-    QList<syncLib::SongHeader> playList;
-    QString playListName;
+    const QList<syncLib::SongHeader> *playList;
     int itemCount;
 
 private slots:
@@ -30,7 +30,7 @@ protected:
     void fetchMore(const QModelIndex &parent) override;
 
 public:
-    explicit PlayListModel(QObject *parent = nullptr);
+    explicit CurentPlayListModel(QObject *parent = nullptr);
 
     /**
      * @brief The ServerListRoles enum
@@ -71,40 +71,19 @@ public:
 
 signals:
 
+    /**
+     * @brief curentSongIdChanged
+     * emited when changed curent song
+     */
+    void curentSongIdChanged();
+
 public slots:
 
     /**
-     * @brief select a song from playList;
-     * @param id - if of song
-     * @return true if all done
+     * @brief curentSongId
+     * @return id of curent song
      */
-    bool select(int id);
-
-    /**
-     * @brief unselect a song from playList;
-     * @param id - if of song
-     * @return true if all done
-     */
-    bool unSelect(int id);
-
-    /**
-     * @brief getSelected
-     * @return list of selected songs
-     */
-    QList<int> getSelected();
-
-    /**
-     * @brief isSelected
-     * @param id - id of checked song
-     * @return true if song selected
-     */
-    bool isSelected(int id);
-
-    /**
-     * @brief setNewList load a new play list into model
-     * @param name - name of loaded playlist
-     */
-    void setNewList(const QString & name);
+    int curentSongId();
 };
 
-#endif // PLAYLISTMODEL_H
+#endif // CURENTPLAYLISTMODEL_H

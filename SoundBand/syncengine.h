@@ -68,9 +68,9 @@ public slots:
 
     /**
      * @brief curentSong
-     * @return  curent song name
+     * @return  curent song id
      */
-    const QString& curentSong()const;
+    int curentSongId()const;
 
     /**
      * @brief curentPlayList
@@ -142,6 +142,14 @@ public slots:
     bool setPlayList(const QString &name);
 
     /**
+     * @brief getPlayList
+     * @param playList return value (song headers)
+     * @param name - name of selected playList
+     * @return
+     */
+    bool getPlayList(QList<syncLib::SongHeader> &playList, const QString& name);
+
+    /**
      * @brief lastError - message of last error
      * @return  message of last error
      */
@@ -166,7 +174,7 @@ public slots:
 
     /**
      * @brief getValume
-     * @return valune of song
+     * @return valune ofsong
      */
     int getValume()const;
 
@@ -180,6 +188,48 @@ public slots:
      * @brief scan
      */
     void scan();
+
+    /**
+     * @brief addSong added a new song from file
+     * @param songUrl - url to song
+     * @return true if all done
+     */
+    bool addSong(const QString &songUrl);
+
+    /**
+     * @brief removeSong remove song from database
+     * @param id - id of removing song
+     * @return true if all done
+     */
+    bool removeSong(int id);
+
+    /**
+     * @brief createPlayList
+     * @return true if new play list created
+     */
+    bool createPlayList(const QString &name);
+
+    /**
+     * @brief removePlayList
+     * @return true if new play list removed
+     */
+    bool removePlayList(const QString &name);
+
+    /**
+     * @brief addToPlayList added selected song into playlist
+     * @param id of song
+     * @param playList name of playlist
+     * @return true if all done
+     */
+    bool addToPlayList(int id, const QString& playList);
+
+    /**
+     * @brief addToPlayList remove selected song from playlist
+     * @param id of song
+     * @param playList name of playlist
+     * @return true if all done
+     */
+    bool removeFromPlayList(int id, const QString& playList);
 
 signals:
 
@@ -218,6 +268,12 @@ signals:
      * This signal can be emitted when finded new playlists or removed old playlists
      */
     void playListsCountChanged();
+
+    /**
+     * @brief songsCountChanged
+     * This signal can be emitted when finded new song or removed old song
+     */
+    void songsCountChanged();
 
     /**
      * @brief curentPlayListCountChanged

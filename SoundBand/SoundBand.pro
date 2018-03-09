@@ -32,7 +32,8 @@ SOURCES += main.cpp \
     app.cpp \
     playlistmodel.cpp \
     serverlistmodel.cpp \
-    playlistsmodel.cpp
+    playlistsmodel.cpp \
+    curentplaylistmodel.cpp
 
 
 RESOURCES += qml.qrc
@@ -67,5 +68,6 @@ HEADERS += \
     app.h \
     playlistmodel.h \
     serverlistmodel.h \
-    playlistsmodel.h
+    playlistsmodel.h \
+    curentplaylistmodel.h
 

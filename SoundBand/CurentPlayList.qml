@@ -14,13 +14,16 @@ Item{
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
     readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
 
-    property int curentSongId: -1
-
     signal cyrentsongChanged(int id, string name)
 
+    function play(){
+
+    }
+
     function onItemClick(id, name) {
-        cyrentsongChanged(id, name);
         syncEngine.play(id);
+        cyrentsongChanged(id, name);
+
     }
 
     ListView {
@@ -39,16 +42,23 @@ Item{
                 id: item
 
                 Rectangle {
-                    color: (curentSongId === songId)? "#ffffff":Qt.rgba(0,0,0,0)
+                    color: Qt.rgba(0,0,0,0)
                     id: rectangle;
                     anchors.fill: item
 
-                    MouseArea{
-                        anchors.fill: parent;
+                    Button {
+                        id: playButton
+                        text: qsTr("Play")
                         onClicked: {
                             onItemClick(songId, songName);
-                            curentSongId = songId;
+
+
                         }
+                        width: parent.width / 5
+                        height: parent.height * 1.2
+                        anchors.right: rectangle.right
+                        anchors.leftMargin: textmargin
+                        anchors.verticalCenter: rectangle.verticalCenter
                     }
 
                     Text {
@@ -57,7 +67,7 @@ Item{
                         anchors.left: image.right
                         anchors.top: rectangle.top
                         anchors.bottom: rectangle.bottom
-                        anchors.right: rectangle.right
+                        anchors.right: playButton.left
                         text: songName !== undefined ? songName : ""
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter

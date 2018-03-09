@@ -4,17 +4,17 @@ using namespace syncLib;
 
 PlayListModel::PlayListModel(QObject *parent) :
     QAbstractListModel(parent),
-    syncEngine(nullptr),
-    playList(nullptr)
+    syncEngine(nullptr)
 {
     itemCount = 0;
+    playListName = ALL_SONGS_LIST;
 }
 
 void PlayListModel::setSource(SyncEngine *engine){
     if(syncEngine)
-        disconnect(syncEngine, SIGNAL(curentPlayListCountChanged()) ,this, SLOT(onPlayListChanged()));
+        disconnect(syncEngine, SIGNAL(songsCountChanged()) ,this, SLOT(onPlayListChanged()));
     syncEngine = engine;
-    connect(syncEngine, SIGNAL(curentPlayListCountChanged()),this ,SLOT(onPlayListChanged()));
+    connect(syncEngine, SIGNAL(songsCountChanged()),this ,SLOT(onPlayListChanged()));
 }
 
 QHash<int, QByteArray> PlayListModel::roleNames()const{
@@ -24,15 +24,20 @@ QHash<int, QByteArray> PlayListModel::roleNames()const{
     return roles;
 }
 
+void PlayListModel::setNewList(const QString &name){
+    playListName = name;
+    onPlayListChanged();
+}
+
 void PlayListModel::onPlayListChanged(){
     beginResetModel();
-    playList = syncEngine->curentPlayList();
+    syncEngine->getPlayList(playList, playListName);
     endResetModel();
 }
 
 bool PlayListModel::canFetchMore(const QModelIndex & /* index */) const
 {
-    if (playList && itemCount < playList->size())
+    if (itemCount < playList.size())
         return true;
     else
         return false;
@@ -40,7 +45,7 @@ bool PlayListModel::canFetchMore(const QModelIndex & /* index */) const
 
 void PlayListModel::fetchMore(const QModelIndex & /* index */)
 {
-    int remainder = playList->size() - itemCount;
+    int remainder = playList.size() - itemCount;
     int itemsToFetch = qMin(100, remainder);
 
     beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
@@ -60,15 +65,15 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= playList->size() || index.row() < 0)
+    if (index.row() >= playList.size() || index.row() < 0)
         return QVariant();
 
     switch (role) {
     case nameRole:
-        return playList->at(index.row()).name;
+        return playList[index.row()].name;
         break;
     case idRole:
-        return playList->at(index.row()).id;
+        return playList[index.row()].id;
         break;
     default:
         break;
@@ -78,10 +83,8 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
 }
 
 bool PlayListModel::select(int id){
-    if(!playList)
-        return false;
 
-    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList->end(); i++){
+    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList.end(); i++){
         if(i->id == id){
            return i->isSelected = true;
         }
@@ -91,10 +94,8 @@ bool PlayListModel::select(int id){
 }
 
 bool PlayListModel::unSelect(int id){
-    if(!playList)
-        return false;
 
-    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList->end(); i++){
+    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList.end(); i++){
         if(i->id == id){
             i->isSelected = false;
             return true;
@@ -107,10 +108,7 @@ bool PlayListModel::unSelect(int id){
 QList<int> PlayListModel::getSelected(){
     QList<int> result;
 
-    if(!playList)
-        return result;
-
-    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList->end(); i++){
+    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList.end(); i++){
         if(i->isSelected){
             result.push_back(i->id);
         }
@@ -119,10 +117,8 @@ QList<int> PlayListModel::getSelected(){
 }
 
 bool PlayListModel::isSelected(int id){
-    if(!playList)
-        return false;
 
-    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList->end(); i++){
+    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList.end(); i++){
         if(i->id == id){
             return i->isSelected;
         }

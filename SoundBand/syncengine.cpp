@@ -21,8 +21,8 @@ int SyncEngine::curentSongIndex()const{
     return sync->getCurentSongIndex();
 }
 
-const QString& SyncEngine::curentSong()const{
-    return sync->getCurentSong()->name;
+int SyncEngine::curentSongId()const{
+    return sync->getCurentSong()->id;
 }
 
 bool SyncEngine::selectPlayList(const QString &list){
@@ -160,6 +160,10 @@ bool SyncEngine::setPlayList(const QString& name){
     return true;
 }
 
+bool SyncEngine::getPlayList(QList<syncLib::SongHeader> &playList, const QString &name){
+    return sqlApi->updateAvailableSongs(playList, name);
+}
+
 const QString& SyncEngine::lastError() const{
     return _lastError;
 }
@@ -182,6 +186,72 @@ double SyncEngine::pos()const{
         return 0.0;
 
     return (double)sync->seek() / sync->getEndPoint();
+}
+
+bool SyncEngine::addSong(const QString &songUrl){
+    if(sqlApi->save(songUrl) < 0)
+        return false;
+
+    emit songsCountChanged();
+    return true;
+}
+
+bool SyncEngine::removeSong(int id){
+    syncLib::SongHeader header;
+    header.id = id;
+    if(!sqlApi->removeSong(header))
+        return false;
+
+    emit songsCountChanged();
+    return true;
+}
+
+bool SyncEngine::createPlayList(const QString &name){
+    if(!sqlApi->addPlayList(name))
+        return false;
+
+    emit playListsCountChanged();
+    return true;
+}
+
+bool SyncEngine::removePlayList(const QString &name){
+    if(!sqlApi->removePlayList(name))
+        return false;
+
+    emit playListsCountChanged();
+    return true;
+}
+
+bool SyncEngine::addToPlayList(int id, const QString &playList){
+
+    syncLib::SongHeader header;
+    header.id = id;
+
+    if(!sqlApi->addToPlayList(header, playList)){
+        return false;
+    }
+
+    if(playList == _curentPlayListName)
+        emit curentPlayListCountChanged();
+
+    return true;
+
+}
+
+bool SyncEngine::removeFromPlayList(int id, const QString &playList){
+
+    syncLib::SongHeader header;
+    header.id = id;
+
+    if(!sqlApi->removeFromPlayList(header, playList)){
+        return false;
+    }
+
+    if(playList == _curentPlayListName)
+        emit curentPlayListCountChanged();
+
+    return true;
+
 }
 
 SyncEngine::~SyncEngine(){

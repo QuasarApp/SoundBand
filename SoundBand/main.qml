@@ -5,8 +5,8 @@ ApplicationWindow {
 
     id: applicationWindow
     visible: true
-    width: 440
-    height: 680
+    width: 300
+    height: 480
     title: qsTr("Tabs")
 
     MainPage {

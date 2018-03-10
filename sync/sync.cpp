@@ -25,6 +25,7 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
     fbroadcaster = false;
     resyncCount = 0;
     lastSyncTime = 0;
+    curentSongIndex = 0;
     ping = 0;
 
     sql = new MySql(datadir);

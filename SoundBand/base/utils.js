@@ -23,6 +23,6 @@ function backgroundColor() {
 }
 
 function backgroundAltColor() {
-	return "#ffefde"
+    return "#333333"
 }
 

@@ -10,7 +10,7 @@ class ImageProvider;
 class ServerListModel;
 class PlayListsModel;
 class PlayListModel;
-class CurentPlayListModel;
+class CurrentPlayListModel;
 
 
 /**
@@ -25,7 +25,7 @@ private:
     ImageProvider *imageProvider;
     ServerListModel *serverListModel;
     PlayListsModel *playListsModel;
-    CurentPlayListModel *currentPlayListModel;
+    CurrentPlayListModel *currentPlayListModel;
 
 
 public:

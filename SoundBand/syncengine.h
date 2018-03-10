@@ -21,7 +21,7 @@ class SyncEngine : public QObject
 private:
     syncLib::Sync *sync;
     syncLib::MySql * sqlApi;
-    QString _curentPlayListName;
+    QString _currentPlayListName;
     QString _lastError;
     Repeat _repeat;
     QSettings settings;
@@ -61,22 +61,22 @@ public:
 public slots:
 
     /**
-     * @brief curentSongName
-     * @return Name of curent cong in selected playlist.
+     * @brief currentSongName
+     * @return Name of current cong in selected playlist.
      */
-    QString curentSongName()const;
+    QString currentSongName()const;
 
     /**
-     * @brief curentSong
-     * @return  curent song id
+     * @brief currentSong
+     * @return  current song id
      */
-    int curentSongId()const;
+    int currentSongId()const;
 
     /**
-     * @brief curentPlayList
-     * @return return curent Play List
+     * @brief currentPlayList
+     * @return return current Play List
      */
-    const QList<syncLib::SongHeader> *curentPlayList() const;
+    const QList<syncLib::SongHeader> *currentPlayList() const;
 
     /**
      * @brief selectPlayList - selected a ne play list for player
@@ -86,19 +86,19 @@ public slots:
     bool selectPlayList(const QString& list);
 
     /**
-     * @brief curentPlayListName
-     * @return name of curent play list
+     * @brief currentPlayListName
+     * @return name of current play list
      */
-    const QString& curentPlayListName()const;
+    const QString& currentPlayListName()const;
 
     /**
-     * @brief play - play curent music
+     * @brief play - play current music
      * @return true if all done.
      */
     bool play(int id);
 
     /**
-     * @brief pause - set pause for curent song
+     * @brief pause - set pause for current song
      * @return true if all done.
      */
     bool pause(bool state);
@@ -157,7 +157,7 @@ public slots:
 
     /**
      * @brief pos
-     * @return posistion of curent song on double
+     * @return posistion of current song on double
      */
     double pos()const;
 
@@ -241,7 +241,7 @@ signals:
 
     /**
      * @brief posChanged
-     * This signal can be emitted when position of curent song changed
+     * This signal can be emitted when position of current song changed
      */
     void posChanged();
 
@@ -270,16 +270,16 @@ signals:
     void songsCountChanged();
 
     /**
-     * @brief curentPlayListCountChanged
+     * @brief currentPlayListCountChanged
      * This signal can be emitted when finded new songs or removed old songs
      */
-    void curentPlayListCountChanged();
+    void currentPlayListCountChanged();
 
     /**
-     * @brief curentSongChanged
+     * @brief currentSongChanged
      * emited when changed a playing song
      */
-    void curentSongChanged();
+    void currentSongChanged();
 
 };
 

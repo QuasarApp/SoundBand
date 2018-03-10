@@ -5,6 +5,6 @@ Item{
     id:theme;
     property int size: 25
     property int fontSizeMax: Screen.desktopAvailableHeight / 50;
-    property int fCurentSize: (applicationWindow.height / size > applicationWindow.width / size)? applicationWindow.width / size : applicationWindow.height / size
-    property int fontSize: (fCurentSize < fontSizeMax)? fCurentSize: fontSizeMax
+    property int fCurrentSize: (applicationWindow.height / size > applicationWindow.width / size)? applicationWindow.width / size : applicationWindow.height / size
+    property int fontSize: (fCurrentSize < fontSizeMax)? fCurrentSize: fontSizeMax
 }

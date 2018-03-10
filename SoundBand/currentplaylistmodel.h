@@ -9,11 +9,11 @@ class SyncEngine;
 /**
  * @brief The PlayListsModel class
  */
-class CurentPlayListModel : public QAbstractListModel
+class CurrentPlayListModel : public QAbstractListModel
 {
     Q_OBJECT
 
-    Q_PROPERTY(int curentSongId READ curentSongId NOTIFY curentSongIdChanged)
+    Q_PROPERTY(int currentSongId READ currentSongId NOTIFY currentSongIdChanged)
 
 private:
     SyncEngine * syncEngine;
@@ -30,7 +30,7 @@ protected:
     void fetchMore(const QModelIndex &parent) override;
 
 public:
-    explicit CurentPlayListModel(QObject *parent = nullptr);
+    explicit CurrentPlayListModel(QObject *parent = nullptr);
 
     /**
      * @brief The ServerListRoles enum
@@ -72,24 +72,24 @@ public:
 signals:
 
     /**
-     * @brief curentSongIdChanged
-     * emited when changed curent song
+     * @brief currentSongIdChanged
+     * emited when changed current song
      */
-    void curentSongIdChanged();
+    void currentSongIdChanged();
 
 public slots:
 
     /**
-     * @brief curentSongId
-     * @return id of curent song
+     * @brief currentSongId
+     * @return id of current song
      */
-    int curentSongId();
+    int currentSongId();
 
     /**
-     * @brief curentSongName
-     * @return name of curent song
+     * @brief currentSongName
+     * @return name of current song
      */
-    QString curentSongName();
+    QString currentSongName();
 };
 
 #endif // CURENTPLAYLISTMODEL_H

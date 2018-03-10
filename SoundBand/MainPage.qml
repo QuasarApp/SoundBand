@@ -6,7 +6,7 @@ Page {
     width: 600
     height: 400
 
-    property string curentPlayListName: "all"
+    property string currentPlayListName: "all"
 
     function onLoaded(){
 
@@ -22,8 +22,8 @@ Page {
                 id:serverListPage;
             }
 
-            CurentPlayList {
-                id:curentPlayList;
+            CurrentPlayList {
+                id:currentPlayList;
 
                 onCyrentsongChanged:{
                     header.changeSong(id, name);

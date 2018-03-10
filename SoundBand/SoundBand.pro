@@ -1,5 +1,9 @@
-QT += quick
-CONFIG += c++11
+QT += quick core gui network multimedia sql
+android: QT += androidextras
+mac: QT += macextras
+CONFIG += c++14
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -12,7 +16,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    syncengine.cpp \
+    ../sync/chronotime.cpp \
+    ../sync/ETcpSocket.cpp \
+    ../sync/LocalScanner.cpp \
+    ../sync/mysql.cpp \
+    ../sync/node.cpp \
+    ../sync/player.cpp \
+    ../sync/song.cpp \
+    ../sync/sync.cpp \
+    ../sync/Log.cpp\
+    ../sync/exaptions.cpp \
+    imageprovider.cpp \
+    app.cpp \
+    playlistmodel.cpp \
+    serverlistmodel.cpp \
+    playlistsmodel.cpp \
+    currentplaylistmodel.cpp
+
 
 RESOURCES += qml.qrc
 
@@ -28,3 +50,24 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES +=
+
+HEADERS += \
+    syncengine.h \
+    ../sync/chronotime.h \
+    ../sync/config.h \
+    ../sync/ETcpSocket.h \
+    ../sync/exaptions.h \
+    ../sync/LocalScanner.h \
+    ../sync/mysql.h \
+    ../sync/node.h \
+    ../sync/player.h \
+    ../sync/song.h \
+    ../sync/sync.h \
+    ../sync/Log.h \
+    imageprovider.h \
+    app.h \
+    playlistmodel.h \
+    serverlistmodel.h \
+    playlistsmodel.h \
+    currentplaylistmodel.h
+

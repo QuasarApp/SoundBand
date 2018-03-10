@@ -5,6 +5,7 @@ namespace syncLib{
 static const QStringList ValidSongs = {".mp3", ".wav", ".ogg"};
 SongHeader::SongHeader()
 {
+    this->isSelected = false;
     this->id = -1;
     this->name = "";
     this->size = 0;

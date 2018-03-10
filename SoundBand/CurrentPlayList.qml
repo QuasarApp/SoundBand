@@ -1,4 +1,4 @@
-import QtQuick 2.7
+import QtQuick 2.4
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.0
 
@@ -6,38 +6,38 @@ import "./base" as Base
 import "base/utils.js" as Utils
 
 
-Item {
+Item{
 
     readonly property real rowHeight: Utils.dp(Screen.pixelDensity, 36)
     readonly property real rowWidth: parent.width;
     readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
     readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
+    readonly property int currentSongId: currentPlayListModel.currentSongId;
 
-    function onItemClick(index) {
-        syncEngine.listen(index);
+    signal cyrentsongChanged(int id, string name)
+
+    function play(){
+
     }
 
-    Button{
-        id:listen
-        width: parent.width
-        text: qsTr("Refresh")
-        anchors.top:parent.top
-        anchors.left: parent.left
+    onCurrentSongIdChanged: {
+        cyrentsongChanged(currentSongId, currentPlayListModel.currentSongName());
+    }
 
-        onClicked: {
-            syncEngine.scan();
-        }
-
+    function onItemClick(id) {
+        syncEngine.play(id);
     }
 
     ListView {
         id: listView
+        width: parent.width
+        height: parent.height
 
-        model: serverListModel;
+        model: currentPlayListModel;
 
         Component {
-            id: serverDelegate
+            id: playListDelegate
 
             Item {
                 height: rowHeight
@@ -45,29 +45,33 @@ Item {
                 id: item
 
                 Rectangle {
-                    color: Qt.rgba(0,0,0,0)
+                    color: (currentSongId === songId)? Utils.primaryColor(): Utils.baseColor();
                     id: rectangle;
                     anchors.fill: item
 
                     Button {
-                        text: qsTr("listen")
+                        id: playButton
+                        text: qsTr("Play")
                         onClicked: {
-                            onItemClick(index)
-                        }
+                            onItemClick(songId);
 
+
+                        }
+                        width: parent.width / 5
+                        height: parent.height * 1.2
                         anchors.right: rectangle.right
                         anchors.leftMargin: textmargin
                         anchors.verticalCenter: rectangle.verticalCenter
                     }
 
                     Text {
-                        id: serverNameText
+                        id: playListDelegateNameText
                         height: width
                         anchors.left: image.right
                         anchors.top: rectangle.top
                         anchors.bottom: rectangle.bottom
-                        anchors.right: rectangle.right
-                        text: serverName !== undefined ? serverName : ""
+                        anchors.right: playButton.left
+                        text: songName !== undefined ? songName : ""
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -79,18 +83,17 @@ Item {
                         anchors.left: rectangle.left
                         anchors.leftMargin: textmargin
                         anchors.verticalCenter: rectangle.verticalCenter
-                        source: "/icons/res/folder.png"
+                        source: "image://collection/" + songId
                     }
                 }
             }
         }
-        delegate: serverDelegate
+
+        delegate: playListDelegate
 
         ScrollIndicator.horizontal: ScrollIndicator { }
         ScrollIndicator.vertical: ScrollIndicator { }
 
-        anchors.top:listen.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.fill: parent
     }
 }

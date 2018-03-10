@@ -4,16 +4,22 @@
         <file>qtquickcontrols2.conf</file>
         <file>Header.qml</file>
         <file>MainPage.qml</file>
-        <file>CurentPlayList.qml</file>
-        <file>SongDelegate.qml</file>
+        <file>CurrentPlayList.qml</file>
         <file>PlayListsControl.qml</file>
-        <file>PlayListDelegate.qml</file>
-        <file>SongDelegateSelection.qml</file>
         <file>PlayListEditPane.qml</file>
         <file>ServerListPage.qml</file>
-        <file>ServerDelegate.qml</file>
+        <file>base/BaseText.qml</file>
+        <file>base/Theme.qml</file>
+        <file>FileDialog.qml</file>
+        <file>base/utils.js</file>
+        <file>base/StatusIndicator.qml</file>
+        <file>base/BaseButton.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>res/logo.png</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>res/file.png</file>
+        <file>res/folder.png</file>
     </qresource>
 </RCC>

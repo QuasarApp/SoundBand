@@ -38,11 +38,6 @@ bool package::isValid() const{
 
     }
 
-    if(type & TypePackage::t_play){
-        ret = ret && true;
-
-    }
-
     if(type & TypePackage::t_sync && type & t_brodcaster){
         ret = ret && (playdata.seek > 0);
 

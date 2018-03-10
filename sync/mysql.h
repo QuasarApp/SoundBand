@@ -19,7 +19,7 @@ private:
      * @brief sqlErrorLog show sql error
      * @param qyery
      */
-    void sqlErrorLog(const QString& qyery);
+    void sqlErrorLog(const QString& qyery) const;
 
 public:
     MySql(const QString& databasename);
@@ -59,9 +59,18 @@ public:
      * @brief updateAvelableSongs will update the list of participants of songs.
      * @param list - [out value] list of avelable song.
      * @param playList - play list of songs.
+     * @param forEdit - flag for editing play list. If this flag = true then return all available songs with corect flag 'isSelect'
      * @return true if all done
      */
-    bool updateAvailableSongs(QList<SongHeader>& list, const QString &playList = "");
+    bool updateAvailableSongs(QList<SongHeader>& list, const QString &playList = "", bool forEditing = false);
+
+    /**
+     * @brief updateAvelableSongs will update the list of participants of songs.
+     * @param list - [out value] list of avelable song.
+     * @param playList - play list of songs (string).
+     * @return true if all done
+     */
+    bool updateAvailableSongs(QStringList& list, const QString &playList = "");
 
     /**
      * @brief removeSong - remove song from local database.
@@ -116,8 +125,19 @@ public:
      * @param list - list of play lists.
      * @return trye if all done
      */
-    bool getPlayLists(QStringList &list);
+    bool getPlayLists(QStringList &list) const;
 
+    /**
+     * @brief getSongId get song id by name
+     * @param name - name of song
+     * @return true if finded song,
+     *  bud if count of finded songs is greater than 1 return false
+     */
+    int getSongId(const QString& name);
+
+    /**
+     * @brief clear - clear free space in local database
+     */
     void clear();
 
     ~MySql();

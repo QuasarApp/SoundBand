@@ -1,41 +1,22 @@
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.7
+import QtQuick.Controls 2.0
 
 ApplicationWindow {
+
+    id: applicationWindow
     visible: true
-    width: 340
+    width: 300
     height: 480
     title: qsTr("Tabs")
 
-    SwipeView {
-        id: swipeView
+    MainPage {
+        id: core
         anchors.fill: parent
-        currentIndex: 1
-
-        ServerListPage{
-        }
-
-        MainPage {
-        }
-
-        PlayListsControl{
-        }
-
     }
 
-    footer: TabBar {
-        id: tabBar
-        currentIndex: swipeView.currentIndex
-
-        TabButton {
-            text: qsTr("Servers Page")
-        }
-
-        TabButton {
-            text: qsTr("Main Page")
-        }
-        TabButton {
-            text: qsTr("Play Lists Control Page")
-        }
+    Component.onCompleted: {
+        core.onLoaded();
     }
+
+
 }

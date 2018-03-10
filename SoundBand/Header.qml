@@ -1,101 +1,143 @@
-import QtQuick 2.4
-import QtQuick.Controls 2.3
+import QtQuick 2.7
+import QtQuick.Controls 2.0
+import QtQuick.Window 2.0
+
+import "./base" as Base
+import "base/utils.js" as Utils
 
 Item {
     id: headerForm
+
+    property int currentSongId: 0
+    property string currentSongName: qsTr("Song is not selected")
+    property bool playState: false
+
+
+    function changeSong(id, name){
+        currentSongId = id;
+        currentSongName = name;
+    }
+
     Image {
         id: viewSong
-        fillMode: Image.PreserveAspectFit
+        anchors.leftMargin: 0
+        fillMode: Image.PreserveAspectCrop
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.bottom: groupBox.top
-        anchors.left: parent.right
-        source: "/image/res/logo.png"
+        anchors.bottom: songName.top
+        anchors.left: parent.left
+        source: "image://collection/" + currentSongId;
+        visible: true;
     }
-    Text {
+
+    Base.BaseText {
         id: songName
         color: "#5e5858"
         height: 20
-        text: qsTr("Song is not selected")
+        text: currentSongName
         styleColor: "#554f4f"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         anchors.left: parent.left
-        anchors.top: parent.top
+        anchors.leftMargin: 0
         anchors.right: parent.right
-
+        anchors.rightMargin: 0
+        anchors.bottom: groupBox.top
+        anchors.bottomMargin: 0
         font.pixelSize:16
     }
 
     GroupBox {
+
         id: groupBox
-        y: 149
-        height: 200
+        height: 120
+        padding: 0;
         anchors.left: parent.left
         anchors.leftMargin: 0
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 0
-        title: qsTr("SoundBand")
+
+        Rectangle{
+            anchors.fill: parent;
+            color: Utils.backgroundColor()
+        }
 
         Button {
             id: prev
-            Image {
-                id: _Iprev
-                source: "file"
-                anchors.fill: parent
-            }
-            width: parent.width/4
+
+            width: parent.width/3
             text: qsTr("<<")
             anchors.left: parent.left
+
+            onClicked: {
+                syncEngine.prev();
+            }
         }
 
         Button {
             id: play
-            width: parent.width/4
-            text: qsTr("Play")
+            width: parent.width/3
+            text: (playState)? qsTr("Pause"): qsTr("Play")
             anchors.left: prev.right
-        }
 
-        Button {
-            id: stop
-            width: parent.width/4
-            text: qsTr("Stop")
-            anchors.right: next.left
+            onClicked: {
+                syncEngine.pause(playState);
+                playState = !playState;
+            }
+
         }
 
         Button {
             id: next
-            Image {
-                id: _Inext
-                source: "file"
-            }
-            width: parent.width/4
+            width: parent.width/3
             text: qsTr(">>")
             anchors.right: parent.right
+
+            onClicked: {
+                syncEngine.next();
+            }
         }
 
-        Text {
-            id: description
-            color: "#b5abab"
-            text: qsTr("Song is not selected")
-            styleColor: "#a29a9a"
-            font.pointSize: 12
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
+        Slider {
+            id: valume
+            from: 0
+            to: 100
+            value: syncEngine.getValume()
+            width: parent.width / 4;
             anchors.bottom: progress.top
             anchors.top: next.bottom
             anchors.left: parent.left
+            onMoved: {
+                syncEngine.setValume(value);
+            }
+        }
+
+        Base.BaseText {
+            id: valumeText
+            color: "#b5abab"
+            text: qsTr("Valume")
+            styleColor: "#a29a9a"
+            verticalAlignment: Text.AlignVCenter
+            anchors.bottom: progress.top
+            anchors.top: next.bottom
+            anchors.left: valume.right
             anchors.right: parent.right
         }
 
         Slider {
             id: progress
-            value: 0.5
+            value: syncEngine.pos
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
+            onMoved:{
+                syncEngine.setPos(value);
+            }
         }
     }
+
+
+
 }

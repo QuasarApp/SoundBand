@@ -26,6 +26,7 @@ struct Syncer
 class SongHeader{
 
 public:
+    bool isSelected;
     int id;
     QString name;
     int size;
@@ -36,6 +37,14 @@ public:
     bool isNameValid() const;
     virtual bool isValid() const;
     virtual ~SongHeader();
+
+    /**
+     * serialize data:
+     * id,
+     * size,
+     * and,
+     * name
+     */
     friend QDataStream& operator << (QDataStream& stream, const SongHeader& song);
     friend QDataStream& operator >> (QDataStream& stream, SongHeader& song);
 };

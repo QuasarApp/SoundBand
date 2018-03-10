@@ -36,7 +36,8 @@ SOURCES += \
     ../sync/player.cpp \
     ../sync/chronotime.cpp \
     ../sync/mysql.cpp \
-    ../sync/Log.cpp
+    ../sync/Log.cpp \
+    ../sync/exaptions.cpp
 
 HEADERS += \
         mainwindow.h \

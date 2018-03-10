@@ -25,7 +25,8 @@ private:
     Node *node;
     Player *player;
     QList<SongHeader> playList;
-    SongHeader *curentSong;
+    QString lastUsedPlayList;
+    int currentSongIndex;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     int resyncCount;
@@ -35,7 +36,7 @@ private:
     MySql *sql;
     int port;
     /**
-     * @brief findHeader set curent song if playList have playng song
+     * @brief findHeader set current song if playList have playng song
      * @return true if all done
      */
     bool findHeader(const Song& song);
@@ -53,7 +54,14 @@ private:
      * @return true if everything's done
      */
     bool createPackage(Type type , package& pac);
+
 private slots:
+
+    /**
+     * @brief updateSongs use method update avelable songs from sql database
+     * @return true if all done
+     */
+    bool updateSongs(QList<SongHeader> &list, const QString &playList = "");
 
     /**
      * @brief packageRender - the handler of all messages received.
@@ -72,6 +80,13 @@ private slots:
     void endPlay(QMediaPlayer::State state);
 
 public:
+
+    /**
+     * @brief getSqlApi
+     * @return pointer of sql api
+     */
+    MySql* getSqlApi();
+
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param header of song
@@ -152,11 +167,16 @@ public:
      */
     const QList<ETcpSocket*>& getServersList() const;
 
+    /**
+     * @brief listen - a server
+     * @param server - host
+     * @return true id all done
+     */
     bool listen(ETcpSocket* server);
 
     /**
      * @brief getVersion
-     * @return curent version of library
+     * @return current version of library
      */
     QString getVersion();
 
@@ -177,7 +197,7 @@ public:
 
     /**
      * @brief seek
-     * @return curent playning milisecond
+     * @return current playning milisecond
      */
     unsigned int seek()const;
 
@@ -188,10 +208,16 @@ public:
     const QList<SongHeader> *getPlayList() const;
 
     /**
-     * @brief getCurentSong
+     * @brief SongHeader::getCurrentSongIndex
+     * @return
+     */
+    int getCurrentSongIndex()const;
+
+    /**
+     * @brief getCurrentSong
      * @return playing song.
      */
-    const SongHeader *getCurentSong() const;
+    const SongHeader *getCurrentSong() const;
 
     /**
      * @brief getEndPoint
@@ -206,7 +232,26 @@ public:
      */
     int addNewSong(const QString &url);
 
-    Sync(const QString address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
+    /**
+     * @brief updatePlayList this method set a new playlist
+     * @param id - id of playlist
+     * @return true if all don
+     */
+    bool updatePlayList(const QString& _playList);
+
+    /**
+     * @brief next
+     * @return true if all done;
+     */
+    bool next();
+
+    /**
+     * @brief prev
+     * @return true if all done;
+     */
+    bool prev();
+
+    Sync(const QString &address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
 
 signals:
@@ -223,6 +268,24 @@ signals:
      * signal if changed count of activity servers.
      */
     void networkStateChange();
+
+    /**
+     * @brief currentPlayListChanged
+     * emited when added new songs into active playlist
+     */
+    void currentPlayListChanged();
+
+    /**
+     * @brief currentPlayListChanged
+     * emited when selected a new playList
+     */
+    void selectedNewPlatList();
+
+    /**
+     * @brief currentSongChanged
+     * emited when changed a playing song
+     */
+    void currentSongChanged();
 
 };
 }

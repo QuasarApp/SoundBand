@@ -15,6 +15,7 @@ void PlayListModel::setSource(SyncEngine *engine){
         disconnect(syncEngine, SIGNAL(songsCountChanged()) ,this, SLOT(onPlayListChanged()));
     syncEngine = engine;
     connect(syncEngine, SIGNAL(songsCountChanged()),this ,SLOT(onPlayListChanged()));
+    onPlayListChanged();
 }
 
 QHash<int, QByteArray> PlayListModel::roleNames()const{
@@ -37,7 +38,7 @@ void PlayListModel::onPlayListChanged(){
 
 bool PlayListModel::canFetchMore(const QModelIndex & /* index */) const
 {
-    if (itemCount < playList.size())
+    if (itemCount != playList.size())
         return true;
     else
         return false;
@@ -48,11 +49,20 @@ void PlayListModel::fetchMore(const QModelIndex & /* index */)
     int remainder = playList.size() - itemCount;
     int itemsToFetch = qMin(100, remainder);
 
-    beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
+    if(itemsToFetch < 0){
+        beginRemoveRows(QModelIndex(), 0, 0 - itemsToFetch - 1 );
 
-    itemCount += itemsToFetch;
+        itemCount += itemsToFetch;
 
-    endInsertRows();
+        endRemoveRows();
+    }else{
+        beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
+
+        itemCount += itemsToFetch;
+
+        endInsertRows();
+    }
+
 }
 
 int PlayListModel::rowCount(const QModelIndex & /* parent */) const
@@ -84,21 +94,17 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
 
 bool PlayListModel::select(int id){
 
-    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList.end(); i++){
+    for(QList<syncLib::SongHeader>::Iterator i = playList.begin(); i < playList.end(); i++){
         if(i->id == id){
-           return i->isSelected = true;
-        }
-    }
 
-    return false;
-}
+            if((i->isSelected = !i->isSelected)){
+                syncEngine->addToPlayList(id, playListName);
+            }
+            else{
+                syncEngine->removeFromPlayList(id, playListName);
+            }
 
-bool PlayListModel::unSelect(int id){
-
-    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList.end(); i++){
-        if(i->id == id){
-            i->isSelected = false;
-            return true;
+            return i->isSelected;
         }
     }
 
@@ -108,7 +114,7 @@ bool PlayListModel::unSelect(int id){
 QList<int> PlayListModel::getSelected(){
     QList<int> result;
 
-    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList.end(); i++){
+    for(QList<syncLib::SongHeader>::Iterator i = playList.begin(); i < playList.end(); i++){
         if(i->isSelected){
             result.push_back(i->id);
         }
@@ -118,7 +124,7 @@ QList<int> PlayListModel::getSelected(){
 
 bool PlayListModel::isSelected(int id){
 
-    for(QList<syncLib::SongHeader>::Iterator i = 0; i < playList.end(); i++){
+    for(QList<syncLib::SongHeader>::Iterator i = playList.begin(); i < playList.end(); i++){
         if(i->id == id){
             return i->isSelected;
         }

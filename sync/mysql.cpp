@@ -50,7 +50,20 @@ void MySql::initDB(const QString &database){
     db->setDatabaseName(d.absolutePath());
     if(db->open()){
         qyery = new QSqlQuery(*db);
-        QString qyer = QString("CREATE TABLE IF NOT EXISTS songs("
+
+        /*
+         *https://stackoverflow.com/questions/40863216/sqlite-why-is-foreign-key-constraint-not-working-here
+        */
+
+        QString qyer = QString("PRAGMA foreign_keys = ON");
+        if(!qyery->exec(qyer)){
+            sqlErrorLog(qyer);
+            throw InitDBError();
+            delete db;
+            return;
+        }
+
+        qyer = QString("CREATE TABLE IF NOT EXISTS songs("
                      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                      "name VARCHAR(100), "
                      "size INT NOT NULL, "
@@ -62,6 +75,7 @@ void MySql::initDB(const QString &database){
             delete db;
             return;
         }
+
 
         qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS isongs ON songs(name,size)");
         if(!qyery->exec(qyer)){
@@ -87,7 +101,7 @@ void MySql::initDB(const QString &database){
         qyer = QString("CREATE TABLE IF NOT EXISTS playlistsdata("
                      "playlist INT NOT NULL,"
                      "song INT NOT NULL,"
-                     "FOREIGN KEY(playlist) REFERENCES playlists(id)"
+                     "FOREIGN KEY(playlist) REFERENCES playlists(name)"
                         " ON UPDATE CASCADE"
                         " ON DELETE CASCADE,"
                      "FOREIGN KEY(song) REFERENCES songs(id)"
@@ -155,8 +169,8 @@ int MySql::save(const Song &song){
     return result;
 }
 
-int MySql::save(const QString &url){
-    QFile f(url);
+int MySql::save(const QString &url){    
+    QFile f(QUrl(url).toLocalFile());
     if(!f.open(QIODevice::ReadOnly)){
         return -1;
     }
@@ -203,9 +217,10 @@ bool MySql::load(const SongHeader &song,Song &result){
     return true;
 }
 
-bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playList){
+bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playList, bool forEditing){
     QString qyer;
-    if(playList.isEmpty() || playList == ALL_SONGS_LIST){
+
+    if(playList.isEmpty() || playList == ALL_SONGS_LIST || forEditing){
         qyer = QString("SELECT id,name,size from songs");
     }else{
         qyer = QString("SELECT id,name,size from songs where "
@@ -222,11 +237,34 @@ bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playLis
 
     while(qyery->next()){
         SongHeader song;
+        song.isSelected = !forEditing || playList == ALL_SONGS_LIST;
         song.id = qyery->value(0).toInt();
         song.name = qyery->value(1).toString();
         song.size = qyery->value(2).toInt();
         list.push_back(song);
     }
+
+    if(forEditing && list.size() > 0 && playList != ALL_SONGS_LIST){
+        QString qyer;
+        qyer = QString("select song from playlistsdata where "
+                           " playlist='%0'").arg(playList);
+
+        if(!qyery->exec(qyer)){
+            sqlErrorLog(qyer);
+            return false;
+        }
+
+        while(qyery->next()){
+            for(SongHeader& item:list){
+                int id = qyery->value(0).toInt();
+                if(item.id == id){
+                    item.isSelected = true;
+                    break;
+                }
+            }
+        }
+    }
+
 
     return true;
 }

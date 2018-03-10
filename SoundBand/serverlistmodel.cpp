@@ -30,7 +30,7 @@ void ServerListModel::onServersListsChanged(){
 
 bool ServerListModel::canFetchMore(const QModelIndex & /* index */) const
 {
-    if (servers && itemCount < servers->size())
+    if (servers && itemCount != servers->size())
         return true;
     else
         return false;
@@ -41,11 +41,19 @@ void ServerListModel::fetchMore(const QModelIndex & /* index */)
     int remainder = servers->size() - itemCount;
     int itemsToFetch = qMin(100, remainder);
 
-    beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
+    if(itemsToFetch < 0){
+        beginRemoveRows(QModelIndex(), 0, 0 - itemsToFetch - 1 );
 
-    itemCount += itemsToFetch;
+        itemCount += itemsToFetch;
 
-    endInsertRows();
+        endRemoveRows();
+    }else{
+        beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
+
+        itemCount += itemsToFetch;
+
+        endInsertRows();
+    }
 }
 
 int ServerListModel::rowCount(const QModelIndex & /* parent */) const

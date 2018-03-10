@@ -59,9 +59,10 @@ public:
      * @brief updateAvelableSongs will update the list of participants of songs.
      * @param list - [out value] list of avelable song.
      * @param playList - play list of songs.
+     * @param forEdit - flag for editing play list. If this flag = true then return all available songs with corect flag 'isSelect'
      * @return true if all done
      */
-    bool updateAvailableSongs(QList<SongHeader>& list, const QString &playList = "");
+    bool updateAvailableSongs(QList<SongHeader>& list, const QString &playList = "", bool forEditing = false);
 
     /**
      * @brief updateAvelableSongs will update the list of participants of songs.

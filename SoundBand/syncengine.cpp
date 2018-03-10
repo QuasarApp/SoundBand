@@ -164,7 +164,7 @@ bool SyncEngine::setPlayList(const QString& name){
 }
 
 bool SyncEngine::getPlayList(QList<syncLib::SongHeader> &playList, const QString &name){
-    return sqlApi->updateAvailableSongs(playList, name);
+    return sqlApi->updateAvailableSongs(playList, name, true);
 }
 
 const QString& SyncEngine::lastError() const{

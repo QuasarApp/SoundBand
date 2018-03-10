@@ -26,6 +26,8 @@ private:
     ServerListModel *serverListModel;
     PlayListsModel *playListsModel;
     CurrentPlayListModel *currentPlayListModel;
+    PlayListModel *playListModel;
+
 
 
 public:

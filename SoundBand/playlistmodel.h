@@ -74,18 +74,11 @@ signals:
 public slots:
 
     /**
-     * @brief select a song from playList;
+     * @brief select a song from playList or unselected if item has been selected;
      * @param id - if of song
      * @return true if all done
      */
     bool select(int id);
-
-    /**
-     * @brief unselect a song from playList;
-     * @param id - if of song
-     * @return true if all done
-     */
-    bool unSelect(int id);
 
     /**
      * @brief getSelected

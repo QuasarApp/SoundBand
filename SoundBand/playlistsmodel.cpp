@@ -31,7 +31,7 @@ void PlayListsModel::onPlayListsChanged(){
 
 bool PlayListsModel::canFetchMore(const QModelIndex & /* index */) const
 {
-    if (itemCount < playLists.size())
+    if (itemCount != playLists.size())
         return true;
     else
         return false;
@@ -42,11 +42,20 @@ void PlayListsModel::fetchMore(const QModelIndex & /* index */)
     int remainder = playLists.size() - itemCount;
     int itemsToFetch = qMin(100, remainder);
 
-    beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
+    if(itemsToFetch < 0){
+        beginRemoveRows(QModelIndex(), 0, 0 - itemsToFetch - 1 );
 
-    itemCount += itemsToFetch;
+        itemCount += itemsToFetch;
 
-    endInsertRows();
+        endRemoveRows();
+    }else{
+        beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
+
+        itemCount += itemsToFetch;
+
+        endInsertRows();
+    }
+
 }
 
 int PlayListsModel::rowCount(const QModelIndex & /* parent */) const

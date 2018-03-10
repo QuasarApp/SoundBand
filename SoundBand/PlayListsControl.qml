@@ -77,18 +77,20 @@ Item {
                                     anchors.top: parent.top
                                     onClicked: {
                                         switch_pane(editPlayList);
-                                        popup.close()
+                                        editPlayList.showPlayList(playListName);
+                                        popup.close();
                                     }
                                 }
 
                                 Button {
-                                    text: qsTr("Remove")
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.bottom: parent.bottom
-                                    height: parent.height/2
+                                    text: qsTr("Remove");
+                                    anchors.left: parent.left;
+                                    anchors.right: parent.right;
+                                    anchors.bottom: parent.bottom;
+                                    height: parent.height/2;
                                     onClicked: {
-                                        popup.close()
+                                        syncEngine.removePlayList(playListName);
+                                        popup.close();
 
                                     }
                                 }
@@ -153,6 +155,7 @@ Item {
                 anchors.bottom: parent.bottom
 
                 onClicked: {
+                    getName.open();
 
                 }
 
@@ -163,6 +166,67 @@ Item {
         }
 
         anchors.fill: playListsControl;
+    }
+
+    Popup{
+        id:getName
+        modal: true
+        focus: true
+        width: controlBox.width;
+        height: Utils.dp(Screen.pixelDensity, 60);
+        x: 0;
+        y: controlBox.height / 2
+
+        Base.BaseText{
+            id:text
+            text : qsTr("write name:");
+            anchors.left: parent.left;
+            anchors.top:parent.top;
+            anchors.bottom:parent.bottom;
+
+        }
+
+        Rectangle{
+            color: Qt.rgba(0,0,0,0)
+            border.color: Utils.primaryColor();
+            radius: Utils.dp(Screen.pixelDensity, 2);
+            TextEdit{
+                id:newName;
+                text : qsTr("new PlayList");
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Utils.baseFontSize(Screen.pixelDensity)
+                anchors.fill: parent
+            }
+            anchors.top:parent.top;
+            anchors.topMargin: Utils.dp(Screen.pixelDensity, 5);
+
+            anchors.bottom:parent.bottom;
+            anchors.bottomMargin: Utils.dp(Screen.pixelDensity, 5);
+
+            anchors.left:text.right
+            anchors.leftMargin: Utils.dp(Screen.pixelDensity, 10);
+
+            anchors.right: ok.left
+            anchors.rightMargin: Utils.dp(Screen.pixelDensity, 10);
+
+        }
+
+
+        Base.BaseButton{
+            id:ok;
+            width: 80;
+            anchors.top:parent.top;
+            anchors.bottom:parent.bottom;
+            anchors.right: parent.right;
+
+            onClicked: {
+                syncEngine.createPlayList(newName.text);
+                getName.close();
+
+            }
+
+        }
     }
 
 
@@ -183,8 +247,11 @@ Item {
         nameFilters: "*.mp3"
         onFilesSelected: {
             switch_pane(editPlayList);
-          //  messageDialog.text = "Cannot open file "+ currentFolder() + "/" + fileName
-          //  messageDialog.open()
+
+            for(var i = 0;  i < selectedFiles.length; i++){
+                syncEngine.addSong(selectedFiles[i]);
+            }
+
         }
     }
 

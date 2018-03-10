@@ -1,3 +1,4 @@
+
 function dp(pixelDensity,x) {
 	return (pixelDensity * 25.4 < 120) ? x : x*(pixelDensity * 25.4/160);
 }
@@ -24,5 +25,9 @@ function backgroundColor() {
 
 function backgroundAltColor() {
     return "#333333"
+}
+
+function baseFontSize(pixelDensity){
+    return dp(pixelDensity, 14);
 }
 

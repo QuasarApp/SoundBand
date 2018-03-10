@@ -40,7 +40,7 @@ Item {
     function map(obj){
         var index = selectedFiles.indexOf(obj);
         if(index === -1){
-            selectedFiles.push(obj);
+            selectedFiles.push(folderListModel.folder + "/" + obj);
             return true;
         }else{
             selectedFiles.splice(index,1);

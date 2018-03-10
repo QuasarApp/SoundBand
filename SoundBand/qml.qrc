@@ -13,6 +13,7 @@
         <file>FileDialog.qml</file>
         <file>base/utils.js</file>
         <file>base/StatusIndicator.qml</file>
+        <file>base/BaseButton.qml</file>
     </qresource>
     <qresource prefix="/image">
         <file>res/logo.png</file>

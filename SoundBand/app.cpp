@@ -23,6 +23,9 @@ App::App(QObject* ptr):
 
     currentPlayListModel = new CurrentPlayListModel();
     currentPlayListModel->setSource(syncEngine);
+
+    playListModel = new PlayListModel();
+    playListModel->setSource(syncEngine);
 }
 
 bool App::run(){
@@ -34,6 +37,8 @@ bool App::run(){
     ctxt->setContextProperty("serverListModel", serverListModel);
     ctxt->setContextProperty("playListsModel", playListsModel);
     ctxt->setContextProperty("currentPlayListModel", currentPlayListModel);
+    ctxt->setContextProperty("playListModel", playListModel);
+
 
     qmlEngine->load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (qmlEngine->rootObjects().isEmpty())

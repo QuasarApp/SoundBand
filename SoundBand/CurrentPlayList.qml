@@ -13,7 +13,7 @@ Item{
     readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
     readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
-    readonly property int curentSongId: currentPlayListModel.curentSongId;
+    readonly property int currentSongId: currentPlayListModel.currentSongId;
 
     signal cyrentsongChanged(int id, string name)
 
@@ -21,8 +21,8 @@ Item{
 
     }
 
-    onCurentSongIdChanged: {
-        cyrentsongChanged(curentSongId, currentPlayListModel.curentSongName());
+    onCurrentSongIdChanged: {
+        cyrentsongChanged(currentSongId, currentPlayListModel.currentSongName());
     }
 
     function onItemClick(id) {
@@ -45,7 +45,7 @@ Item{
                 id: item
 
                 Rectangle {
-                    color: (curentSongId === songId)? Utils.primaryColor(): Utils.baseColor();
+                    color: (currentSongId === songId)? Utils.primaryColor(): Utils.baseColor();
                     id: rectangle;
                     anchors.fill: item
 

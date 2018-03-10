@@ -9,13 +9,13 @@ Item {
     id: headerForm
 
     property int currentSongId: 0
-    property string curentSongName: qsTr("Song is not selected")
+    property string currentSongName: qsTr("Song is not selected")
     property bool playState: false
 
 
     function changeSong(id, name){
         currentSongId = id;
-        curentSongName = name;
+        currentSongName = name;
     }
 
     Image {
@@ -34,7 +34,7 @@ Item {
         id: songName
         color: "#5e5858"
         height: 20
-        text: curentSongName
+        text: currentSongName
         styleColor: "#554f4f"
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter

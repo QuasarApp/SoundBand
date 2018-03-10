@@ -24,48 +24,6 @@ Item {
     Item {
         id: playListsControlSource
 
-        GroupBox {
-            id: controlBox
-            title: qsTr("Your playlists")
-            height: 100;
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            Button{
-                id:add
-                width: parent.width / 3
-                text: qsTr("Create")
-                anchors.top:parent.top
-                anchors.left: parent.left
-
-                onClicked: {
-
-                }
-
-            }
-
-//            Rectangle{
-//                color: "#ffffff";
-//                width: parent.width / 3
-//                TextEdit{
-
-//                    id:edit
-//                    text: qsTr("Create")
-//                    verticalAlignment: Text.AlignVCenter
-//                    horizontalAlignment: Text.AlignHCenter
-
-//                    anchors.fill: parent;
-
-//                }
-//                anchors.top:parent.top
-//                anchors.left: add.right
-//                radius: width / 4;
-//                border.color: "black"
-//            }
-
-        }
-
         ListView {
             id: playLists
 
@@ -88,26 +46,55 @@ Item {
                         id: rectangle;
                         anchors.fill: item
 
-                        Button {
-                            id: editButton
-                            text: qsTr("Edit")
-                            onClicked: {
-                                switch_pane(editPlayList);
-                            }
 
-                            anchors.right: rectangle.right
-                            anchors.leftMargin: textmargin
-                            anchors.verticalCenter: rectangle.verticalCenter
+                        MouseArea{
+                            onPressAndHold: {
+                                popup.y = mouseY
+                                popup.open();
+                            }
+                            anchors.fill: parent;
                         }
 
-                        Button {
-                            text: qsTr("Remove")
-                            onClicked: {
+                        Popup {
+                            id: popup
+                            modal: true
+                            focus: true
+                            x:parent.width / 2 - Utils.dp(Screen.pixelDensity, 75)
+                            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
+                            Rectangle {
+                                height: Utils.dp(Screen.pixelDensity, 50)
+                                color: Utils.backgroundAltColor()
+                                width: Utils.dp(Screen.pixelDensity, 150)
+                                radius: Utils.dp(Screen.pixelDensity, 2)
+
+                                Button {
+                                    id: editButton
+                                    text: qsTr("Edit")
+                                    height: parent.height/2
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.top: parent.top
+                                    onClicked: {
+                                        switch_pane(editPlayList);
+                                        popup.close()
+                                    }
+                                }
+
+                                Button {
+                                    text: qsTr("Remove")
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.bottom: parent.bottom
+                                    height: parent.height/2
+                                    onClicked: {
+                                        popup.close()
+
+                                    }
+                                }
                             }
 
-                            anchors.right: editButton.left
-                            anchors.verticalCenter: rectangle.verticalCenter
+
                         }
 
                         Text {
@@ -140,6 +127,41 @@ Item {
             model: playListsModel;
 
         }
+
+        Rectangle{
+            id: controlBox
+            height: 40;
+            border.width: 1
+            color: Utils.backgroundColor()
+
+            Base.BaseText{
+
+                text: qsTr("Your playlists")
+                anchors.top:parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.leftMargin: 20;
+                anchors.right: add.left
+            }
+
+            Button{
+                id:add
+                width: height
+                text: qsTr("+")
+                anchors.top:parent.top
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+
+                onClicked: {
+
+                }
+
+            }
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+        }
+
         anchors.fill: playListsControl;
     }
 

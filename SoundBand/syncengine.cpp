@@ -8,9 +8,9 @@ SyncEngine::SyncEngine()
     sqlApi = sync->getSqlApi();
 
     connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
-    connect(sync, SIGNAL(curentPlayListChanged()), this, SIGNAL(curentPlayListCountChanged()));
+    connect(sync, SIGNAL(currentPlayListChanged()), this, SIGNAL(currentPlayListCountChanged()));
     connect(sync, SIGNAL(seekChanged(qint64)), this, SLOT(seekChanged(qint64)));
-    connect(sync, SIGNAL(curentSongChanged()), this, SIGNAL(curentSongChanged()));
+    connect(sync, SIGNAL(currentSongChanged()), this, SIGNAL(currentSongChanged()));
 
 }
 
@@ -18,8 +18,8 @@ void SyncEngine::seekChanged(qint64){
     emit posChanged();
 }
 
-QString SyncEngine::curentSongName()const{
-    auto song = sync->getCurentSong();
+QString SyncEngine::currentSongName()const{
+    auto song = sync->getCurrentSong();
 
     if(!song)
         return tr("none");
@@ -27,8 +27,8 @@ QString SyncEngine::curentSongName()const{
     return song->name;
 }
 
-int SyncEngine::curentSongId()const{
-    auto song = sync->getCurentSong();
+int SyncEngine::currentSongId()const{
+    auto song = sync->getCurrentSong();
 
     if(!song)
         return -1;
@@ -52,13 +52,13 @@ bool SyncEngine::init(){
     return true;
 }
 
-const QList<syncLib::SongHeader>* SyncEngine::curentPlayList() const{
+const QList<syncLib::SongHeader>* SyncEngine::currentPlayList() const{
 
     return sync->getPlayList();
 }
 
-const QString& SyncEngine::curentPlayListName() const{
-    return _curentPlayListName;
+const QString& SyncEngine::currentPlayListName() const{
+    return _currentPlayListName;
 }
 
 void SyncEngine::allPlayLists(QStringList &playList)const{
@@ -234,8 +234,8 @@ bool SyncEngine::addToPlayList(int id, const QString &playList){
         return false;
     }
 
-    if(playList == _curentPlayListName)
-        emit curentPlayListCountChanged();
+    if(playList == _currentPlayListName)
+        emit currentPlayListCountChanged();
 
     return true;
 
@@ -250,8 +250,8 @@ bool SyncEngine::removeFromPlayList(int id, const QString &playList){
         return false;
     }
 
-    if(playList == _curentPlayListName)
-        emit curentPlayListCountChanged();
+    if(playList == _currentPlayListName)
+        emit currentPlayListCountChanged();
 
     return true;
 

@@ -4,7 +4,7 @@
         <file>qtquickcontrols2.conf</file>
         <file>Header.qml</file>
         <file>MainPage.qml</file>
-        <file>CurentPlayList.qml</file>
+        <file>CurrentPlayList.qml</file>
         <file>PlayListsControl.qml</file>
         <file>PlayListEditPane.qml</file>
         <file>ServerListPage.qml</file>

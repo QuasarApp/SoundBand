@@ -26,7 +26,7 @@ private:
     Player *player;
     QList<SongHeader> playList;
     QString lastUsedPlayList;
-    int curentSongIndex;
+    int currentSongIndex;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     int resyncCount;
@@ -36,7 +36,7 @@ private:
     MySql *sql;
     int port;
     /**
-     * @brief findHeader set curent song if playList have playng song
+     * @brief findHeader set current song if playList have playng song
      * @return true if all done
      */
     bool findHeader(const Song& song);
@@ -176,7 +176,7 @@ public:
 
     /**
      * @brief getVersion
-     * @return curent version of library
+     * @return current version of library
      */
     QString getVersion();
 
@@ -197,7 +197,7 @@ public:
 
     /**
      * @brief seek
-     * @return curent playning milisecond
+     * @return current playning milisecond
      */
     unsigned int seek()const;
 
@@ -208,16 +208,16 @@ public:
     const QList<SongHeader> *getPlayList() const;
 
     /**
-     * @brief SongHeader::getCurentSongIndex
+     * @brief SongHeader::getCurrentSongIndex
      * @return
      */
-    int getCurentSongIndex()const;
+    int getCurrentSongIndex()const;
 
     /**
-     * @brief getCurentSong
+     * @brief getCurrentSong
      * @return playing song.
      */
-    const SongHeader *getCurentSong() const;
+    const SongHeader *getCurrentSong() const;
 
     /**
      * @brief getEndPoint
@@ -270,22 +270,22 @@ signals:
     void networkStateChange();
 
     /**
-     * @brief curentPlayListChanged
+     * @brief currentPlayListChanged
      * emited when added new songs into active playlist
      */
-    void curentPlayListChanged();
+    void currentPlayListChanged();
 
     /**
-     * @brief curentPlayListChanged
+     * @brief currentPlayListChanged
      * emited when selected a new playList
      */
     void selectedNewPlatList();
 
     /**
-     * @brief curentSongChanged
+     * @brief currentSongChanged
      * emited when changed a playing song
      */
-    void curentSongChanged();
+    void currentSongChanged();
 
 };
 }

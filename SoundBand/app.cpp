@@ -6,7 +6,7 @@
 #include "serverlistmodel.h"
 #include "playlistsmodel.h"
 #include "playlistmodel.h"
-#include "curentplaylistmodel.h"
+#include "currentplaylistmodel.h"
 
 
 App::App(QObject* ptr):
@@ -21,7 +21,7 @@ App::App(QObject* ptr):
     playListsModel = new PlayListsModel();
     playListsModel->setSource(syncEngine);
 
-    currentPlayListModel = new CurentPlayListModel();
+    currentPlayListModel = new CurrentPlayListModel();
     currentPlayListModel->setSource(syncEngine);
 }
 

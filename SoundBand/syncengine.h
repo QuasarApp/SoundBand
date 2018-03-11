@@ -15,15 +15,13 @@ class SyncEngine : public QObject
     Q_PROPERTY(QString lastError READ lastError NOTIFY error)
     Q_PROPERTY(double pos READ pos WRITE setPos NOTIFY posChanged)
     Q_PROPERTY(int repeat READ repeat WRITE setRepeat NOTIFY repeatChanged)
+    Q_PROPERTY(QString currentPlayListName READ currentPlayListName NOTIFY currentPlayListNameChanged)
 
-    enum Repeat{noRepeat, oneMusic, allPlayList};
 
 private:
     syncLib::Sync *sync;
     syncLib::MySql * sqlApi;
-    QString _currentPlayListName;
     QString _lastError;
-    Repeat _repeat;
     QSettings settings;
 
 private slots:
@@ -77,13 +75,6 @@ public slots:
      * @return return current Play List
      */
     const QList<syncLib::SongHeader> *currentPlayList() const;
-
-    /**
-     * @brief selectPlayList - selected a ne play list for player
-     * @param list - name of play list
-     * @return true if all done;
-     */
-    bool selectPlayList(const QString& list);
 
     /**
      * @brief currentPlayListName
@@ -280,6 +271,12 @@ signals:
      * emited when changed a playing song
      */
     void currentSongChanged();
+
+    /**
+     * @brief currentPlayListNameChanged
+     *  emited when selected new PlayList;
+     */
+    void currentPlayListNameChanged();
 
 };
 

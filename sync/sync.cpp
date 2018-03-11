@@ -4,6 +4,7 @@
 #include <QSqlQuery>
 #include "exaptions.h"
 #include "chronotime.h"
+#include "cmath"
 
 #ifdef QT_DEBUG
 #include <QDebug>
@@ -52,6 +53,10 @@ bool Sync::updateSongs(QList<SongHeader>& list, const QString& playList){
 
     emit currentPlayListChanged();
     return true;
+}
+
+const QString& Sync::getPlayListName() const{
+    return lastUsedPlayList;
 }
 
 bool Sync::findHeader(const Song &song){
@@ -130,10 +135,23 @@ bool Sync::play(QString url){
     return Sync::play(id);
 }
 
+Repeat Sync::repeat()const{
+    return _repeat;
+}
+
+void Sync::setRepeat(Repeat flag){
+    _repeat = flag;
+}
+
 bool Sync::pause(bool state){
 
-    if(!fbroadcaster)
-        return false;
+    if(!fbroadcaster){
+
+        if(playList.isEmpty())
+            return false;
+
+        return play(playList[0]);
+    }
 
     if(state){
         player->pause();
@@ -426,8 +444,26 @@ void Sync::deepScaned(QList<ETcpSocket *> * list){
 
 void Sync::endPlay(QMediaPlayer::State state){
     if(state == QMediaPlayer::StoppedState){
-        currentSongIndex = -1;
-        fbroadcaster = false;
+
+        switch (_repeat) {
+        case allPlayListRandom:
+            next(true);
+            break;
+
+        case allPlayList:
+            next(false);
+            break;
+
+        case oneMusic:
+            play(playList[currentSongIndex]);
+            break;
+
+        default:
+            currentSongIndex = -1;
+            fbroadcaster = false;
+            break;
+        }
+
     }
 }
 
@@ -493,11 +529,11 @@ bool Sync::updatePlayList(const QString &_playList){
 
 }
 
-bool Sync::next(){
+bool Sync::next(bool random){
     if(playList.isEmpty())
         return false;
 
-    currentSongIndex = (currentSongIndex + 1) % playList.size();
+    currentSongIndex = (currentSongIndex + ((random)? rand() % 10000:1)) % playList.size();
     return play(playList[currentSongIndex]);
 }
 

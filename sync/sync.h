@@ -14,6 +14,9 @@ typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class Node;
 
+enum Repeat{noRepeat, oneMusic, allPlayList, allPlayListRandom};
+
+
 /**
  * @brief The Sync class is main class of this library.
  * the 'sync' has supported synced playning media files on network and saving media data into local database.
@@ -35,6 +38,8 @@ private:
     LocalScanner deepScaner;
     MySql *sql;
     int port;
+    Repeat _repeat;
+
     /**
      * @brief findHeader set current song if playList have playng song
      * @return true if all done
@@ -80,6 +85,24 @@ private slots:
     void endPlay(QMediaPlayer::State state);
 
 public:
+
+    /**
+     * @brief getPlayListName
+     * @return name of playlist
+     */
+    const QString& getPlayListName()const;
+
+    /**
+     * @brief repeat
+     * @return flag of repeat
+     */
+    Repeat repeat()const;
+
+    /**
+     * @brief setRepeat
+     * @param flag new flag of repeat
+     */
+    void setRepeat(Repeat flag);
 
     /**
      * @brief getSqlApi
@@ -243,7 +266,7 @@ public:
      * @brief next
      * @return true if all done;
      */
-    bool next();
+    bool next(bool random = false);
 
     /**
      * @brief prev

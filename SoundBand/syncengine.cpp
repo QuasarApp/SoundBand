@@ -36,19 +36,9 @@ int SyncEngine::currentSongId()const{
     return song->id;
 }
 
-bool SyncEngine::selectPlayList(const QString &list){
-
-    if(!sync->updatePlayList(list)){
-        _lastError = tr("play list not found!");
-        emit error();
-        return false;
-    }
-
-    return true;
-}
-
 bool SyncEngine::init(){
     sync->updatePlayList(settings.value(CURRENT_PLAYLIST_KEY, ALL_SONGS_LIST).toString());
+    emit currentPlayListNameChanged();
     return true;
 }
 
@@ -58,7 +48,7 @@ const QList<syncLib::SongHeader>* SyncEngine::currentPlayList() const{
 }
 
 const QString& SyncEngine::currentPlayListName() const{
-    return _currentPlayListName;
+    return sync->getPlayListName();
 }
 
 void SyncEngine::allPlayLists(QStringList &playList)const{
@@ -146,21 +136,25 @@ void SyncEngine::scan(){
 }
 
 int SyncEngine::repeat()const{
-    return _repeat;
+    return sync->repeat();
 }
 
 void SyncEngine::setRepeat(int flag){
-    _repeat = (Repeat)flag;
+    sync->setRepeat((syncLib::Repeat)flag);
 }
 
 bool SyncEngine::setPlayList(const QString& name){
 
     if(!sync->updatePlayList(name)){
+        _lastError = tr("play list not found!");
+        emit error();
         return false;
     }
-
     settings.setValue(CURRENT_PLAYLIST_KEY, name);
+
+    emit currentPlayListNameChanged();
     return true;
+
 }
 
 bool SyncEngine::getPlayList(QList<syncLib::SongHeader> &playList, const QString &name){
@@ -234,7 +228,7 @@ bool SyncEngine::addToPlayList(int id, const QString &playList){
         return false;
     }
 
-    if(playList == _currentPlayListName)
+    if(playList == sync->getPlayListName())
         emit currentPlayListCountChanged();
 
     return true;
@@ -250,7 +244,7 @@ bool SyncEngine::removeFromPlayList(int id, const QString &playList){
         return false;
     }
 
-    if(playList == _currentPlayListName)
+    if(playList == sync->getPlayListName())
         emit currentPlayListCountChanged();
 
     return true;

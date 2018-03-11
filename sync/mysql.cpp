@@ -51,19 +51,19 @@ void MySql::initDB(const QString &database){
     if(db->open()){
         qyery = new QSqlQuery(*db);
 
-        /*
-         *https://stackoverflow.com/questions/40863216/sqlite-why-is-foreign-key-constraint-not-working-here
-        */
+//        /*
+//         *https://stackoverflow.com/questions/40863216/sqlite-why-is-foreign-key-constraint-not-working-here
+//        */
 
-        QString qyer = QString("PRAGMA foreign_keys = ON");
-        if(!qyery->exec(qyer)){
-            sqlErrorLog(qyer);
-            throw InitDBError();
-            delete db;
-            return;
-        }
+//        QString qyer = QString("PRAGMA foreign_keys = ON");
+//        if(!qyery->exec(qyer)){
+//            sqlErrorLog(qyer);
+//            throw InitDBError();
+//            delete db;
+//            return;
+//        }
 
-        qyer = QString("CREATE TABLE IF NOT EXISTS songs("
+        QString qyer = QString("CREATE TABLE IF NOT EXISTS songs("
                      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                      "name VARCHAR(100), "
                      "size INT NOT NULL, "
@@ -224,7 +224,7 @@ bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playLis
         qyer = QString("SELECT id,name,size from songs");
     }else{
         qyer = QString("SELECT id,name,size from songs where "
-                       "id = (select song from playlistsdata where "
+                       "id in (select song from playlistsdata where "
                        "playlist='%0')").arg(playList);
     }
 

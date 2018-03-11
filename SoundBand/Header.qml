@@ -113,6 +113,20 @@ Item {
                 syncEngine.setValume(value);
             }
         }
+        Base.BaseButton{
+            property int state: syncEngine.repeat + "";
+
+            id:repeatControl
+            text: state + "";
+            width: height;
+            anchors.verticalCenter: valume.verticalCenter
+            anchors.right: parent.right;
+            anchors.rightMargin: Utils.dp(Screen.pixelDensity, 5)
+            onClicked: {
+                state = ++state % 4;
+                syncEngine.setRepeat(state)
+            }
+        }
 
         Base.BaseText {
             id: valumeText
@@ -123,7 +137,6 @@ Item {
             anchors.bottom: progress.top
             anchors.top: next.bottom
             anchors.left: valume.right
-            anchors.right: parent.right
         }
 
         Slider {

@@ -11,7 +11,7 @@ class ServerListModel;
 class PlayListsModel;
 class PlayListModel;
 class CurrentPlayListModel;
-
+class QSystemTrayIcon;
 
 /**
  * @brief The App class
@@ -27,8 +27,8 @@ private:
     PlayListsModel *playListsModel;
     CurrentPlayListModel *currentPlayListModel;
     PlayListModel *playListModel;
-
-
+    QSystemTrayIcon *trayIcon;
+    void setIcon();
 
 public:
     explicit App(QObject *ptr = nullptr);

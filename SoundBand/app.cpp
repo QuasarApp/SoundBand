@@ -7,7 +7,8 @@
 #include "playlistsmodel.h"
 #include "playlistmodel.h"
 #include "currentplaylistmodel.h"
-
+#include <QIcon>
+#include <QSystemTrayIcon>
 
 App::App(QObject* ptr):
     QObject(ptr)
@@ -26,6 +27,17 @@ App::App(QObject* ptr):
 
     playListModel = new PlayListModel();
     playListModel->setSource(syncEngine);
+
+    trayIcon = new QSystemTrayIcon(this);
+
+}
+
+void App::setIcon()
+{
+    QIcon icon = QIcon(":/image/res/logo.png");
+    trayIcon->setIcon(icon);
+
+    trayIcon->setToolTip(tr("SoundBand"));
 }
 
 bool App::run(){
@@ -44,10 +56,13 @@ bool App::run(){
     if (qmlEngine->rootObjects().isEmpty())
         return false;
 
+    setIcon();
+
     return syncEngine->init();
 }
 
 App::~App(){
+    delete playListModel;
     delete playListsModel;
     delete currentPlayListModel;
     delete serverListModel;

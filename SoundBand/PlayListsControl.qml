@@ -14,6 +14,8 @@ Item {
     readonly property real textmargin: Utils.dp(Screen.pixelDensity, 8)
     readonly property real textSize: Utils.dp(Screen.pixelDensity, 10)
     readonly property real buttonHeight: Utils.dp(Screen.pixelDensity, 24)
+    readonly property string currentPlayList: syncEngine.currentPlayListName;
+
 
     function switch_pane(object){
         for(var i = 0; i < playListsControl.children.length; i++){
@@ -42,7 +44,7 @@ Item {
                     id: item
 
                     Rectangle {
-                        color: Qt.rgba(0,0,0,0)
+                        color: (currentPlayList === playListName)? Utils.primaryColor(): Utils.baseColor();
                         id: rectangle;
                         anchors.fill: item
 
@@ -52,6 +54,11 @@ Item {
                                 popup.y = mouseY
                                 popup.open();
                             }
+
+                            onClicked: {
+                                syncEngine.setPlayList(playListName);
+                            }
+
                             anchors.fill: parent;
                         }
 

@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QDataStream>
 #include "chronotime.h"
+#include <QMediaContent>
 
 namespace syncLib {
 
@@ -50,10 +51,30 @@ public:
 };
 
 /**
+ * @brief The SongStorage class
+ * header with url to song source
+ */
+class SongStorage : public SongHeader {
+private:
+    QUrl url;
+public:
+    SongStorage();
+    SongStorage(const SongHeader& from);
+    const QUrl& getSource()const;
+    QMediaContent toMedia()const;
+    unsigned int getSize() const;
+    bool isValid() const;
+    ~SongStorage();
+    friend QDataStream& operator << (QDataStream& stream, const SongStorage& song);
+    friend QDataStream& operator >> (QDataStream& stream, SongStorage& song);
+    friend class MySql;
+};
+
+/**
  * @brief The Song class
  * into this calss added mediadata of playable media file.
  */
-class Song : public SongHeader{
+class Song : public SongHeader {
 private:
     QByteArray source;
 public:

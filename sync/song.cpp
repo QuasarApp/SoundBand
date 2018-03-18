@@ -45,14 +45,6 @@ bool SongHeader::isValid() const{
 
 SongHeader::~SongHeader(){}
 
-
-
-Song::Song():
-    SongHeader()
-{
-    source.clear();
-}
-
 QDataStream& operator << (QDataStream& stream, const SongHeader& song){
     stream << song.id;
     stream << song.name;
@@ -64,6 +56,57 @@ QDataStream& operator >> (QDataStream& stream, SongHeader& song){
     stream >> song.name;
     stream >> song.size;
     return stream;
+}
+
+SongStorage::SongStorage():
+    SongHeader()
+{
+    url.clear();
+}
+
+SongStorage::SongStorage(const SongHeader& from)
+    :SongStorage::SongStorage()
+{
+    this->id = from.id;
+    this->name = from.name;
+    this->size = from.size;
+}
+
+unsigned int SongStorage::getSize() const{
+    return SongHeader::getSize();
+}
+
+const QUrl& SongStorage::getSource()const{
+    return url;
+}
+
+QMediaContent SongStorage::toMedia()const{
+    return QMediaContent(url);
+}
+
+bool SongStorage::isValid() const{
+
+    return SongHeader::isValid() && url.isValid();
+}
+
+SongStorage::~SongStorage(){}
+
+QDataStream& operator << (QDataStream& stream,const SongStorage& song){
+    stream << static_cast<const SongHeader&>(song);
+    stream << song.url;
+    return stream;
+}
+
+QDataStream& operator >> (QDataStream& stream, SongStorage& song){
+    stream >> static_cast<SongHeader&>(song);
+    stream >> song.url;
+    return stream;
+}
+
+Song::Song():
+    SongHeader()
+{
+    source.clear();
 }
 
 Song::Song(const SongHeader& from)

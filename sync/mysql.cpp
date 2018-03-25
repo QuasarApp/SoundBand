@@ -2,6 +2,7 @@
 #include <QSqlQuery>
 #include <QtSql>
 #include "exaptions.h"
+#include <QSettings>
 
 namespace syncLib{
 
@@ -44,6 +45,8 @@ bool MySql::exec(QSqlQuery *sq,const QString& sqlFile){
 void MySql::initDB(const QString &database){
     if(db) return;
     dataBaseName = database;
+    QSettings settings;
+    songDir = settings.value(MAIN_FOLDER_KEY, QDir::homePath() + "/soundBand").toString();
     db = new QSqlDatabase();
     *db = QSqlDatabase::addDatabase("QSQLITE", database);
     QDir d(QString("./%0").arg(dataBaseName));
@@ -51,23 +54,11 @@ void MySql::initDB(const QString &database){
     if(db->open()){
         qyery = new QSqlQuery(*db);
 
-//        /*
-//         *https://stackoverflow.com/questions/40863216/sqlite-why-is-foreign-key-constraint-not-working-here
-//        */
-
-//        QString qyer = QString("PRAGMA foreign_keys = ON");
-//        if(!qyery->exec(qyer)){
-//            sqlErrorLog(qyer);
-//            throw InitDBError();
-//            delete db;
-//            return;
-//        }
-
         QString qyer = QString("CREATE TABLE IF NOT EXISTS songs("
                      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                      "name VARCHAR(100), "
                      "size INT NOT NULL, "
-                     "data BLOB NOT NULL "
+                     "data TEXT NOT NULL "
                      ")");
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
@@ -127,6 +118,31 @@ void MySql::initDB(const QString &database){
     }
 }
 
+void MySql::setSoundDir(const QString &str){
+    songDir = str;
+    QSettings().setValue(MAIN_FOLDER_KEY, songDir);
+}
+
+bool MySql::saveToStorage(QUrl &url, const Song &song) const{
+    if(!song.isValid()){
+        return false;
+    }
+
+    QFile file(songDir + "/" + song.name);
+
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate)){
+       return false;
+    }
+
+    file.write(song.source.data(), song.source.length());
+    file.close();
+
+    url = QUrl::fromLocalFile(songDir + "/" + song.name);
+
+    return url.isValid();
+
+}
+
 void MySql::sqlErrorLog(const QString &qyery)const{
 #ifdef QT_DEBUG
             qDebug()<< qyery << ": fail:\n " <<this->qyery->lastError();
@@ -145,15 +161,16 @@ int MySql::save(const Song &song){
         return qyery->value(0).toInt();
     }
 
-    qyer = QString("INSERT INTO songs (name,size,data) VALUES"
-                           "('%0',%1,:val)").arg(song.name,
-                                                 QString::number(song.size));
-    if(!qyery->prepare(qyer)){
-        sqlErrorLog(qyer + " prepare error");
-        return -1;
+    QUrl url;
+    if(!saveToStorage(url, song)){
+        return false;
     }
 
-    qyery->bindValue(":val",song.source);
+    qyer = QString("INSERT INTO songs (name,size,data) VALUES"
+                           "('%0',%1,'%2')").arg(song.name,
+                                                 QString::number(song.size),
+                                                 url.path());
+
     if(!qyery->exec()){
         sqlErrorLog(qyer);
         return -1;
@@ -176,7 +193,7 @@ int MySql::save(const QString &url){
     }
     QByteArray bytes = f.readAll();
     f.close();
-    QString name = url.right(url.lastIndexOf(QRegularExpression("[\\/]"))); // meby [[\\\/]]
+    QString name = url.right(url.lastIndexOf(QRegularExpression("[\\\/]")));
     Song song;
     song.name = name;
     song.size = bytes.size();

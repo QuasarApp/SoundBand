@@ -25,7 +25,8 @@ struct Syncer
  * (id,size and name)
  */
 class SongHeader{
-
+protected:
+    bool getName(QString &name, const QUrl& url)const;
 public:
     bool isSelected;
     int id;
@@ -33,8 +34,10 @@ public:
     int size;
     SongHeader();
     SongHeader& operator = (const SongHeader& right);
+    SongHeader& operator = (const QMediaContent& right);
+
     bool operator == (const SongHeader& right);
-    virtual unsigned int getSize() const;
+    bool operator == (const QMediaContent& right);
     bool isNameValid() const;
     virtual bool isValid() const;
     virtual ~SongHeader();
@@ -62,7 +65,6 @@ public:
     SongStorage(const SongHeader& from);
     const QUrl& getSource()const;
     QMediaContent toMedia()const;
-    unsigned int getSize() const;
     bool isValid() const;
     ~SongStorage();
     friend QDataStream& operator << (QDataStream& stream, const SongStorage& song);
@@ -82,7 +84,6 @@ public:
     Song(const SongHeader& from);
     void clear();
     const QByteArray& getSource()const;
-    unsigned int getSize() const;
     bool isValid() const;
     ~Song();
     friend QDataStream& operator << (QDataStream& stream, const Song& song);

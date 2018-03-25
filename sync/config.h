@@ -3,6 +3,9 @@
 
 // general otions
 #define CURRENT_PLAYLIST_KEY        "currentPlayList"
+#define MAIN_FOLDER_KEY             "songsfolder"
+#define MAIN_FOLDER                 "soundBand"
+
 
 // LIB VERSION
 #define MAJOR_VERSION               0

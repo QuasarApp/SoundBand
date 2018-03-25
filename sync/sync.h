@@ -6,6 +6,7 @@
 #include <chrono>
 #include "config.h"
 #include "mysql.h"
+#include <QMediaPlaylist>
 #include "player.h"
 
 namespace syncLib {
@@ -27,7 +28,7 @@ class Sync : public QObject
 private:
     Node *node;
     Player *player;
-    QList<SongHeader> playList;
+    QMediaPlaylist playList;
     QString lastUsedPlayList;
     int currentSongIndex;
     QList<ETcpSocket*> servers;

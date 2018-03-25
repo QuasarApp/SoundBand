@@ -1,5 +1,7 @@
 #include "song.h"
 #include <QStringList>
+#include <QRegularExpression>
+
 namespace syncLib{
 
 static const QStringList ValidSongs = {".mp3", ".wav", ".ogg"};
@@ -11,6 +13,17 @@ SongHeader::SongHeader()
     this->size = 0;
 }
 
+bool SongHeader::getName(QString & name, const QUrl &url) const {
+    if(url.isLocalFile() && url.isValid()){
+        name = url.fileName();
+        name = name.right(name.lastIndexOf(QRegularExpression("[\\\/]")));
+        return true;
+    }
+
+    return false;
+
+}
+
 SongHeader& SongHeader::operator =(const SongHeader& right){
     this->id = right.id;
     this->name = right.name;
@@ -18,15 +31,25 @@ SongHeader& SongHeader::operator =(const SongHeader& right){
     return *this;
 }
 
+SongHeader& SongHeader::operator =(const QMediaContent& right){
+    this->id = -1;
+    if(!getName(name, right.canonicalUrl())){
+        name.clear();
+    }
+    this->size = right.canonicalResource().dataSize();
+    return *this;
+}
+
 bool SongHeader::operator ==(const SongHeader& right){
     return this->name == right.name && this->size == right.size;
 }
 
-unsigned int SongHeader::getSize() const{
-    QByteArray size;
-    QDataStream stream(size);
-    stream << id << name << this->size;
-    return size.size();
+bool SongHeader::operator ==(const QMediaContent& right){
+    QString name;
+    if(!getName(name, right.canonicalUrl())){
+        return false;
+    }
+    return this->name == name && this->size == right.canonicalResource().dataSize();
 }
 
 bool SongHeader::isNameValid() const{
@@ -58,50 +81,6 @@ QDataStream& operator >> (QDataStream& stream, SongHeader& song){
     return stream;
 }
 
-SongStorage::SongStorage():
-    SongHeader()
-{
-    url.clear();
-}
-
-SongStorage::SongStorage(const SongHeader& from)
-    :SongStorage::SongStorage()
-{
-    this->id = from.id;
-    this->name = from.name;
-    this->size = from.size;
-}
-
-unsigned int SongStorage::getSize() const{
-    return SongHeader::getSize();
-}
-
-const QUrl& SongStorage::getSource()const{
-    return url;
-}
-
-QMediaContent SongStorage::toMedia()const{
-    return QMediaContent(url);
-}
-
-bool SongStorage::isValid() const{
-
-    return SongHeader::isValid() && url.isValid();
-}
-
-SongStorage::~SongStorage(){}
-
-QDataStream& operator << (QDataStream& stream,const SongStorage& song){
-    stream << static_cast<const SongHeader&>(song);
-    stream << song.url;
-    return stream;
-}
-
-QDataStream& operator >> (QDataStream& stream, SongStorage& song){
-    stream >> static_cast<SongHeader&>(song);
-    stream >> song.url;
-    return stream;
-}
 
 Song::Song():
     SongHeader()
@@ -119,10 +98,6 @@ Song::Song(const SongHeader& from)
 
 void Song::clear(){
     source.clear();
-}
-
-unsigned int Song::getSize() const{
-    return SongHeader::getSize() + source.size();
 }
 
 const QByteArray& Song::getSource()const{

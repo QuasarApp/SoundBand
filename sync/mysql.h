@@ -14,6 +14,7 @@ private:
     QSqlDatabase *db;
     QSqlQuery *qyery;
     QString dataBaseName;
+    QString songDir;
 
     /**
      * @brief sqlErrorLog show sql error
@@ -21,12 +22,26 @@ private:
      */
     void sqlErrorLog(const QString& qyery) const;
 
+    /**
+     * @brief saveToStorage save song as file into hdd
+     * @param url - url of song after save
+     * @param song - saved song
+     * @return true if all done
+     */
+    bool saveToStorage(QUrl& url, const Song& song)const;
+
 public:
     MySql(const QString& databasename);
     /**
      * @brief initDB initialize local database of song
      */
     void initDB(const QString& database = DATABASE_NAME );
+
+    /**
+     * @brief setSoundDir
+     * @param str
+     */
+    void setSoundDir(const QString& str);
 
     /**
      * @brief load song of database;

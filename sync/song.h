@@ -63,7 +63,10 @@ private:
 public:
     SongStorage();
     SongStorage(const SongHeader& from);
+    SongStorage(const QUrl& url);
+
     const QUrl& getSource()const;
+    bool toSong(Song &)const;
     QMediaContent toMedia()const;
     bool isValid() const;
     ~SongStorage();
@@ -89,6 +92,8 @@ public:
     friend QDataStream& operator << (QDataStream& stream, const Song& song);
     friend QDataStream& operator >> (QDataStream& stream, Song& song);
     friend class MySql;
+    friend class SongStorage;
+
 };
 }
 #endif // SONG_H

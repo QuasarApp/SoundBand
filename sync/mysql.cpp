@@ -3,6 +3,7 @@
 #include <QtSql>
 #include "exaptions.h"
 #include <QSettings>
+#include <QMediaPlaylist>
 
 namespace syncLib{
 
@@ -118,6 +119,59 @@ void MySql::initDB(const QString &database){
     }
 }
 
+bool MySql::find(const QMediaContent &song, SongStorage &response){
+    QList<SongStorage> songs;
+
+    if(!updateAvailableSongs(songs)){
+        return false;
+    }
+
+    for(SongStorage &i: songs){
+        if(i == song){
+            response = i;
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+bool MySql::find(const QMediaContent &song, SongHeader &response){
+    QList<SongStorage> songs;
+
+    if(!updateAvailableSongs(songs)){
+        return false;
+    }
+
+    for(SongStorage &i: songs){
+        if(i == song){
+            response = (SongHeader&)i;
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+bool MySql::find(const SongHeader &song, QMediaContent &response){
+    QList<SongStorage> songs;
+
+    if(!updateAvailableSongs(songs)){
+        return false;
+    }
+
+    for(SongStorage &i: songs){
+        if((SongHeader&)i == song){
+            response = i.toMedia();
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void MySql::setSoundDir(const QString &str){
     songDir = str;
     QSettings().setValue(MAIN_FOLDER_KEY, songDir);
@@ -149,7 +203,7 @@ void MySql::sqlErrorLog(const QString &qyery)const{
 #endif
 }
 
-int MySql::save(const Song &song){
+int MySql::save(const Song &song , bool onlyDataBase){
     QString qyer = QString("SELECT id from songs where name='%0' and size=%1").arg(song.name,
                                                  QString::number(song.size));
     if(!qyery->exec(qyer)){
@@ -162,7 +216,7 @@ int MySql::save(const Song &song){
     }
 
     QUrl url;
-    if(!saveToStorage(url, song)){
+    if(!onlyDataBase && !saveToStorage(url, song)){
         return false;
     }
 
@@ -186,29 +240,19 @@ int MySql::save(const Song &song){
     return result;
 }
 
-int MySql::save(const QString &url){    
-    QFile f(QUrl(url).toLocalFile());
-    if(!f.open(QIODevice::ReadOnly)){
-        return -1;
-    }
-    QByteArray bytes = f.readAll();
-    f.close();
-    QString name = url.right(url.lastIndexOf(QRegularExpression("[\\\/]")));
-    Song song;
-    song.name = name;
-    song.size = bytes.size();
-    song.source = bytes;
+int MySql::save(const QString &url){
+
+    SongStorage song(QUrl::fromLocalFile(url));
 
     if(!song.isNameValid()){
         return -1;
     }
 
-    return save(song);
+    return save(song, true);
 
 }
 
-bool MySql::load(const SongHeader &song,Song &result){
-    result.clear();
+bool MySql::load(const SongHeader &song, SongStorage &result){
     if(song.id > -1){
         QString qyer = QString("SELECT * from songs where id=%0").arg(song.id);
         if(!qyery->exec(qyer)){
@@ -230,17 +274,17 @@ bool MySql::load(const SongHeader &song,Song &result){
     result.id = qyery->value(0).toInt();
     result.name = qyery->value(1).toString();
     result.size = qyery->value(2).toInt();
-    result.source = qyery->value(3).toByteArray();
+    result.url = qyery->value(3).toUrl();
     return true;
 }
 
-bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playList, bool forEditing){
+bool MySql::updateAvailableSongs(QList<SongStorage>& list, const QString& playList, bool forEditing){
     QString qyer;
 
     if(playList.isEmpty() || playList == ALL_SONGS_LIST || forEditing){
-        qyer = QString("SELECT id,name,size from songs");
+        qyer = QString("SELECT * from songs");
     }else{
-        qyer = QString("SELECT id,name,size from songs where "
+        qyer = QString("SELECT * from songs where "
                        "id in (select song from playlistsdata where "
                        "playlist='%0')").arg(playList);
     }
@@ -253,11 +297,13 @@ bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playLis
     list.clear();
 
     while(qyery->next()){
-        SongHeader song;
+        SongStorage song;
         song.isSelected = !forEditing || playList == ALL_SONGS_LIST;
         song.id = qyery->value(0).toInt();
         song.name = qyery->value(1).toString();
         song.size = qyery->value(2).toInt();
+        song.url = qyery->value(3).toUrl();
+
         list.push_back(song);
     }
 
@@ -272,7 +318,7 @@ bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playLis
         }
 
         while(qyery->next()){
-            for(SongHeader& item:list){
+            for(SongStorage& item:list){
                 int id = qyery->value(0).toInt();
                 if(item.id == id){
                     item.isSelected = true;
@@ -286,15 +332,15 @@ bool MySql::updateAvailableSongs(QList<SongHeader>& list, const QString& playLis
     return true;
 }
 
-bool MySql::updateAvailableSongs(QStringList& list, const QString& playList){
+bool MySql::updateAvailableSongs(QMediaPlaylist& list, const QString& playList){
 
-    QList<SongHeader> tempList;
+    QList<SongStorage> tempList;
 
     if(!updateAvailableSongs(tempList, playList))
         return false;
 
-    for(SongHeader &header : tempList){
-        list.push_back(header.name);
+    for(SongStorage &header : tempList){
+        list.addMedia(header.toMedia());
     }
 
     return true;

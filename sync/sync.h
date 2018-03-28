@@ -15,8 +15,6 @@ typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class Node;
 
-enum Repeat{noRepeat, oneMusic, allPlayList, allPlayListRandom};
-
 
 /**
  * @brief The Sync class is main class of this library.
@@ -28,9 +26,8 @@ class Sync : public QObject
 private:
     Node *node;
     Player *player;
-    QMediaPlaylist playList;
+    QMediaPlaylist *playList;
     QString lastUsedPlayList;
-    int currentSongIndex;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     int resyncCount;
@@ -39,13 +36,6 @@ private:
     LocalScanner deepScaner;
     MySql *sql;
     int port;
-    Repeat _repeat;
-
-    /**
-     * @brief findHeader set current song if playList have playng song
-     * @return true if all done
-     */
-    bool findHeader(const Song& song);
 
     /**
      * @brief rescan - search for existing servers
@@ -67,7 +57,7 @@ private slots:
      * @brief updateSongs use method update avelable songs from sql database
      * @return true if all done
      */
-    bool updateSongs(QList<SongHeader> &list, const QString &playList = "");
+    bool updateSongs(QMediaPlaylist &list, const QString &playList = "");
 
     /**
      * @brief packageRender - the handler of all messages received.
@@ -97,19 +87,34 @@ public:
      * @brief repeat
      * @return flag of repeat
      */
-    Repeat repeat()const;
+    QMediaPlaylist::PlaybackMode repeat()const;
 
     /**
      * @brief setRepeat
      * @param flag new flag of repeat
      */
-    void setRepeat(Repeat flag);
+    void setRepeat(QMediaPlaylist::PlaybackMode flag);
 
     /**
      * @brief getSqlApi
      * @return pointer of sql api
      */
     MySql* getSqlApi();
+
+    /**
+     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
+     * @param fbroadcast - server broadcasting sound.
+     * @return true if all done else false.
+     */
+    bool play(bool fbroadcast = true);
+
+    /**
+     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
+     * @param header of song
+     * @param fbroadcast - server broadcasting sound.
+     * @return true if all done else false.
+     */
+    bool play(const QMediaContent &media,  bool fbroadcast = true);
 
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
@@ -229,7 +234,7 @@ public:
      * @brief getPlayList
      * @return list of available songs
      */
-    const QList<SongHeader> *getPlayList() const;
+    const QMediaPlaylist *getPlayList() const;
 
     /**
      * @brief SongHeader::getCurrentSongIndex
@@ -241,7 +246,7 @@ public:
      * @brief getCurrentSong
      * @return playing song.
      */
-    const SongHeader *getCurrentSong() const;
+    const QMediaContent *getCurrentSong() const;
 
     /**
      * @brief getEndPoint

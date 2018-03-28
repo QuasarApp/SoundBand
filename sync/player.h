@@ -22,13 +22,6 @@ public:
     Player(const QString& bufferFile, QObject *parent = Q_NULLPTR, Flags flags = Flags());
 
     /**
-     * @brief setMediaFromBytes
-     * @param array of song data
-     * @return true if all done
-     */
-    bool setMediaFromBytes(const QByteArray& array);
-
-    /**
      * @brief syncBegin - palyer waiting for sunced.
      */
     void syncBegin();

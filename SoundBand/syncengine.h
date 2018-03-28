@@ -138,7 +138,7 @@ public slots:
      * @param name - name of selected playList
      * @return
      */
-    bool getPlayList(QList<syncLib::SongHeader> &playList, const QString& name);
+    bool getPlayList(QList<syncLib::SongStorage> &playList, const QString& name);
 
     /**
      * @brief lastError - message of last error

@@ -140,7 +140,7 @@ int SyncEngine::repeat()const{
 }
 
 void SyncEngine::setRepeat(int flag){
-    sync->setRepeat((syncLib::Repeat)flag);
+    sync->setRepeat((QMediaPlaylist::PlaybackMode)flag);
 }
 
 bool SyncEngine::setPlayList(const QString& name){
@@ -157,7 +157,7 @@ bool SyncEngine::setPlayList(const QString& name){
 
 }
 
-bool SyncEngine::getPlayList(QList<syncLib::SongHeader> &playList, const QString &name){
+bool SyncEngine::getPlayList(QList<syncLib::SongStorage> &playList, const QString &name){
     return sqlApi->updateAvailableSongs(playList, name, true);
 }
 

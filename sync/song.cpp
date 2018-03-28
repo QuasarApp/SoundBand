@@ -1,6 +1,7 @@
 #include "song.h"
 #include <QStringList>
 #include <QRegularExpression>
+#include <QFile>
 
 namespace syncLib{
 
@@ -78,6 +79,77 @@ QDataStream& operator >> (QDataStream& stream, SongHeader& song){
     stream >> song.id;
     stream >> song.name;
     stream >> song.size;
+    return stream;
+}
+
+
+SongStorage::SongStorage():
+    SongHeader()
+{
+    url.clear();
+}
+
+SongStorage::SongStorage(const SongHeader& from)
+    :SongStorage::SongStorage()
+{
+    this->id = from.id;
+    this->name = from.name;
+    this->size = from.size;
+}
+
+SongStorage::SongStorage(const QUrl& from)
+    :SongStorage::SongStorage()
+{
+    if(!from.isValid() || !from.isLocalFile()){
+        return;
+    }
+
+    this->id = -1;
+    if(!getName(name, from)){
+        name.clear();
+    }
+
+    this->size = QFile(from.toLocalFile()).size();
+}
+
+const QUrl& SongStorage::getSource()const{
+    return url;
+}
+
+bool SongStorage::isValid() const{
+    return SongHeader::isValid() && url.isValid();
+}
+
+SongStorage::~SongStorage(){
+    url.clear();
+}
+
+QMediaContent SongStorage::toMedia()const{
+    return QMediaContent(url);
+}
+
+bool SongStorage::toSong(Song&)const{
+    Song song(*((SongHeader*)this));
+
+    QFile f(url.toLocalFile());
+
+    if(!f.open(QIODevice::ReadOnly))
+        return false;
+    song.source = f.readAll();
+
+    f.close();
+    return song.isValid();
+}
+
+QDataStream& operator << (QDataStream& stream,const SongStorage& song){
+    stream << static_cast<const SongHeader&>(song);
+    stream << song.url;
+    return stream;
+}
+
+QDataStream& operator >> (QDataStream& stream, SongStorage& song){
+    stream >> static_cast<SongHeader&>(song);
+    stream >> song.url;
     return stream;
 }
 

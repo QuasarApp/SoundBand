@@ -38,10 +38,40 @@ public:
     void initDB(const QString& database = DATABASE_NAME );
 
     /**
+     * @brief find - find song
+     * @param song - song header
+     * @param response Media Content of finded song
+     * @return true if song finded
+     */
+    bool find(const SongHeader& song, QMediaContent& response);
+
+    /**
+     * @brief find - find song
+     * @param song - song header
+     * @param response Media Content of finded song
+     * @return true if song finded
+     */
+    bool find(const QMediaContent& song, SongHeader& response);
+
+    /**
+     * @brief find - find song
+     * @param song - media Content
+     * @param response header of finded song
+     * @return true if song finded
+     */
+    bool find(const QMediaContent& song, SongStorage &response);
+
+    /**
      * @brief setSoundDir
      * @param str
      */
     void setSoundDir(const QString& str);
+
+    /**
+     * @brief findSong
+     * @param song
+     */
+    bool findSong(const SongHeader &song);
 
     /**
      * @brief load song of database;
@@ -49,14 +79,14 @@ public:
      * @brief result - the resulting value;
      * @return true if everything's done
      */
-    bool load(const SongHeader &song, Song &result);
+    bool load(const SongHeader &song, SongStorage &result);
 
     /**
      * @brief save media data into local database.
      * @param song savining media data.
      * @return id of song saved on local database.
      */
-    int save(const Song &song);
+    int save(const Song &song, bool onlyDataBase = false);
 
     /**
      * @brief save media file, bud from url.
@@ -77,7 +107,7 @@ public:
      * @param forEdit - flag for editing play list. If this flag = true then return all available songs with corect flag 'isSelect'
      * @return true if all done
      */
-    bool updateAvailableSongs(QList<SongHeader>& list, const QString &playList = "", bool forEditing = false);
+    bool updateAvailableSongs(QList<SongStorage>& list, const QString &playList = "", bool forEditing = false);
 
     /**
      * @brief updateAvelableSongs will update the list of participants of songs.
@@ -85,7 +115,7 @@ public:
      * @param playList - play list of songs (string).
      * @return true if all done
      */
-    bool updateAvailableSongs(QStringList& list, const QString &playList = "");
+    bool updateAvailableSongs(QMediaPlaylist &list, const QString &playList = "");
 
     /**
      * @brief removeSong - remove song from local database.

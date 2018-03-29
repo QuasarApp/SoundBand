@@ -112,6 +112,12 @@ SongStorage::SongStorage(const QUrl& from)
     this->size = QFile(from.toLocalFile()).size();
 }
 
+SongStorage::SongStorage(const QMediaContent& from)
+    :SongStorage::SongStorage(from.canonicalUrl())
+{
+
+}
+
 const QUrl& SongStorage::getSource()const{
     return url;
 }

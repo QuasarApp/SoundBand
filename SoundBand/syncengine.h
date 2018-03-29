@@ -74,7 +74,7 @@ public slots:
      * @brief currentPlayList
      * @return return current Play List
      */
-    const QList<syncLib::SongHeader> *currentPlayList() const;
+    const QList<SongStorage> *currentPlayList() const;
 
     /**
      * @brief currentPlayListName
@@ -138,7 +138,7 @@ public slots:
      * @param name - name of selected playList
      * @return
      */
-    bool getPlayList(QList<syncLib::SongStorage> &playList, const QString& name);
+    bool getPlayList(QList<SongStorage> &playList, const QString& name);
 
     /**
      * @brief lastError - message of last error

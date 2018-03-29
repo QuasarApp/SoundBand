@@ -23,12 +23,11 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
         throw MediaException();
     }
 
-    playList = player->playlist();
+    playList = new PlayList(player->playlist());
 
     fbroadcaster = false;
     resyncCount = 0;
     lastSyncTime = 0;
-    currentSongIndex = 0;
     ping = 0;
 
     sql = new MySql(datadir);
@@ -43,7 +42,7 @@ MySql* Sync::getSqlApi(){
     return sql;
 }
 
-bool Sync::updateSongs(QMediaPlaylist& list, const QString& playList){
+bool Sync::updateSongs(PlayList& list, const QString& playList){
     if(!sql->updateAvailableSongs(list, playList)){
         return false;
     }
@@ -146,11 +145,11 @@ bool Sync::play(QString url){
 }
 
 QMediaPlaylist::PlaybackMode Sync::repeat()const{
-    return playList->playbackMode();
+    return playList->getList()->playbackMode();
 }
 
 void Sync::setRepeat(QMediaPlaylist::PlaybackMode flag){
-    playList->setPlaybackMode(flag);
+    playList->getList()->setPlaybackMode(flag);
 }
 
 bool Sync::pause(bool state){
@@ -262,21 +261,17 @@ bool Sync::createPackage(Type type, package &pac){
     }
 
     if(type & TypePackage::t_song_h && fbroadcaster){
-        if(playList->currentIndex() < 0)
+        if(playList->getList()->currentIndex() < 0)
             return false;
 
-        if(!sql->find(playList->currentMedia(), pac.header)){
-            return false;
-        }
-
+         pac.header = playList->currentHeader();
     }
 
     if(type & TypePackage::t_song && fbroadcaster){
-        if(playList->currentIndex() < 0)
+        if(playList->getList()->currentIndex() < 0)
             return false;
 
-        SongStorage song;
-        if(!sql->load(playList->currentMedia(), song) && !song.toSong(pac.source))
+        if(!playList->currentSong().toSong(pac.source))
             return false;
 
     }
@@ -400,7 +395,7 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from client
             if(pkg.getType() & t_play & t_sync){
-                if(playList->currentIndex() < 0){
+                if(playList->getList()->currentIndex() < 0){
                     throw SyncError();
                     socket->nextItem();
                     continue;
@@ -456,14 +451,15 @@ void Sync::deepScaned(QList<ETcpSocket *> * list){
 }
 
 void Sync::endPlay(QMediaPlayer::State state){
-    if(state == QMediaPlayer::StoppedState && playList->currentIndex() != -1){
+    if(state == QMediaPlayer::StoppedState &&
+       playList->getList()->currentIndex() != -1){
             fbroadcaster = false;
-            break;
     }
 }
 
 QString Sync::getVersion(){
-    return QString(tr("Version") + "%0.%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION).arg(REVISION_VERSION);
+    return QString(tr("Version") + "%0.%1.%2").
+            arg(MAJOR_VERSION).arg(MINOR_VERSION).arg(REVISION_VERSION);
 }
 
 bool Sync::setValume(unsigned int valume){
@@ -483,16 +479,16 @@ unsigned int Sync::seek() const{
     return player->position();
 }
 
-const QMediaPlaylist* Sync::getPlayList() const{
-    return playList;
+const QList<SongStorage>* Sync::getPlayList() const{
+    return playList->getInfo();
 }
 
 int Sync::getCurrentSongIndex()const{
-    return playList->currentIndex();
+    return playList->getList()->currentIndex();
 }
 
-const QMediaContent* Sync::getCurrentSong() const{
-    return &playList->currentMedia();
+const SongStorage* Sync::getCurrentSong() const{
+    return &playList->currentSong();
 }
 
 qint64 Sync::getEndPoint() const {
@@ -543,6 +539,7 @@ Sync::~Sync(){
     delete node;
     delete player;
     delete sql;
+    delete playList;
     servers.clear();
 
 }

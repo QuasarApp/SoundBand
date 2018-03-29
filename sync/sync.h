@@ -8,6 +8,7 @@
 #include "mysql.h"
 #include <QMediaPlaylist>
 #include "player.h"
+#include "playlist.h"
 
 namespace syncLib {
 
@@ -26,7 +27,7 @@ class Sync : public QObject
 private:
     Node *node;
     Player *player;
-    QMediaPlaylist *playList;
+    PlayList *playList;
     QString lastUsedPlayList;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
@@ -57,7 +58,7 @@ private slots:
      * @brief updateSongs use method update avelable songs from sql database
      * @return true if all done
      */
-    bool updateSongs(QMediaPlaylist &list, const QString &playList = "");
+    bool updateSongs(PlayList &list, const QString &playList = "");
 
     /**
      * @brief packageRender - the handler of all messages received.
@@ -234,7 +235,7 @@ public:
      * @brief getPlayList
      * @return list of available songs
      */
-    const QMediaPlaylist *getPlayList() const;
+    const QList<SongStorage> *getPlayList() const;
 
     /**
      * @brief SongHeader::getCurrentSongIndex
@@ -246,7 +247,7 @@ public:
      * @brief getCurrentSong
      * @return playing song.
      */
-    const QMediaContent *getCurrentSong() const;
+    const SongStorage *getCurrentSong() const;
 
     /**
      * @brief getEndPoint

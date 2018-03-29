@@ -1,7 +1,7 @@
 #ifndef MYSQL_H
 #define MYSQL_H
 #include <QString>
-#include "song.h"
+#include "playlist.h"
 
 class QSqlDatabase;
 class QSqlQuery;
@@ -115,7 +115,7 @@ public:
      * @param playList - play list of songs (string).
      * @return true if all done
      */
-    bool updateAvailableSongs(QMediaPlaylist &list, const QString &playList = "");
+    bool updateAvailableSongs(PlayList& list, const QString &playList = "", bool forEditing = false);
 
     /**
      * @brief removeSong - remove song from local database.

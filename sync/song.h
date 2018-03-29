@@ -54,28 +54,6 @@ public:
 };
 
 /**
- * @brief The SongStorage class
- * header with url to song source
- */
-class SongStorage : public SongHeader {
-private:
-    QUrl url;
-public:
-    SongStorage();
-    SongStorage(const SongHeader& from);
-    SongStorage(const QUrl& url);
-
-    const QUrl& getSource()const;
-    bool toSong(Song &)const;
-    QMediaContent toMedia()const;
-    bool isValid() const;
-    ~SongStorage();
-    friend QDataStream& operator << (QDataStream& stream, const SongStorage& song);
-    friend QDataStream& operator >> (QDataStream& stream, SongStorage& song);
-    friend class MySql;
-};
-
-/**
  * @brief The Song class
  * into this calss added mediadata of playable media file.
  */
@@ -95,5 +73,28 @@ public:
     friend class SongStorage;
 
 };
+
+/**
+ * @brief The SongStorage class
+ * header with url to song source
+ */
+class SongStorage : public SongHeader {
+private:
+    QUrl url;
+public:
+    SongStorage();
+    SongStorage(const SongHeader& from);
+    SongStorage(const QUrl& url);
+    SongStorage(const QMediaContent& media);
+    const QUrl& getSource()const;
+    bool toSong(Song &)const;
+    QMediaContent toMedia()const;
+    bool isValid() const;
+    ~SongStorage();
+    friend QDataStream& operator << (QDataStream& stream, const SongStorage& song);
+    friend QDataStream& operator >> (QDataStream& stream, SongStorage& song);
+    friend class MySql;
+};
+
 }
 #endif // SONG_H

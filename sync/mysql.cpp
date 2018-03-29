@@ -3,7 +3,7 @@
 #include <QtSql>
 #include "exaptions.h"
 #include <QSettings>
-#include <QMediaPlaylist>
+#include "playlist.h"
 
 namespace syncLib{
 
@@ -328,19 +328,18 @@ bool MySql::updateAvailableSongs(QList<SongStorage>& list, const QString& playLi
         }
     }
 
-
     return true;
 }
 
-bool MySql::updateAvailableSongs(QMediaPlaylist& list, const QString& playList){
+bool MySql::updateAvailableSongs(PlayList& list, const QString& playList, bool forEditing){
 
     QList<SongStorage> tempList;
 
-    if(!updateAvailableSongs(tempList, playList))
+    if(!updateAvailableSongs(tempList, playList, forEditing))
         return false;
 
     for(SongStorage &header : tempList){
-        list.addMedia(header.toMedia());
+        list.addMedia(header);
     }
 
     return true;

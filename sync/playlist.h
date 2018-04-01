@@ -22,7 +22,7 @@ private:
      */
     QList<SongStorage> playListInfo;
 public:
-    PlayList(QMediaPlaylist * playList);
+    PlayList();
 
     /**
      * @brief getInfo
@@ -41,6 +41,16 @@ public:
      * @return true if all done
      */
     bool addMedia(const SongStorage& song);
+
+    /**
+     * @brief next
+     */
+    void next()const;
+
+    /**
+     * @brief prev
+     */
+    void prev()const;
 
     /**
      * @brief isValid
@@ -64,13 +74,13 @@ public:
      * @brief currentHeader
      * @return header of curent song
      */
-    const SongHeader& currentHeader()const;
+    const SongHeader* currentHeader()const;
 
     /**
      * @brief currentStorage
      * @return header of curent song
      */
-    const SongStorage& currentSong()const;
+    const SongStorage* currentSong()const;
 
     /**
      * @brief size

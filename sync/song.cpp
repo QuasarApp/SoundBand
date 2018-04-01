@@ -104,12 +104,15 @@ SongStorage::SongStorage(const QUrl& from)
         return;
     }
 
+    QFile f(from.toLocalFile());
+    this->size = f.size();
+    f.close();
+
     this->id = -1;
+    url = from;
     if(!getName(name, from)){
         name.clear();
     }
-
-    this->size = QFile(from.toLocalFile()).size();
 }
 
 SongStorage::SongStorage(const QMediaContent& from)
@@ -123,7 +126,7 @@ const QUrl& SongStorage::getSource()const{
 }
 
 bool SongStorage::isValid() const{
-    return SongHeader::isValid() && url.isValid();
+    return SongHeader::isValid() && url.isValid() && QFile(url.toLocalFile()).exists();
 }
 
 SongStorage::~SongStorage(){

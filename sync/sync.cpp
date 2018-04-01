@@ -22,8 +22,10 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
     if(!player->isAvailable()){
         throw MediaException();
     }
+    playList = new PlayList;
 
-    playList = new PlayList(player->playlist());
+    player->setPlaylist(playList->getList());
+
 
     fbroadcaster = false;
     resyncCount = 0;
@@ -74,6 +76,18 @@ bool Sync::play(bool fbroadcast){
     return true;
 }
 
+bool Sync::play(const SongStorage &song, bool fbroadcast){
+
+    if(!song.isValid()){
+        return false;
+    }
+
+    playList->clear();
+    playList->addMedia(song);
+
+    return play(fbroadcast);
+}
+
 bool Sync::play(const SongHeader &header, bool fbroadcast){
 
     if(!header.isValid()){
@@ -87,10 +101,7 @@ bool Sync::play(const SongHeader &header, bool fbroadcast){
         return false;
     }
 
-    playList->clear();
-    playList->addMedia(song.toMedia());
-
-    return play(fbroadcast);
+    return play(song, fbroadcast);
 }
 
 bool Sync::play(const Song &song, bool fbroadcast){
@@ -128,9 +139,12 @@ bool Sync::play(int id_song, bool fbroadcast){
     }
 
     SongHeader header;
-    header.id = id_song;
     SongStorage song;
-    sql->load(header, song);
+    header.id = id_song;
+
+    if(!sql->load(header, song)){
+        return false;
+    }
 
     return Sync::play(song, fbroadcast);
 }
@@ -198,6 +212,9 @@ bool Sync::sync(const Syncer &sync, milliseconds ping){
 
 }
 
+/**
+ * @todo thi nead send a hedaer
+*/
 void Sync::sync(){
 
     if(fbroadcaster)
@@ -264,14 +281,14 @@ bool Sync::createPackage(Type type, package &pac){
         if(playList->getList()->currentIndex() < 0)
             return false;
 
-         pac.header = playList->currentHeader();
+         pac.header = *playList->currentHeader();
     }
 
     if(type & TypePackage::t_song && fbroadcaster){
         if(playList->getList()->currentIndex() < 0)
             return false;
 
-        if(!playList->currentSong().toSong(pac.source))
+        if(!playList->currentSong()->toSong(pac.source))
             return false;
 
     }
@@ -488,7 +505,7 @@ int Sync::getCurrentSongIndex()const{
 }
 
 const SongStorage* Sync::getCurrentSong() const{
-    return &playList->currentSong();
+    return playList->currentSong();
 }
 
 qint64 Sync::getEndPoint() const {
@@ -497,42 +514,40 @@ qint64 Sync::getEndPoint() const {
 
 int Sync::addNewSong(const QString &url){
     int result = sql->save(url);
-    updateSongs(playList);
+    updateSongs(*playList);
     return result;
 }
 
 bool Sync::updatePlayList(const QString &_playList){
-    if(!updateSongs(playList, _playList)){
+    if(!updateSongs(*playList, _playList)){
         return false;
     }
 
-    if(!playList.size())
+    if(!playList->size())
         return false;
 
     if(fbroadcaster){
-        play(playList.first());
+        play(fbroadcaster);
     }
 
     return true;
 
 }
 
-bool Sync::next(bool random){
-    if(playList.isEmpty())
+bool Sync::next(){
+    if(playList->isEmpty())
         return false;
 
-    currentSongIndex = (currentSongIndex + ((random)? rand() % 10000:1)) % playList.size();
-    return play(playList[currentSongIndex]);
+    playList->next();
+    return true;
 }
 
 bool Sync::prev(){
-    if(playList.isEmpty())
+    if(playList->isEmpty())
         return false;
 
-    --currentSongIndex;
-    if(currentSongIndex < 0)
-        currentSongIndex = playList.size() - 1;
-    return play(playList[currentSongIndex]);
+    playList->prev();
+    return true;
 }
 
 Sync::~Sync(){

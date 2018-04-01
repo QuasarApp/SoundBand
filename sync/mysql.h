@@ -86,7 +86,14 @@ public:
      * @param song savining media data.
      * @return id of song saved on local database.
      */
-    int save(const Song &song, bool onlyDataBase = false);
+    int save(const SongStorage &song);
+
+    /**
+     * @brief save media data into local database.
+     * @param song savining media data.
+     * @return id of song saved on local database.
+     */
+    int save(const Song &song);
 
     /**
      * @brief save media file, bud from url.

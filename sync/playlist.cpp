@@ -1,9 +1,9 @@
 #include "playlist.h"
 
-PlayList::PlayList(QMediaPlaylist *playList)
+PlayList::PlayList()
 {
     playListInfo.clear();
-    this->playList = playList;
+    playList = new QMediaPlaylist();
 }
 
 QList<SongStorage>* PlayList::getInfo(){
@@ -30,6 +30,14 @@ bool PlayList::addMedia(const SongStorage &song){
     return true;
 }
 
+void PlayList::next()const{
+    playList->next();
+}
+
+void PlayList::prev()const{
+    playList->previous();
+}
+
 bool PlayList::isValid()const{
     return playListInfo.size() == playList->mediaCount();
 }
@@ -38,12 +46,18 @@ bool PlayList::isEmpty()const{
     return playList->isEmpty() && playListInfo.isEmpty();
 }
 
-const SongHeader& PlayList::currentHeader()const{
-    return static_cast<const SongHeader&>(playListInfo[playList->currentIndex()]);
+const SongHeader *PlayList::currentHeader()const{
+    if(playList->isEmpty())
+        return nullptr;
+
+    return static_cast<const SongHeader*>(&playListInfo[playList->currentIndex()]);
 }
 
-const SongStorage& PlayList::currentSong()const{
-    return playListInfo[playList->currentIndex()];
+const SongStorage *PlayList::currentSong()const{
+    if(playList->isEmpty())
+        return nullptr;
+
+    return &playListInfo[playList->currentIndex()];
 }
 
 int PlayList::size()const{
@@ -51,5 +65,5 @@ int PlayList::size()const{
 }
 
 PlayList::~PlayList(){
-
+    delete playList;
 }

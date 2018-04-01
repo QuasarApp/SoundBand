@@ -124,6 +124,15 @@ public:
      * @return true if all done else false.
      */
     bool play(const SongHeader &header,  bool fbroadcast = true);
+
+    /**
+     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
+     * @param header of song
+     * @param fbroadcast - server broadcasting sound.
+     * @return true if all done else false.
+     */
+    bool play(const SongStorage &song,  bool fbroadcast = true);
+
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param song playning media data.
@@ -273,7 +282,7 @@ public:
      * @brief next
      * @return true if all done;
      */
-    bool next(bool random = false);
+    bool next();
 
     /**
      * @brief prev

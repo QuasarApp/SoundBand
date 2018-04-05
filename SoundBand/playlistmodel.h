@@ -16,7 +16,7 @@ class PlayListModel : public QAbstractListModel
 
 private:
     SyncEngine * syncEngine;
-    QList<syncLib::SongHeader> playList;
+    QList<syncLib::SongStorage> playList;
     QString playListName;
     int itemCount;
 

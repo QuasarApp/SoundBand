@@ -10,7 +10,7 @@ Item {
 
     property int currentSongId: 0
     property string currentSongName: qsTr("Song is not selected")
-    property bool playState: false
+    property bool playState: syncEngine.playState === 1;
 
 
     function changeSong(id, name){
@@ -84,7 +84,6 @@ Item {
 
             onClicked: {
                 syncEngine.pause(playState);
-                playState = !playState;
             }
 
         }
@@ -123,7 +122,7 @@ Item {
             anchors.right: parent.right;
             anchors.rightMargin: Utils.dp(Screen.pixelDensity, 5)
             onClicked: {
-                state = ++state % 4;
+                state = ++state % 5;
                 syncEngine.setRepeat(state)
             }
         }

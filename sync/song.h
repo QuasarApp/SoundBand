@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QDataStream>
 #include "chronotime.h"
+#include <QMediaContent>
 
 namespace syncLib {
 
@@ -24,7 +25,9 @@ struct Syncer
  * (id,size and name)
  */
 class SongHeader{
-
+protected:
+    bool getName(QString &name, const QUrl& url)const;
+    bool getSize(int &size, const QUrl& url)const;
 public:
     bool isSelected;
     int id;
@@ -32,8 +35,10 @@ public:
     int size;
     SongHeader();
     SongHeader& operator = (const SongHeader& right);
-    bool operator == (const SongHeader& right);
-    virtual unsigned int getSize() const;
+    SongHeader& operator = (const QMediaContent& right);
+
+    bool operator == (const SongHeader& right)const;
+    bool operator == (const QMediaContent& right)const;
     bool isNameValid() const;
     virtual bool isValid() const;
     virtual ~SongHeader();
@@ -53,7 +58,7 @@ public:
  * @brief The Song class
  * into this calss added mediadata of playable media file.
  */
-class Song : public SongHeader{
+class Song : public SongHeader {
 private:
     QByteArray source;
 public:
@@ -61,12 +66,36 @@ public:
     Song(const SongHeader& from);
     void clear();
     const QByteArray& getSource()const;
-    unsigned int getSize() const;
     bool isValid() const;
     ~Song();
     friend QDataStream& operator << (QDataStream& stream, const Song& song);
     friend QDataStream& operator >> (QDataStream& stream, Song& song);
     friend class MySql;
+    friend class SongStorage;
+
 };
+
+/**
+ * @brief The SongStorage class
+ * header with url to song source
+ */
+class SongStorage : public SongHeader {
+private:
+    QUrl url;
+public:
+    SongStorage();
+    SongStorage(const SongHeader& from);
+    SongStorage(const QUrl& url);
+    SongStorage(const QMediaContent& media);
+    const QUrl& getSource()const;
+    bool toSong(Song &)const;
+    QMediaContent toMedia()const;
+    bool isValid() const;
+    ~SongStorage();
+    friend QDataStream& operator << (QDataStream& stream, const SongStorage& song);
+    friend QDataStream& operator >> (QDataStream& stream, SongStorage& song);
+    friend class MySql;
+};
+
 }
 #endif // SONG_H

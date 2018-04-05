@@ -8,9 +8,11 @@ SyncEngine::SyncEngine()
     sqlApi = sync->getSqlApi();
 
     connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
+    connect(sync, SIGNAL(currentPlayListChanged()), this, SIGNAL(currentPlayListNameChanged()));
     connect(sync, SIGNAL(currentPlayListChanged()), this, SIGNAL(currentPlayListCountChanged()));
     connect(sync, SIGNAL(seekChanged(qint64)), this, SLOT(seekChanged(qint64)));
     connect(sync, SIGNAL(currentSongChanged()), this, SIGNAL(currentSongChanged()));
+    connect(sync, SIGNAL(playStateChanged()), this, SIGNAL(playStateChanged()));
 
 }
 
@@ -42,7 +44,7 @@ bool SyncEngine::init(){
     return true;
 }
 
-const QList<syncLib::SongHeader>* SyncEngine::currentPlayList() const{
+const QList<syncLib::SongStorage>* SyncEngine::currentPlayList() const{
 
     return sync->getPlayList();
 }
@@ -140,7 +142,7 @@ int SyncEngine::repeat()const{
 }
 
 void SyncEngine::setRepeat(int flag){
-    sync->setRepeat((syncLib::Repeat)flag);
+    sync->setRepeat((QMediaPlaylist::PlaybackMode)flag);
 }
 
 bool SyncEngine::setPlayList(const QString& name){
@@ -157,7 +159,7 @@ bool SyncEngine::setPlayList(const QString& name){
 
 }
 
-bool SyncEngine::getPlayList(QList<syncLib::SongHeader> &playList, const QString &name){
+bool SyncEngine::getPlayList(QList<SongStorage> &playList, const QString &name){
     return sqlApi->updateAvailableSongs(playList, name, true);
 }
 
@@ -249,6 +251,10 @@ bool SyncEngine::removeFromPlayList(int id, const QString &playList){
 
     return true;
 
+}
+
+int SyncEngine::playState()const{
+    return sync->playState();
 }
 
 SyncEngine::~SyncEngine(){

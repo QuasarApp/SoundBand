@@ -6,15 +6,15 @@
 #include <chrono>
 #include "config.h"
 #include "mysql.h"
+#include <QMediaPlaylist>
 #include "player.h"
+#include "playlist.h"
 
 namespace syncLib {
 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class Node;
-
-enum Repeat{noRepeat, oneMusic, allPlayList, allPlayListRandom};
 
 
 /**
@@ -27,9 +27,8 @@ class Sync : public QObject
 private:
     Node *node;
     Player *player;
-    QList<SongHeader> playList;
+    PlayList *playList;
     QString lastUsedPlayList;
-    int currentSongIndex;
     QList<ETcpSocket*> servers;
     bool fbroadcaster;
     int resyncCount;
@@ -38,13 +37,6 @@ private:
     LocalScanner deepScaner;
     MySql *sql;
     int port;
-    Repeat _repeat;
-
-    /**
-     * @brief findHeader set current song if playList have playng song
-     * @return true if all done
-     */
-    bool findHeader(const Song& song);
 
     /**
      * @brief rescan - search for existing servers
@@ -63,10 +55,16 @@ private:
 private slots:
 
     /**
+     * @brief setSingle set singl or temp playlist
+     * @return true if all done
+     */
+    bool setSingle(const QMediaContent& media);
+
+    /**
      * @brief updateSongs use method update avelable songs from sql database
      * @return true if all done
      */
-    bool updateSongs(QList<SongHeader> &list, const QString &playList = "");
+    bool updateSongs(PlayList &list, const QString &playList = "");
 
     /**
      * @brief packageRender - the handler of all messages received.
@@ -96,13 +94,13 @@ public:
      * @brief repeat
      * @return flag of repeat
      */
-    Repeat repeat()const;
+    QMediaPlaylist::PlaybackMode repeat()const;
 
     /**
      * @brief setRepeat
      * @param flag new flag of repeat
      */
-    void setRepeat(Repeat flag);
+    void setRepeat(QMediaPlaylist::PlaybackMode flag);
 
     /**
      * @brief getSqlApi
@@ -112,11 +110,35 @@ public:
 
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
+     * @param fbroadcast - server broadcasting sound.
+     * @return true if all done else false.
+     */
+    bool play(bool fbroadcast = true);
+
+    /**
+     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
+     * @param header of song
+     * @param fbroadcast - server broadcasting sound.
+     * @return true if all done else false.
+     */
+    bool play(const QMediaContent &media,  bool fbroadcast = true);
+
+    /**
+     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param header of song
      * @param fbroadcast - server broadcasting sound.
      * @return true if all done else false.
      */
     bool play(const SongHeader &header,  bool fbroadcast = true);
+
+    /**
+     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
+     * @param header of song
+     * @param fbroadcast - server broadcasting sound.
+     * @return true if all done else false.
+     */
+    bool play(const SongStorage &song,  bool fbroadcast = true);
+
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
      * @param song playning media data.
@@ -228,7 +250,7 @@ public:
      * @brief getPlayList
      * @return list of available songs
      */
-    const QList<SongHeader> *getPlayList() const;
+    const QList<SongStorage> *getPlayList() const;
 
     /**
      * @brief SongHeader::getCurrentSongIndex
@@ -240,7 +262,7 @@ public:
      * @brief getCurrentSong
      * @return playing song.
      */
-    const SongHeader *getCurrentSong() const;
+    const SongStorage *getCurrentSong() const;
 
     /**
      * @brief getEndPoint
@@ -266,13 +288,19 @@ public:
      * @brief next
      * @return true if all done;
      */
-    bool next(bool random = false);
+    bool next();
 
     /**
      * @brief prev
      * @return true if all done;
      */
     bool prev();
+
+    /**
+     * @brief playState
+     * @return state of media data
+     */
+    QMediaPlayer::State playState()const;
 
     Sync(const QString &address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
@@ -309,6 +337,12 @@ signals:
      * emited when changed a playing song
      */
     void currentSongChanged();
+
+    /**
+     * @brief playStateChanged
+     * emited when state of playing song changed
+     */
+    void playStateChanged();
 
 };
 }

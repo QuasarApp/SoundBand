@@ -22,11 +22,14 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
     if(!player->isAvailable()){
         throw MediaException();
     }
+    playList = new PlayList;
+
+    player->setPlaylist(playList->getList());
+
 
     fbroadcaster = false;
     resyncCount = 0;
     lastSyncTime = 0;
-    currentSongIndex = 0;
     ping = 0;
 
     sql = new MySql(datadir);
@@ -41,7 +44,15 @@ MySql* Sync::getSqlApi(){
     return sql;
 }
 
-bool Sync::updateSongs(QList<SongHeader>& list, const QString& playList){
+bool Sync::setSingle(const QMediaContent& media){
+    playList->clear();
+    playList->addMedia(media);
+
+    emit currentPlayListChanged();
+    return true;
+}
+
+bool Sync::updateSongs(PlayList& list, const QString& playList){
     if(!sql->updateAvailableSongs(list, playList)){
         return false;
     }
@@ -59,28 +70,54 @@ const QString& Sync::getPlayListName() const{
     return lastUsedPlayList;
 }
 
-bool Sync::findHeader(const Song &song){
+bool Sync::play(bool fbroadcast){
+    fbroadcaster = fbroadcast;
 
-    for(int i = 0; i < playList.size(); i++){
-        if(playList[i] == static_cast<SongHeader>(song)){
-            currentSongIndex = i;
-            return true;
-        }
+    if(fbroadcaster){
+        player->play();
+        sync();
+    }else{
+        player->syncBegin();
+    }
+    emit currentSongChanged();
+
+    return true;
+}
+
+bool Sync::play(const SongStorage &song, bool fbroadcast){
+
+    if(!song.isValid()){
+        return false;
     }
 
-    return false;
+    if(playList->selectSong(song)){
+        return play(fbroadcast);
+    }
+
+    playList->clear();
+    playList->addMedia(song);
+
+    return play(fbroadcast);
 }
 
 bool Sync::play(const SongHeader &header, bool fbroadcast){
 
-    Song song;
+    if(!header.isValid()){
+        return false;
+    }
+
+    if(playList->selectSong(header)){
+        return play(fbroadcast);
+    }
+
+    SongStorage song;
     SongHeader newheader = header;
     newheader.id = -1;
     if(!sql->load(newheader, song)){
         return false;
     }
 
-    return Sync::play(song, fbroadcast);
+    return play(song, fbroadcast);
 }
 
 bool Sync::play(const Song &song, bool fbroadcast){
@@ -89,27 +126,27 @@ bool Sync::play(const Song &song, bool fbroadcast){
         return false;
     }
 
-    if(!player->setMediaFromBytes(song.getSource())){
-        return false;
-    }
-
-    fbroadcaster = fbroadcast;
-
-    if(!findHeader(song) && sql->save(song) > -1 &&
-            updateSongs(playList) && !findHeader(song)){
+    QMediaContent savedSong;
+    if(!sql->find(static_cast<const SongHeader&>(song), savedSong) && sql->save(song) > -1 &&
+            !sql->find((SongHeader&)song, savedSong)){
 
         return false;
     }
 
-    if(fbroadcaster){
-        player->play();
-        sync();
-    }else{
-        player->syncBegin();
+    return play(savedSong, fbroadcast);
+}
+
+bool Sync::play(const QMediaContent& media, bool fbroadcast){
+
+    if(media.isNull()){
+        return false;
     }
 
-    emit currentSongChanged();
-    return true;
+    if(!setSingle(media)){
+        return false;
+    }
+
+    return Sync::play(fbroadcast);
 }
 
 bool Sync::play(int id_song, bool fbroadcast){
@@ -119,9 +156,12 @@ bool Sync::play(int id_song, bool fbroadcast){
     }
 
     SongHeader header;
+    SongStorage song;
     header.id = id_song;
-    Song song;
-    sql->load(header, song);
+
+    if(!sql->load(header, song)){
+        return false;
+    }
 
     return Sync::play(song, fbroadcast);
 }
@@ -135,22 +175,21 @@ bool Sync::play(QString url){
     return Sync::play(id);
 }
 
-Repeat Sync::repeat()const{
-    return _repeat;
+QMediaPlaylist::PlaybackMode Sync::repeat()const{
+    return playList->getList()->playbackMode();
 }
 
-void Sync::setRepeat(Repeat flag){
-    _repeat = flag;
+void Sync::setRepeat(QMediaPlaylist::PlaybackMode flag){
+    playList->getList()->setPlaybackMode(flag);
 }
 
 bool Sync::pause(bool state){
 
-    if(!fbroadcaster){
-
-        if(playList.isEmpty())
+    if(player->state() == QMediaPlayer::StoppedState){
+        if(playList->isEmpty())
             return false;
 
-        return play(playList[0]);
+        return play();
     }
 
     if(state){
@@ -189,6 +228,9 @@ bool Sync::sync(const Syncer &sync, milliseconds ping){
 
 }
 
+/**
+ * @todo thi nead send a hedaer
+*/
 void Sync::sync(){
 
     if(fbroadcaster)
@@ -196,7 +238,7 @@ void Sync::sync(){
 
             package pac;
             if(!createPackage(t_sync, pac)){
-                throw CreatePackageExaption();
+                CreatePackageExaption();
                 return;
             }
             node->WriteAll(pac.parseTo());
@@ -252,18 +294,17 @@ bool Sync::createPackage(Type type, package &pac){
     }
 
     if(type & TypePackage::t_song_h && fbroadcaster){
-        if(currentSongIndex < 0)
+        if(playList->getList()->currentIndex() < 0)
             return false;
 
-        pac.header = playList[currentSongIndex];
-
+         pac.header = *playList->currentHeader();
     }
 
     if(type & TypePackage::t_song && fbroadcaster){
-        if(currentSongIndex < 0)
+        if(playList->getList()->currentIndex() < 0)
             return false;
 
-        if(!sql->load(playList[currentSongIndex], pac.source))
+        if(!playList->currentSong()->toSong(pac.source))
             return false;
 
     }
@@ -387,7 +428,7 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from client
             if(pkg.getType() & t_play & t_sync){
-                if(currentSongIndex < 0){
+                if(playList->getList()->currentIndex() < 0){
                     throw SyncError();
                     socket->nextItem();
                     continue;
@@ -443,32 +484,27 @@ void Sync::deepScaned(QList<ETcpSocket *> * list){
 }
 
 void Sync::endPlay(QMediaPlayer::State state){
-    if(state == QMediaPlayer::StoppedState){
 
-        switch (_repeat) {
-        case allPlayListRandom:
-            next(true);
-            break;
+    switch (state) {
+    case QMediaPlayer::StoppedState:
+        fbroadcaster = false;
+        break;
+    case QMediaPlayer::PlayingState:
+        sync();
+        break;
 
-        case allPlayList:
-            next(false);
-            break;
-
-        case oneMusic:
-            play(playList[currentSongIndex]);
-            break;
-
-        default:
-            currentSongIndex = -1;
-            fbroadcaster = false;
-            break;
-        }
-
+    case QMediaPlayer::PausedState:
+        break;
+    default:
+        break;
     }
+
+    emit playStateChanged();
 }
 
 QString Sync::getVersion(){
-    return QString(tr("Version") + "%0.%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION).arg(REVISION_VERSION);
+    return QString(tr("Version") + "%0.%1.%2").
+            arg(MAJOR_VERSION).arg(MINOR_VERSION).arg(REVISION_VERSION);
 }
 
 bool Sync::setValume(unsigned int valume){
@@ -488,19 +524,16 @@ unsigned int Sync::seek() const{
     return player->position();
 }
 
-const QList<SongHeader>* Sync::getPlayList() const{
-    return &playList;
+const QList<SongStorage>* Sync::getPlayList() const{
+    return playList->getInfo();
 }
 
 int Sync::getCurrentSongIndex()const{
-    return currentSongIndex;
+    return playList->getList()->currentIndex();
 }
 
-const SongHeader* Sync::getCurrentSong() const{
-    if(currentSongIndex < 0 || currentSongIndex >= playList.size()){
-        return nullptr;
-    }
-    return &playList[currentSongIndex];
+const SongStorage* Sync::getCurrentSong() const{
+    return playList->currentSong();
 }
 
 qint64 Sync::getEndPoint() const {
@@ -509,48 +542,53 @@ qint64 Sync::getEndPoint() const {
 
 int Sync::addNewSong(const QString &url){
     int result = sql->save(url);
-    updateSongs(playList);
+    updateSongs(*playList);
     return result;
 }
 
 bool Sync::updatePlayList(const QString &_playList){
-    if(!updateSongs(playList, _playList)){
+    if(!updateSongs(*playList, _playList)){
         return false;
     }
 
-    if(!playList.size())
+    if(!playList->size())
         return false;
 
     if(fbroadcaster){
-        play(playList.first());
+        play(fbroadcaster);
     }
 
     return true;
 
 }
 
-bool Sync::next(bool random){
-    if(playList.isEmpty())
+bool Sync::next(){
+    if(playList->isEmpty())
         return false;
 
-    currentSongIndex = (currentSongIndex + ((random)? rand() % 10000:1)) % playList.size();
-    return play(playList[currentSongIndex]);
+    playList->next();
+    emit currentSongChanged();
+    return true;
 }
 
 bool Sync::prev(){
-    if(playList.isEmpty())
+    if(playList->isEmpty())
         return false;
 
-    --currentSongIndex;
-    if(currentSongIndex < 0)
-        currentSongIndex = playList.size() - 1;
-    return play(playList[currentSongIndex]);
+    playList->prev();
+    emit currentSongChanged();
+    return true;
+}
+
+QMediaPlayer::State Sync::playState()const{
+    return player->state();
 }
 
 Sync::~Sync(){
     delete node;
     delete player;
     delete sql;
+    delete playList;
     servers.clear();
 
 }

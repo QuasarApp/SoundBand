@@ -47,14 +47,14 @@ bool PlayList::isEmpty()const{
 }
 
 const SongHeader *PlayList::currentHeader()const{
-    if(playList->isEmpty())
+    if(playList->isEmpty() || playList->currentIndex() < 0)
         return nullptr;
 
     return static_cast<const SongHeader*>(&playListInfo[playList->currentIndex()]);
 }
 
 const SongStorage *PlayList::currentSong()const{
-    if(playList->isEmpty())
+    if(playList->isEmpty() || playList->currentIndex() < 0)
         return nullptr;
 
     return &playListInfo[playList->currentIndex()];
@@ -63,6 +63,30 @@ const SongStorage *PlayList::currentSong()const{
 int PlayList::size()const{
     return playList->mediaCount();
 }
+
+int PlayList::find(const SongHeader &header)const{
+    for(int i = 0; i < playList->mediaCount(); ++i) {
+        if(header == playList->media(i)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool PlayList::selectSong(int index){
+    if(playList->mediaCount() <= index || index < 0){
+        return false;
+    }
+
+    playList->setCurrentIndex(index);
+    return true;
+}
+
+bool PlayList::selectSong(const SongHeader &header){
+    return selectSong(find(header));
+}
+
+
 
 PlayList::~PlayList(){
     delete playList;

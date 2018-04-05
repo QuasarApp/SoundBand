@@ -44,6 +44,14 @@ MySql* Sync::getSqlApi(){
     return sql;
 }
 
+bool Sync::setSingle(const QMediaContent& media){
+    playList->clear();
+    playList->addMedia(media);
+
+    emit currentPlayListChanged();
+    return true;
+}
+
 bool Sync::updateSongs(PlayList& list, const QString& playList){
     if(!sql->updateAvailableSongs(list, playList)){
         return false;
@@ -82,6 +90,10 @@ bool Sync::play(const SongStorage &song, bool fbroadcast){
         return false;
     }
 
+    if(playList->selectSong(song)){
+        return play(fbroadcast);
+    }
+
     playList->clear();
     playList->addMedia(song);
 
@@ -92,6 +104,10 @@ bool Sync::play(const SongHeader &header, bool fbroadcast){
 
     if(!header.isValid()){
         return false;
+    }
+
+    if(playList->selectSong(header)){
+        return play(fbroadcast);
     }
 
     SongStorage song;
@@ -126,8 +142,9 @@ bool Sync::play(const QMediaContent& media, bool fbroadcast){
         return false;
     }
 
-    playList->clear();
-    playList->addMedia(media);
+    if(!setSingle(media)){
+        return false;
+    }
 
     return Sync::play(fbroadcast);
 }
@@ -168,8 +185,7 @@ void Sync::setRepeat(QMediaPlaylist::PlaybackMode flag){
 
 bool Sync::pause(bool state){
 
-    if(!fbroadcaster){
-
+    if(player->state() == QMediaPlayer::StoppedState){
         if(playList->isEmpty())
             return false;
 
@@ -222,7 +238,7 @@ void Sync::sync(){
 
             package pac;
             if(!createPackage(t_sync, pac)){
-                throw CreatePackageExaption();
+                CreatePackageExaption();
                 return;
             }
             node->WriteAll(pac.parseTo());
@@ -468,10 +484,22 @@ void Sync::deepScaned(QList<ETcpSocket *> * list){
 }
 
 void Sync::endPlay(QMediaPlayer::State state){
-    if(state == QMediaPlayer::StoppedState &&
-       playList->getList()->currentIndex() != -1){
-            fbroadcaster = false;
+
+    switch (state) {
+    case QMediaPlayer::StoppedState:
+        fbroadcaster = false;
+        break;
+    case QMediaPlayer::PlayingState:
+        sync();
+        break;
+
+    case QMediaPlayer::PausedState:
+        break;
+    default:
+        break;
     }
+
+    emit playStateChanged();
 }
 
 QString Sync::getVersion(){
@@ -539,6 +567,7 @@ bool Sync::next(){
         return false;
 
     playList->next();
+    emit currentSongChanged();
     return true;
 }
 
@@ -547,7 +576,12 @@ bool Sync::prev(){
         return false;
 
     playList->prev();
+    emit currentSongChanged();
     return true;
+}
+
+QMediaPlayer::State Sync::playState()const{
+    return player->state();
 }
 
 Sync::~Sync(){

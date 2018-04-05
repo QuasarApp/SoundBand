@@ -25,6 +25,20 @@ bool SongHeader::getName(QString & name, const QUrl &url) const {
 
 }
 
+bool SongHeader::getSize(int & size, const QUrl &url) const {
+    if(url.isLocalFile() && url.isValid()){
+        QFile f(url.toLocalFile());
+        if(!f.exists()){
+            return false;
+        }
+        size = f.size();
+        return true;
+    }
+
+    return false;
+
+}
+
 SongHeader& SongHeader::operator =(const SongHeader& right){
     this->id = right.id;
     this->name = right.name;
@@ -37,20 +51,30 @@ SongHeader& SongHeader::operator =(const QMediaContent& right){
     if(!getName(name, right.canonicalUrl())){
         name.clear();
     }
-    this->size = right.canonicalResource().dataSize();
+
+    if(!getSize(this->size, right.canonicalUrl())){
+        this->size = 0;
+    }
+
     return *this;
 }
 
-bool SongHeader::operator ==(const SongHeader& right){
+bool SongHeader::operator ==(const SongHeader& right)const{
     return this->name == right.name && this->size == right.size;
 }
 
-bool SongHeader::operator ==(const QMediaContent& right){
+bool SongHeader::operator ==(const QMediaContent& right)const{
     QString name;
     if(!getName(name, right.canonicalUrl())){
         return false;
     }
-    return this->name == name && this->size == right.canonicalResource().dataSize();
+
+    int size;;
+    if(!getSize(size, right.canonicalUrl())){
+        return false;
+    }
+
+    return this->name == name && this->size == size;
 }
 
 bool SongHeader::isNameValid() const{

@@ -27,6 +27,7 @@ struct Syncer
 class SongHeader{
 protected:
     bool getName(QString &name, const QUrl& url)const;
+    bool getSize(int &size, const QUrl& url)const;
 public:
     bool isSelected;
     int id;
@@ -36,8 +37,8 @@ public:
     SongHeader& operator = (const SongHeader& right);
     SongHeader& operator = (const QMediaContent& right);
 
-    bool operator == (const SongHeader& right);
-    bool operator == (const QMediaContent& right);
+    bool operator == (const SongHeader& right)const;
+    bool operator == (const QMediaContent& right)const;
     bool isNameValid() const;
     virtual bool isValid() const;
     virtual ~SongHeader();

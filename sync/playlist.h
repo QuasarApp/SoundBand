@@ -88,6 +88,25 @@ public:
      */
     int size()const;
 
+    /**
+     * @brief find
+     * @return index of finded media
+     */
+    int find(const SongHeader& header)const;
+
+    /**
+     * @brief selectSong
+     * @return true if song selected
+     */
+    bool selectSong(int index);
+
+    /**
+     * @brief selectSong
+     * @param header of selecting song
+     * @return if song selected return true;
+     */
+    bool selectSong(const SongHeader& header);
+
     ~PlayList();
 };
 

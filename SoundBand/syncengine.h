@@ -16,6 +16,7 @@ class SyncEngine : public QObject
     Q_PROPERTY(double pos READ pos WRITE setPos NOTIFY posChanged)
     Q_PROPERTY(int repeat READ repeat WRITE setRepeat NOTIFY repeatChanged)
     Q_PROPERTY(QString currentPlayListName READ currentPlayListName NOTIFY currentPlayListNameChanged)
+    Q_PROPERTY(int playState READ playState NOTIFY playStateChanged)
 
 
 private:
@@ -222,6 +223,17 @@ public slots:
      */
     bool removeFromPlayList(int id, const QString& playList);
 
+    /**
+     * @brief playState
+     * @return playState current song ( )
+     * @value 0 is no repeat
+     * @value 1 is single repeat
+     * @value 2 is single playlist
+     * @value 3 is repeat playlist
+     * @value 4 is random play
+     */
+    int playState()const;
+
 signals:
 
     /**
@@ -277,6 +289,12 @@ signals:
      *  emited when selected new PlayList;
      */
     void currentPlayListNameChanged();
+
+    /**
+     * @brief playStateChanged
+     * emited when state of playing song changed
+     */
+    void playStateChanged();
 
 };
 

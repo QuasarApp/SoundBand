@@ -55,6 +55,12 @@ private:
 private slots:
 
     /**
+     * @brief setSingle set singl or temp playlist
+     * @return true if all done
+     */
+    bool setSingle(const QMediaContent& media);
+
+    /**
      * @brief updateSongs use method update avelable songs from sql database
      * @return true if all done
      */
@@ -290,6 +296,12 @@ public:
      */
     bool prev();
 
+    /**
+     * @brief playState
+     * @return state of media data
+     */
+    QMediaPlayer::State playState()const;
+
     Sync(const QString &address = DEFAULT_ADRESS, int port = DEFAULT_PORT, const QString& datadir = DATABASE_NAME);
     ~Sync();
 
@@ -325,6 +337,12 @@ signals:
      * emited when changed a playing song
      */
     void currentSongChanged();
+
+    /**
+     * @brief playStateChanged
+     * emited when state of playing song changed
+     */
+    void playStateChanged();
 
 };
 }

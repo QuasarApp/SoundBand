@@ -119,6 +119,9 @@ package::~package(){}
 
 Node::Node(const QString &addres, int port):QTcpServer(){
     QString address = addres;
+    fBroadcaster = false;
+    index = 0;
+    step = DEFAULT_WS_TIME_SYNC;
     if(address == DEFAULT_ADRESS){
             address = LocalScanner::thisAddress().toString();
     }
@@ -132,17 +135,100 @@ Node::Node(const QString &addres, int port):QTcpServer(){
 #ifdef QT_DEBUG
     qDebug() << "node started on:" << serverAddress().toString() << "port:" << serverPort();
 #endif
+
+    timer = new QTimer(this);
+
+    connect(timer, SIGNAL(timeout()), this, SLOT(timerOut()));
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
+
+}
+
+void Node::timerOut(){
+    if(subscribers.length()){
+        int tempIndex = index % subscribers.length();
+        emit sendSyncInfo(subscribers[tempIndex].node);
+
+        tempIndex = ++index % subscribers.length();
+        subscribers[tempIndex].requestTime = ChronoTime::now();
+    }
 }
 
 void Node::acceptError_(ETcpSocket*c){
     c->getSource()->close();
     clients.removeOne(c);
+    unsubscribe(c);
 #ifdef QT_DEBUG
     qDebug() << "node diskonected error:" <<c->getSource()->errorString() << " node:" << c->peerName();
 #endif
     emit ClientDisconnected(c);
     delete c;
+}
+
+bool Node::subscribe(ETcpSocket* node){
+
+    int index = 0;
+    while (index >= 0 && subscribers[index] != node) ++index;
+
+    if(!node->isValid() || index < 0){
+        return false;
+    }
+    subscribers.push_back(Ping(node));
+
+    int size = subscribers.length();
+    timer->setInterval(step / size);
+
+    if(size == 1){
+        timer->start();
+    }
+    return true;
+
+}
+
+void Node::unsubscribe(ETcpSocket *node){
+    int index = 0;
+    while (index >= 0 && subscribers[index] != node) ++index;
+
+    if(index > -1) subscribers.removeAt(index);
+
+    int size = subscribers.length();
+
+    if(size){
+        timer->setInterval(step / size);
+    } else {
+        timer->stop();
+    }
+}
+
+bool Node::updatePing(ETcpSocket *node){
+    int index = 0;
+    while (index >= 0 && subscribers[index] != node) ++index;
+
+    if(index < 0){
+        return false;
+    }
+
+    subscribers[index].ping = ChronoTime::now() - subscribers[index].requestTime;
+    return true;
+}
+
+bool Node::isBroadcaster()const{
+    return fBroadcaster;
+}
+
+void Node::setBroadcaster(bool newValue){
+    if(!newValue){
+        subscribers.clear();
+    }
+
+    fBroadcaster = newValue;
+}
+
+void Node::setSyncStepWS(int timeOut){
+    step = timeOut;
+}
+
+int Node::getSyncStepWS()const{
+    return step;
 }
 
 QList<ETcpSocket*>* Node::getClients(){
@@ -173,6 +259,7 @@ void Node::WriteAll(const QByteArray &data){
 void Node::disconnectClient(ETcpSocket *c){
     c->getSource()->close();
     clients.removeOne(c);
+    unsubscribe(c);
     delete c;
 }
 

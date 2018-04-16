@@ -27,6 +27,7 @@
 #define SYNC_TIME                   5 * 1000    // 5 sec on millisec
 #define DEEP_SCANER_INTERVAL        1000        // 1 sec
 #define CHECK_PING_INTERVAL         5 * 60 *1000// 5 minutes
+#define DEFAULT_WS_TIME_SYNC        10          // 10 sec
 
 // sync
 #define MIN_DIFFERENCE              10          // millisec

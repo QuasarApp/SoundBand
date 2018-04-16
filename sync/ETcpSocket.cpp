@@ -144,6 +144,10 @@ bool ETcpSocket::Write(const QByteArray&data){
     return false;
 }
 
+bool ETcpSocket::isValid(){
+    return source->isValid() && source->isOpen();
+}
+
 ETcpSocket::~ETcpSocket()
 {
     for(QByteArray*i:ReadyStack){

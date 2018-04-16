@@ -30,10 +30,6 @@ private:
     PlayList *playList;
     QString lastUsedPlayList;
     QList<ETcpSocket*> servers;
-    bool fbroadcaster;
-    int resyncCount;
-    int lastSyncTime;
-    int ping;
     LocalScanner deepScaner;
     MySql *sql;
     int port;
@@ -50,9 +46,15 @@ private:
      * @param pac - the resulting value
      * @return true if everything's done
      */
-    bool createPackage(Type type , package& pac);
+    bool createPackage(Type type , package& pac, int ping = 0);
 
 private slots:
+
+    /**
+     * @brief syncWs send play info
+     * @param node node of synced
+     */
+    void syncWs(ETcpSocket* node);
 
     /**
      * @brief setSingle set singl or temp playlist
@@ -171,7 +173,7 @@ public:
      * @brief sync with server
      * @param sync - data of sync
      */
-    bool sync(const Syncer& sync, milliseconds ping);
+    bool sync(const Syncer& sync);
 
     /**
      * @brief isReadyToSync

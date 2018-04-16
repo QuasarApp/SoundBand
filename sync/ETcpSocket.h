@@ -98,6 +98,12 @@ public:
      */
     bool Write(const QByteArray&);
 
+    /**
+     * @brief isValid
+     * @return true if socket active;
+     */
+    bool isValid();
+
     ~ETcpSocket();
 public slots:
 

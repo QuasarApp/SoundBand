@@ -161,8 +161,8 @@ QMediaContent SongStorage::toMedia()const{
     return QMediaContent(url);
 }
 
-bool SongStorage::toSong(Song&)const{
-    Song song(*((SongHeader*)this));
+bool SongStorage::toSong(Song& song)const{
+    song = (*((SongHeader*)this));
 
     QFile f(url.toLocalFile());
 

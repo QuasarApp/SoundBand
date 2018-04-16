@@ -182,6 +182,9 @@ bool MySql::saveToStorage(QUrl &url, const Song &song) const{
         return false;
     }
 
+    QDir dir;
+    dir.mkpath(songDir);
+
     QFile file(songDir + "/" + song.name);
 
     if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate)){

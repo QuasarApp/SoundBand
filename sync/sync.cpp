@@ -44,9 +44,11 @@ MySql* Sync::getSqlApi(){
     return sql;
 }
 
-bool Sync::setSingle(const QMediaContent& media){
+bool Sync::setSingle(const SongStorage& media){
     playList->clear();
-    playList->addMedia(media);
+    if(!playList->addMedia(media)) {
+        return false;
+    }
 
     emit currentPlayListChanged();
     return true;
@@ -126,7 +128,7 @@ bool Sync::play(const Song &song, bool fbroadcast){
         return false;
     }
 
-    QMediaContent savedSong;
+    SongStorage savedSong;
     if(!sql->find(static_cast<const SongHeader&>(song), savedSong) && sql->save(song) > -1 &&
             !sql->find((SongHeader&)song, savedSong)){
 
@@ -134,19 +136,6 @@ bool Sync::play(const Song &song, bool fbroadcast){
     }
 
     return play(savedSong, fbroadcast);
-}
-
-bool Sync::play(const QMediaContent& media, bool fbroadcast){
-
-    if(media.isNull()){
-        return false;
-    }
-
-    if(!setSingle(media)){
-        return false;
-    }
-
-    return Sync::play(fbroadcast);
 }
 
 bool Sync::play(int id_song, bool fbroadcast){
@@ -209,6 +198,8 @@ void Sync::stop(){
 
 void Sync::jump(const qint64 seek){
     player->setPosition(seek);
+    sync();
+
 }
 
 bool Sync::isReadyToSync()const{
@@ -228,21 +219,35 @@ bool Sync::sync(const Syncer &sync, milliseconds ping){
 
 }
 
+
+
 /**
  * @todo thi nead send a hedaer
 */
-void Sync::sync(){
+void Sync::sync(bool forse){
 
-    if(fbroadcaster)
-        QTimer::singleShot(SYNC_TIME, [=]() {
+    if(fbroadcaster) {
 
+        if (forse) {
             package pac;
             if(!createPackage(t_sync, pac)){
-                CreatePackageExaption();
+                throw CreatePackageExaption();
                 return;
             }
             node->WriteAll(pac.parseTo());
-        });
+        } else {
+            QTimer::singleShot(SYNC_TIME, [=]() {
+
+                package pac;
+                if(!createPackage(t_sync, pac)){
+                    CreatePackageExaption();
+                    return;
+                }
+                node->WriteAll(pac.parseTo());
+            });
+        }
+    }
+
 }
 
 bool Sync::addNode(const QString ip, int port){

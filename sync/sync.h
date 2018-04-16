@@ -58,7 +58,7 @@ private slots:
      * @brief setSingle set singl or temp playlist
      * @return true if all done
      */
-    bool setSingle(const QMediaContent& media);
+    bool setSingle(const SongStorage &media);
 
     /**
      * @brief updateSongs use method update avelable songs from sql database
@@ -114,14 +114,6 @@ public:
      * @return true if all done else false.
      */
     bool play(bool fbroadcast = true);
-
-    /**
-     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
-     * @param header of song
-     * @param fbroadcast - server broadcasting sound.
-     * @return true if all done else false.
-     */
-    bool play(const QMediaContent &media,  bool fbroadcast = true);
 
     /**
      * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
@@ -190,7 +182,7 @@ public:
     /**
      * @brief sync with clients
      */
-    void sync();
+    void sync(bool forse = false);
 
     /**
      * @brief addNode add new connect

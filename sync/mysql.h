@@ -43,23 +43,7 @@ public:
      * @param response Media Content of finded song
      * @return true if song finded
      */
-    bool find(const SongHeader& song, QMediaContent& response);
-
-    /**
-     * @brief find - find song
-     * @param song - song header
-     * @param response Media Content of finded song
-     * @return true if song finded
-     */
-    bool find(const QMediaContent& song, SongHeader& response);
-
-    /**
-     * @brief find - find song
-     * @param song - media Content
-     * @param response header of finded song
-     * @return true if song finded
-     */
-    bool find(const QMediaContent& song, SongStorage &response);
+    bool find(const SongHeader& song, SongStorage &response);
 
     /**
      * @brief setSoundDir

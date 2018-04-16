@@ -166,8 +166,8 @@ void Node::acceptError_(ETcpSocket*c){
 
 bool Node::subscribe(ETcpSocket* node){
 
-    int index = 0;
-    while (index >= 0 && subscribers[index] != node) ++index;
+    int index = subscribers.length() -1 ;
+    while (index >= 0 && subscribers[index] != node) --index;
 
     if(!node->isValid() || index < 0){
         return false;
@@ -185,8 +185,8 @@ bool Node::subscribe(ETcpSocket* node){
 }
 
 void Node::unsubscribe(ETcpSocket *node){
-    int index = 0;
-    while (index >= 0 && subscribers[index] != node) ++index;
+    int index = subscribers.length() -1 ;
+    while (index >= 0 && subscribers[index] != node) --index;
 
     if(index > -1) subscribers.removeAt(index);
 
@@ -200,8 +200,8 @@ void Node::unsubscribe(ETcpSocket *node){
 }
 
 bool Node::updatePing(ETcpSocket *node){
-    int index = 0;
-    while (index >= 0 && subscribers[index] != node) ++index;
+    int index = subscribers.length() -1 ;
+    while (index >= 0 && subscribers[index] != node) --index;
 
     if(index < 0){
         return false;

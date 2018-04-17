@@ -369,8 +369,17 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->Write(answer.parseTo());
             }
 
-            if(pkg.getType() & t_sync){
-                sync(pkg.getPlayData());
+            if(pkg.getType() & t_sync && !sync(pkg.getPlayData())){
+
+                QTimer::singleShot(SYNC_TIME, [=](){
+                    package answer;
+                    if(!createPackage(t_sync, answer)){
+                        throw CreatePackageExaption();
+                        socket->nextItem();
+                        continue;
+                    }
+                    socket->Write(answer.parseTo());
+                });
             }
 
             if(pkg.getType() & t_play && !play(pkg.getHeader(), false) && !play(pkg.getSong(), false)){

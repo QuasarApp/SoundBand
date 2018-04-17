@@ -374,9 +374,8 @@ void Sync::packageRender(ETcpSocket *socket){
                 QTimer::singleShot(SYNC_TIME, [=](){
                     package answer;
                     if(!createPackage(t_sync, answer)){
-                        throw CreatePackageExaption();
+                        CreatePackageExaption();
                         socket->nextItem();
-                        continue;
                     }
                     socket->Write(answer.parseTo());
                 });

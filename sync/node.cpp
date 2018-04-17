@@ -30,6 +30,10 @@ const Type& package::getType() const{
     return type;
 }
 
+const milliseconds& package::getTime() const{
+    return time;
+}
+
 bool package::isValid() const{
 
     bool ret = true;
@@ -39,7 +43,7 @@ bool package::isValid() const{
     }
 
     if(type & TypePackage::t_sync && type & t_brodcaster){
-        ret = ret && (playdata.seek > 0);
+        ret = ret && playdata.seek > 0 && playdata.timeOn > 0;
 
     }
 
@@ -61,6 +65,7 @@ void package::clear(){
     type = TypePackage::t_void;
     source.clear();
     playdata.seek = 0;
+    time = -1;
 }
 
 QByteArray package::parseTo(){
@@ -72,6 +77,7 @@ QByteArray package::parseTo(){
 
         if(type & TypePackage::t_sync && type & t_brodcaster){
             stream << playdata.seek;
+            stream << playdata.timeOn;
 
         }
 
@@ -83,6 +89,10 @@ QByteArray package::parseTo(){
         if(type & TypePackage::t_song && type & t_brodcaster){
             stream << source;
 
+        }
+
+        if(type & TypePackage::t_syncTime){
+            stream << time;
         }
 
     }
@@ -99,6 +109,8 @@ bool package::parseFrom(QByteArray &array){
 
     if(type & TypePackage::t_sync){
         stream >> playdata.seek;
+        stream >> playdata.timeOn;
+
 
     }
 
@@ -112,6 +124,10 @@ bool package::parseFrom(QByteArray &array){
 
     }
 
+    if(type & TypePackage::t_syncTime){
+        stream >> time;
+    }
+
     return isValid();
 }
 
@@ -120,8 +136,6 @@ package::~package(){}
 Node::Node(const QString &addres, int port):QTcpServer(){
     QString address = addres;
     fBroadcaster = false;
-    index = 0;
-    step = DEFAULT_WS_TIME_SYNC;
     if(address == DEFAULT_ADRESS){
             address = LocalScanner::thisAddress().toString();
     }
@@ -136,21 +150,8 @@ Node::Node(const QString &addres, int port):QTcpServer(){
     qDebug() << "node started on:" << serverAddress().toString() << "port:" << serverPort();
 #endif
 
-    timer = new QTimer(this);
-
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerOut()));
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
 
-}
-
-void Node::timerOut(){
-    if(subscribers.length()){
-        int tempIndex = index % subscribers.length();
-        emit sendSyncInfo(subscribers[tempIndex].node);
-
-        tempIndex = ++index % subscribers.length();
-        subscribers[tempIndex].requestTime = ChronoTime::now();
-    }
 }
 
 void Node::acceptError_(ETcpSocket*c){
@@ -164,71 +165,12 @@ void Node::acceptError_(ETcpSocket*c){
     delete c;
 }
 
-bool Node::subscribe(ETcpSocket* node){
-
-    int index = subscribers.length() -1 ;
-    while (index >= 0 && subscribers[index] != node) --index;
-
-    if(!node->isValid() || index < 0){
-        return false;
-    }
-    subscribers.push_back(Ping(node));
-
-    int size = subscribers.length();
-    timer->setInterval(step / size);
-
-    if(size == 1){
-        timer->start();
-    }
-    return true;
-
-}
-
-void Node::unsubscribe(ETcpSocket *node){
-    int index = subscribers.length() -1 ;
-    while (index >= 0 && subscribers[index] != node) --index;
-
-    if(index > -1) subscribers.removeAt(index);
-
-    int size = subscribers.length();
-
-    if(size){
-        timer->setInterval(step / size);
-    } else {
-        timer->stop();
-    }
-}
-
-bool Node::updatePing(ETcpSocket *node){
-    int index = subscribers.length() -1 ;
-    while (index >= 0 && subscribers[index] != node) --index;
-
-    if(index < 0){
-        return false;
-    }
-
-    subscribers[index].ping = ChronoTime::now() - subscribers[index].requestTime;
-    return true;
-}
-
 bool Node::isBroadcaster()const{
     return fBroadcaster;
 }
 
 void Node::setBroadcaster(bool newValue){
-    if(!newValue){
-        subscribers.clear();
-    }
-
     fBroadcaster = newValue;
-}
-
-void Node::setSyncStepWS(int timeOut){
-    step = timeOut;
-}
-
-int Node::getSyncStepWS()const{
-    return step;
 }
 
 QList<ETcpSocket*>* Node::getClients(){

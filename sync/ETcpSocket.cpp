@@ -24,6 +24,8 @@ ETcpSocket::ETcpSocket(const QString& address, int port){
 
 void ETcpSocket::init(){
     array = new QByteArray;
+    isSynced = false;
+    time = 0;
 
     connect(source,SIGNAL(connected()),this,SLOT(connected_()));
     connect(source,SIGNAL(disconnected()),this,SLOT(disconnected_()));
@@ -98,6 +100,14 @@ QByteArray* ETcpSocket::topStack(){
     if(ReadyStack.size())
         return ReadyStack.front();
     return NULL;
+}
+
+void ETcpSocket::setTime(milliseconds newTime){
+    time += newTime;
+}
+
+milliseconds ETcpSocket::getTime()const{
+    return time;
 }
 
 QTcpSocket* ETcpSocket::getSource()const{

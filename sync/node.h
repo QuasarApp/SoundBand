@@ -18,7 +18,7 @@ typedef unsigned char Type;
  * t_song         =   the package with this type is necessary for translite media data on network.
  * t_sync         =   the infomation about sync playning media file on network.
  * t_close        =   the information about close channel.
- * t_ping         =   check ping
+ * t_syncTime     =   getLocalTime of socket
  * t_what         =   request for information about the node
  * t_brodcaster   =   information about the node
 */
@@ -30,26 +30,9 @@ enum TypePackage{
      t_song         =   0x04,
      t_sync         =   0x08,
      t_close        =   0x10,
-     t_ping         =   0x20,
+     t_syncTime     =   0x20,
      t_what         =   0x40,
      t_brodcaster   =   0x80
-};
-
-class Ping
-{
-public:
-    Ping(ETcpSocket* c) {
-        ping = 0;
-        node = c;
-        requestTime = 0;
-    }
-    ETcpSocket* node;
-    qint64 ping;
-    qint64 requestTime;
-
-    bool operator != (ETcpSocket* right){
-        return node != right;
-    }
 };
 
 /**
@@ -68,6 +51,7 @@ private:
     SongHeader header;
     bool fbroadcaster;
     Syncer playdata;
+    milliseconds time;
 public:
     package();
     package(QByteArray &array);
@@ -96,6 +80,12 @@ public:
      * @return type of package
      */
     const Type& getType() const;
+
+    /**
+     * @brief getTime
+     * @return time of sended package pc
+     */
+    const milliseconds& getTime()const;
 
     /**
      * @brief isValid
@@ -134,7 +124,6 @@ private:
 protected:
     QList<ETcpSocket*> clients;
     bool fBroadcaster;
-    QList<Ping> subscribers;
     int step;
 private slots:
     void acceptError_(ETcpSocket*);
@@ -154,17 +143,6 @@ public:
      * @brief setBroadcaster set new state for this node
      */
     void setBroadcaster(bool newValue);
-
-    /**
-     * @brief setStepofUpdateWS set new step of timeout update subscribers
-     */
-    void setSyncStepWS(int timeOut);
-
-    /**
-     * @brief getSyncStepWS
-     * @return step of secunds
-     */
-    int getSyncStepWS()const;
 
     /**
      * @brief WriteAll send package to all connected clients
@@ -197,22 +175,6 @@ public:
      */
     bool addNode(ETcpSocket* node);
 
-    /**
-     * @brief subscribe
-     * @return true if all done
-     */
-    bool subscribe(ETcpSocket* node);
-
-    /**
-     * @brief updatePing
-     * @return true if all done
-     */
-    bool updatePing(ETcpSocket* node);
-
-    /**
-     * @brief unsubscribe
-     */
-    void unsubscribe(ETcpSocket* node);
     ~Node();
 signals:
     /**
@@ -235,11 +197,6 @@ signals:
      */
     void ClientConnected(ETcpSocket*);
 
-    /**
-     * @brief sendSyncInfo emited when need send sync info for node
-     * @param node - node of sync
-     */
-    void sendSyncInfo(ETcpSocket* node);
 };
 
 }

@@ -46,15 +46,9 @@ private:
      * @param pac - the resulting value
      * @return true if everything's done
      */
-    bool createPackage(Type type , package& pac, int ping = 0);
+    bool createPackage(Type type , package& pac, milliseconds time = 0);
 
 private slots:
-
-    /**
-     * @brief syncWs send play info
-     * @param node node of synced
-     */
-    void syncWs(ETcpSocket* node);
 
     /**
      * @brief setSingle set singl or temp playlist

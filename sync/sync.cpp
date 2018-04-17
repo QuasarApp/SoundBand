@@ -32,20 +32,32 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
     connect(&deepScaner, SIGNAL(scaned(QList<ETcpSocket*>*)), SLOT(deepScaned(QList<ETcpSocket*>*)));
     connect(player, SIGNAL(positionChanged(qint64)), SIGNAL(seekChanged(qint64)));
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(endPlay(QMediaPlayer::State)));
-    connect(node, SIGNAL(sendSyncInfo(ETcpSocket*)), this, SLOT(syncWs(ETcpSocket*)));
+    connect(node, SIGNAL(sendSyncInfo(Ping*)), this, SLOT(syncWs(Ping*)));
+    connect(node, SIGNAL(sendSyncInfoPing(Ping*)), this, SLOT(syncPing(Ping*)));
+
 }
 
 MySql* Sync::getSqlApi(){
     return sql;
 }
 
-void Sync::syncWs(ETcpSocket *node){
+void Sync::syncWs(Ping *node){
     package pac;
-    if(!createPackage(t_sync, pac)){
+    if(!createPackage(t_sync, pac, node->ping)){
         CreatePackageExaption();
         return;
     }
-    node->Write(pac.parseTo());
+    node->node->Write(pac.parseTo());
+}
+
+void Sync::syncPing(Ping *node){
+    package pac;
+    if(!createPackage(t_ping, pac)){
+        CreatePackageExaption();
+        return;
+    }
+    node->requestTime = ChronoTime::now();
+    node->node->Write(pac.parseTo());
 }
 
 bool Sync::setSingle(const SongStorage& media){
@@ -278,6 +290,10 @@ bool Sync::listen(ETcpSocket *server){
         return false;
     }
 
+    if(!server->isValid()){
+        return false;
+    }
+
     if(!server->getSource()->isOpen() && server->getSource()->open(QIODevice::ReadWrite)){
         return false;
     }
@@ -290,7 +306,7 @@ bool Sync::listen(ETcpSocket *server){
     return server->Write(pac.parseTo());
 }
 
-bool Sync::createPackage(Type type, package &pac, int ping){
+bool Sync::createPackage(Type type, package &pac, milliseconds time){
 
     pac.clear();
 
@@ -299,7 +315,8 @@ bool Sync::createPackage(Type type, package &pac, int ping){
     bool isbroadcaster = node->isBroadcaster();
 
     if(type & TypePackage::t_sync && isbroadcaster){
-        pac.playdata.seek = player->position() + ping;
+        pac.playdata.seek = player->position() + SYNC_TIME;
+        pac.playdata.timeOn = ChronoTime.now(time) + SYNC_TIME;
 
     }
 
@@ -317,6 +334,10 @@ bool Sync::createPackage(Type type, package &pac, int ping){
         if(!playList->currentSong()->toSong(pac.source))
             return false;
 
+    }
+
+    if(type & TypePackage::t_syncTime){
+            pac.time = time;
     }
 
     if(isbroadcaster)
@@ -353,9 +374,10 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from server
 
-            if(pkg.getType() & t_ping){
+            if(pkg.getType() & t_syncTime){
+
                 package answer;
-                if(!createPackage(t_ping, answer)){
+                if(!createPackage(t_syncTime, answer, ChronoTime::now() - socket->getTime())){
                     throw CreatePackageExaption();
                     socket->nextItem();
                     continue;
@@ -398,6 +420,8 @@ void Sync::packageRender(ETcpSocket *socket){
             if(pkg.getType() & t_close){
                 socket->getSource()->close();
                 node->getClients()->removeOne(socket);
+                servers.removeOne(socket);
+                emit networkStateChange();
                 delete socket;
                 return;
             }
@@ -412,16 +436,51 @@ void Sync::packageRender(ETcpSocket *socket){
                 socket->Write(answer.parseTo());
             }
 
-        }else{
+        } else if (node->isBroadcaster()) {
  //            if requst from client
 
 
-            if(pkg.getType() & t_ping){
-                node->updatePing(socket);
+            if(pkg.getType() & t_syncTime){
+                package answer;
+
+                if(pkg.time == 0){
+                    socket->isSynced = true;
+                    if(!createPackage(t_sync, answer, socket->getTime())){
+                        throw CreatePackageExaption();
+                        socket->nextItem();
+                        continue;
+                    }
+                } else {
+                    socket->setTime(pkg.time);
+                    if(!createPackage(t_syncTime, answer, ChronoTime::now(socket->getTime()))){
+                        throw CreatePackageExaption();
+                        socket->nextItem();
+                        continue;
+                    }
+                }
+
+                socket->Write(answer.parseTo());
+
             }
 
-            if(pkg.getType() & t_sync && node->isBroadcaster()){
-                node->subscribe(socket);
+            if(pkg.getType() & t_sync){
+                package answer;
+
+                if(!socket->isSynced) {
+
+                    if(!createPackage(t_syncTime, answer, ChronoTime::now(socket->getTime()))){
+                        throw CreatePackageExaption();
+                        socket->nextItem();
+                        continue;
+                    }
+                } else {
+                    if(!createPackage(t_sync, answer, socket->getTime())){
+                        throw CreatePackageExaption();
+                        socket->nextItem();
+                        continue;
+                    }
+                }
+                socket->Write(answer.parseTo());
             }
 
             package answer;
@@ -430,7 +489,9 @@ void Sync::packageRender(ETcpSocket *socket){
             }
 
             if(pkg.getType() & t_close){
-                node->unsubscribe(socket);
+                socket->getSource()->close();
+                node->getClients()->removeOne(socket);
+                delete socket;
             }
 
         }

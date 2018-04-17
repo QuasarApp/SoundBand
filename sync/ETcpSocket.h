@@ -36,6 +36,7 @@ private:
     QTcpSocket *source;
     QByteArray *array;
     qint32 size;
+    milliseconds time;
     QList<QByteArray*> ReadyStack;
     void init();
 
@@ -52,6 +53,10 @@ public:
     explicit ETcpSocket();
     explicit ETcpSocket(QTcpSocket*);
     explicit ETcpSocket(const QString& addres,int port);
+    /**
+     * @brief isSynced
+     */
+    bool isSynced;
 
     /**
      * @brief setCheckInterval - set new interval of chking ping
@@ -66,10 +71,15 @@ public:
     int getCheckInterval()const;
 
     /**
-     * @brief getPing
-     * @return ping of soccket;
+     * @brief setTime set new Time
      */
-    int getPing()const;
+    void setTime(milliseconds newTime);
+
+    /**
+     * @brief getTime
+     * @return time of soccket;
+     */
+    milliseconds getTime()const;
     /**
      * @brief getSource
      * @return Qt TCP socket

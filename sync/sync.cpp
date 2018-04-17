@@ -452,6 +452,8 @@ void Sync::packageRender(ETcpSocket *socket){
                 }
 
                 socket->Write(answer.parseTo());
+                socket->nextItem();
+                continue;
 
             }
 
@@ -473,6 +475,8 @@ void Sync::packageRender(ETcpSocket *socket){
                     }
                 }
                 socket->Write(answer.parseTo());
+                socket->nextItem();
+                continue;
             }
 
             package answer;

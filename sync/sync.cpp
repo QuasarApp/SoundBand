@@ -303,7 +303,7 @@ bool Sync::createPackage(Type type, package &pac, int ping){
 
     }
 
-    if(type & TypePackage::t_song_h ){
+    if(type & TypePackage::t_song_h && isbroadcaster ){
         if(playList->getList()->currentIndex() < 0)
             return false;
 
@@ -425,7 +425,7 @@ void Sync::packageRender(ETcpSocket *socket){
             }
 
             package answer;
-            if(createPackage(pkg.getType() & ~t_play & ~t_sync & ~t_what & ~t_close & ~t_brodcaster, answer)){
+            if(createPackage(pkg.getType() & ~t_sync & ~t_what & ~t_close & ~t_brodcaster, answer)){
                 socket->Write(answer.parseTo());
             }
 

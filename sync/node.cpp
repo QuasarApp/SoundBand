@@ -157,7 +157,6 @@ Node::Node(const QString &addres, int port):QTcpServer(){
 void Node::acceptError_(ETcpSocket*c){
     c->getSource()->close();
     clients.removeOne(c);
-    unsubscribe(c);
 #ifdef QT_DEBUG
     qDebug() << "node diskonected error:" <<c->getSource()->errorString() << " node:" << c->peerName();
 #endif
@@ -201,7 +200,6 @@ void Node::WriteAll(const QByteArray &data){
 void Node::disconnectClient(ETcpSocket *c){
     c->getSource()->close();
     clients.removeOne(c);
-    unsubscribe(c);
     delete c;
 }
 

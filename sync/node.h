@@ -129,7 +129,6 @@ private slots:
     void acceptError_(ETcpSocket*);
     void newConnection_();
     void readData(ETcpSocket*_client);
-    void timerOut();
 public:
     Node(const QString &addres = DEFAULT_ADRESS, int port = DEFAULT_PORT);
 

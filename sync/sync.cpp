@@ -32,32 +32,11 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
     connect(&deepScaner, SIGNAL(scaned(QList<ETcpSocket*>*)), SLOT(deepScaned(QList<ETcpSocket*>*)));
     connect(player, SIGNAL(positionChanged(qint64)), SIGNAL(seekChanged(qint64)));
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(endPlay(QMediaPlayer::State)));
-    connect(node, SIGNAL(sendSyncInfo(Ping*)), this, SLOT(syncWs(Ping*)));
-    connect(node, SIGNAL(sendSyncInfoPing(Ping*)), this, SLOT(syncPing(Ping*)));
 
 }
 
 MySql* Sync::getSqlApi(){
     return sql;
-}
-
-void Sync::syncWs(Ping *node){
-    package pac;
-    if(!createPackage(t_sync, pac, node->ping)){
-        CreatePackageExaption();
-        return;
-    }
-    node->node->Write(pac.parseTo());
-}
-
-void Sync::syncPing(Ping *node){
-    package pac;
-    if(!createPackage(t_ping, pac)){
-        CreatePackageExaption();
-        return;
-    }
-    node->requestTime = ChronoTime::now();
-    node->node->Write(pac.parseTo());
 }
 
 bool Sync::setSingle(const SongStorage& media){
@@ -316,7 +295,7 @@ bool Sync::createPackage(Type type, package &pac, milliseconds time){
 
     if(type & TypePackage::t_sync && isbroadcaster){
         pac.playdata.seek = player->position() + SYNC_TIME;
-        pac.playdata.timeOn = ChronoTime.now(time) + SYNC_TIME;
+        pac.playdata.timeOn = ChronoTime::now(time) + SYNC_TIME;
 
     }
 

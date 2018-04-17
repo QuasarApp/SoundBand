@@ -206,11 +206,16 @@ bool Sync::isReadyToSync()const{
 }
 
 bool Sync::sync(const Syncer &sync){
-    if(!isReadyToSync()){
+    milliseconds now =  sync.timeOn - ChronoTime::now();
+    if(!isReadyToSync() || now < 0){
         return false;
     }
-    player->setPosition(sync.seek);
-    player->syncEnd();
+
+    QTimer::singleShot(now, [=](){
+        player->setPosition(sync.seek);
+
+        player->syncEnd();
+    } );
 
     return true;
 

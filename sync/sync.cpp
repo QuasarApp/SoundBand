@@ -358,6 +358,11 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from server
 
+            if(node->isBroadcaster()){
+                socket->nextItem();
+                continue;
+            }
+
             if(pkg.getType() & t_syncTime){
 
                 package answer;

@@ -361,7 +361,7 @@ void Sync::packageRender(ETcpSocket *socket){
             if(pkg.getType() & t_syncTime){
 
                 package answer;
-                if(!createPackage(t_syncTime, answer, ChronoTime::now() - socket->getTime())){
+                if(!createPackage(t_syncTime, answer, ChronoTime::now() - pkg.getTime())){
                     throw CreatePackageExaption();
                     socket->nextItem();
                     continue;

@@ -354,14 +354,9 @@ void Sync::packageRender(ETcpSocket *socket){
             emit networkStateChange();
         }
 
-        if(pkg.getType() & t_brodcaster){
+        if(pkg.getType() & t_brodcaster && !node->isBroadcaster()){
 
 //            if requst from server
-
-            if(node->isBroadcaster()){
-                socket->nextItem();
-                continue;
-            }
 
             if(pkg.getType() & t_syncTime){
 
@@ -442,7 +437,7 @@ void Sync::packageRender(ETcpSocket *socket){
 
                 if(pkg.time == 0){
                     socket->isSynced = true;
-                    if(!createPackage(t_sync, answer, socket->getTime())){
+                    if(!createPackage(t_sync, answer, ChronoTime::now(socket->getTime()))){
                         throw CreatePackageExaption();
                         socket->nextItem();
                         continue;

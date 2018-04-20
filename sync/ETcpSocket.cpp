@@ -24,7 +24,6 @@ ETcpSocket::ETcpSocket(const QString& address, int port){
 
 void ETcpSocket::init(){
     array = new QByteArray;
-    isSynced = false;
     time = 0;
 
     connect(source,SIGNAL(connected()),this,SLOT(connected_()));

@@ -53,10 +53,6 @@ public:
     explicit ETcpSocket();
     explicit ETcpSocket(QTcpSocket*);
     explicit ETcpSocket(const QString& addres,int port);
-    /**
-     * @brief isSynced
-     */
-    bool isSynced;
 
     /**
      * @brief setCheckInterval - set new interval of chking ping

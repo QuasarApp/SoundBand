@@ -226,28 +226,16 @@ bool Sync::sync(const Syncer &sync){
 /**
  * @todo thi nead send a hedaer
 */
-void Sync::sync(bool forse){
+void Sync::sync(){
 
     if(node->isBroadcaster()) {
 
-        if (forse) {
-            package pac;
-            if(!createPackage(t_sync, pac)){
-                throw CreatePackageExaption();
-                return;
-            }
-            node->WriteAll(pac.parseTo());
-        } else {
-            QTimer::singleShot(SYNC_TIME, [=]() {
-
-                package pac;
-                if(!createPackage(t_sync, pac)){
-                    CreatePackageExaption();
-                    return;
-                }
-                node->WriteAll(pac.parseTo());
-            });
+        package pac;
+        if(!createPackage(t_sync, pac)){
+            CreatePackageExaption();
+            return;
         }
+        node->WriteAll(pac.parseTo());
     }
 
 }
@@ -371,14 +359,12 @@ void Sync::packageRender(ETcpSocket *socket){
 
             if(pkg.getType() & t_sync && !sync(pkg.getPlayData())){
 
-                QTimer::singleShot(SYNC_TIME, [=](){
-                    package answer;
-                    if(!createPackage(t_sync, answer)){
-                        CreatePackageExaption();
-                        socket->nextItem();
-                    }
-                    socket->Write(answer.parseTo());
-                });
+                package answer;
+                if(!createPackage(t_sync, answer)){
+                    CreatePackageExaption();
+                    socket->nextItem();
+                }
+                socket->Write(answer.parseTo());
             }
 
             if(pkg.getType() & t_play && !play(pkg.getHeader(), false) && !play(pkg.getSong(), false)){
@@ -434,21 +420,16 @@ void Sync::packageRender(ETcpSocket *socket){
 
             if(pkg.getType() & t_syncTime){
                 package answer;
+                TypePackage temp = t_syncTime;
+                if(!pkg.time){
+                    temp = t_sync;
 
-                if(pkg.time == 0){
-                    socket->isSynced = true;
-                    if(!createPackage(t_sync, answer, ChronoTime::now(socket->getTime()))){
-                        throw CreatePackageExaption();
-                        socket->nextItem();
-                        continue;
-                    }
-                } else {
-                    socket->setTime(pkg.time);
-                    if(!createPackage(t_syncTime, answer, ChronoTime::now(socket->getTime()))){
-                        throw CreatePackageExaption();
-                        socket->nextItem();
-                        continue;
-                    }
+                }
+
+                if(!createPackage(temp, answer, ChronoTime::now(socket->getTime()))){
+                    throw CreatePackageExaption();
+                    socket->nextItem();
+                    continue;
                 }
 
                 socket->Write(answer.parseTo());
@@ -460,19 +441,10 @@ void Sync::packageRender(ETcpSocket *socket){
             if(pkg.getType() & t_sync){
                 package answer;
 
-                if(!socket->isSynced) {
-
-                    if(!createPackage(t_syncTime, answer, ChronoTime::now(socket->getTime()))){
-                        throw CreatePackageExaption();
-                        socket->nextItem();
-                        continue;
-                    }
-                } else {
-                    if(!createPackage(t_sync, answer, socket->getTime())){
-                        throw CreatePackageExaption();
-                        socket->nextItem();
-                        continue;
-                    }
+                if(!createPackage(t_syncTime, answer, ChronoTime::now(socket->getTime()))){
+                    throw CreatePackageExaption();
+                    socket->nextItem();
+                    continue;
                 }
                 socket->Write(answer.parseTo());
                 socket->nextItem();

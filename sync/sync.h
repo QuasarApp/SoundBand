@@ -178,7 +178,7 @@ public:
     /**
      * @brief sync with clients
      */
-    void sync(bool forse = false);
+    void sync();
 
     /**
      * @brief addNode add new connect

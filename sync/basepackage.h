@@ -48,7 +48,6 @@ private:
     SongHeader header;
     bool fbroadcaster;
     Syncer playdata;
-    milliseconds time;
 public:
     package();
     package(QByteArray &array);

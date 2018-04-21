@@ -181,6 +181,11 @@ public:
     void sync();
 
     /**
+     * @brief sync with clients
+     */
+    void sync(ETcpSocket *socket);
+
+    /**
      * @brief addNode add new connect
      * @param ip of connection
      * @param port of connection

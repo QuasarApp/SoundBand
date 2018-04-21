@@ -220,17 +220,26 @@ bool Sync::sync(const Syncer &sync){
 
 }
 
-
-
-/**
- * @todo thi nead send a hedaer
-*/
 void Sync::sync(){
 
     if(node->isBroadcaster()) {
+        for(ETcpSocket *i: *node->getClients()){
+            sync(i);
+        }
+    }
+}
+
+void Sync::sync(ETcpSocket* socket){
+
+    if(node->isBroadcaster()) {
+
+        if(!socket->isSynced()){
+            socket->sync();
+            return;
+        }
 
         package pac;
-        if(!createPackage(t_sync, pac)){
+        if(!createPackage(t_sync, pac, socket->getTime())){
             CreatePackageExaption();
             return;
         }
@@ -307,10 +316,6 @@ bool Sync::createPackage(Type type, package &pac, milliseconds time){
 
     }
 
-    if(type & TypePackage::t_syncTime){
-            pac.time = time;
-    }
-
     if(isbroadcaster)
         pac.type = TypePackage(pac.type | t_brodcaster);
 
@@ -345,15 +350,8 @@ void Sync::packageRender(ETcpSocket *socket){
 
 //            if requst from server
 
-            if(pkg.getType() & t_syncTime){
-
-                package answer;
-                if(!createPackage(t_syncTime, answer, ChronoTime::now() - pkg.getTime())){
-                    throw CreatePackageExaption();
-                    socket->nextItem();
-                    continue;
-                }
-                socket->Write(answer.parseTo());
+            if(pkg.getType() & t_pause){
+                pause(true);
             }
 
             if(pkg.getType() & t_sync && !sync(pkg.getPlayData())){
@@ -418,15 +416,10 @@ void Sync::packageRender(ETcpSocket *socket){
 
             if(pkg.getType() & t_sync){
                 if(socket->isSynced()){
-                    package answer;
-                    if(!createPackage(t_void, answer, socket->getTime())){
-                        throw CreatePackageExaption();
-                        socket->nextItem();
-                        continue;
-                    }
-                    socket->Write(answer.parseTo());
+                    sync(socket);
+                } else {
+                    socket->sync();
                 }
-                socket->sync();
                 socket->nextItem();
                 continue;
             }
@@ -577,7 +570,7 @@ QMediaPlayer::State Sync::playState()const{
 }
 
 void Sync::clientSynced(ETcpSocket* socket){
-
+    sync(socket);
 }
 
 Sync::~Sync(){

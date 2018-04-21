@@ -26,10 +26,6 @@ const Type& package::getType() const{
     return type;
 }
 
-const milliseconds& package::getTime() const{
-    return time;
-}
-
 bool package::isValid() const{
 
     bool ret = true;
@@ -61,7 +57,6 @@ void package::clear(){
     type = TypePackage::t_void;
     source.clear();
     playdata.seek = 0;
-    time = -1;
 }
 
 QByteArray package::parseTo(){
@@ -85,10 +80,6 @@ QByteArray package::parseTo(){
         if(type & TypePackage::t_song && type & t_brodcaster){
             stream << source;
 
-        }
-
-        if(type & TypePackage::t_syncTime){
-            stream << time;
         }
 
     }
@@ -118,10 +109,6 @@ bool package::parseFrom(QByteArray &array){
     if(type & TypePackage::t_song){
         stream >> source;
 
-    }
-
-    if(type & TypePackage::t_syncTime){
-        stream >> time;
     }
 
     return isValid();

@@ -19,6 +19,7 @@ protected:
     bool fBroadcaster;
     int step;
 private slots:
+    void synced();
     void acceptError_(ETcpSocket*);
     void newConnection_();
     void readData(ETcpSocket*_client);
@@ -88,6 +89,11 @@ signals:
      * @brief ClientConnected signal when connected a new node
      */
     void ClientConnected(ETcpSocket*);
+
+    /**
+     * @brief NodeSynced emited when socket synced
+     */
+    void NodeSynced(ETcpSocket*);
 
 };
 

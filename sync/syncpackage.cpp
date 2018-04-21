@@ -41,6 +41,13 @@ QByteArray SyncPackage::parseTo(){
             stream << firstByte;
             break;
 
+        case TypeSyncPackage::t_End:
+            stream << firstByte;
+            stream << sourceBytes;
+            stream << nativeTime;
+
+            break;
+
         default:
             stream << firstByte;
             stream << sourceBytes;
@@ -64,6 +71,13 @@ bool SyncPackage::parseFrom(QByteArray &array){
         stream >> firstByte;
         break;
 
+    case TypeSyncPackage::t_End:
+        stream >> firstByte;
+        stream >> sourceBytes;
+        stream >> nativeTime;
+
+        break;
+
     default:
         stream >> firstByte;
         stream >> sourceBytes;
@@ -79,6 +93,10 @@ TypeSyncPackage SyncPackage::getType()const {
 
 char SyncPackage::getIndex()const {
     return firstByte;
+}
+
+const milliseconds& SyncPackage::getNative()const {
+    return nativeTime;
 }
 
 const milliseconds& SyncPackage::getTime()const {

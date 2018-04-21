@@ -49,9 +49,16 @@ QList<ETcpSocket*>* Node::getClients(){
 void Node::newConnection_(){
     ETcpSocket *newClient=new ETcpSocket(nextPendingConnection());
     clients.push_back(newClient);
-    connect(newClient,SIGNAL(Disconnected(ETcpSocket*)),this,SLOT(acceptError_(ETcpSocket*)));
-    connect(newClient,SIGNAL(Message(ETcpSocket*)),this,SLOT(readData(ETcpSocket*)));
+    connect(newClient, SIGNAL(Disconnected(ETcpSocket*)),
+            this, SLOT(acceptError_(ETcpSocket*)));
+    connect(newClient, SIGNAL(Message(ETcpSocket*)), this, SLOT(readData(ETcpSocket*)));
+    connect(newClient, SIGNAL(synced()), this, SLOT(synced()));
+
     emit ClientConnected(newClient);
+}
+
+void Node::synced(){
+    emit NodeSynced(static_cast<ETcpSocket*>(this->sender()));
 }
 
 void Node::readData(ETcpSocket *c){

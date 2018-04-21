@@ -48,6 +48,8 @@ private:
 
 private slots:
 
+    void clientSynced(ETcpSocket*);
+
     /**
      * @brief setSingle set singl or temp playlist
      * @return true if all done

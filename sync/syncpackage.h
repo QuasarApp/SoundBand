@@ -21,6 +21,7 @@ private:
     TypeSyncPackage type;
     qint8 firstByte;
     milliseconds ping;
+    milliseconds nativeTime;
     milliseconds sourceBytes;
 
 public:
@@ -37,6 +38,12 @@ public:
      * @return return index
      */
     char getIndex()const;
+
+    /**
+     * @brief getDelay
+     * @return return delay
+     */
+    const milliseconds& getNative()const;
 
     /**
      * @brief getTime

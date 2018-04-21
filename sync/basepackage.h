@@ -27,7 +27,7 @@ enum TypePackage{
      t_song         =   0x04,
      t_sync         =   0x08,
      t_close        =   0x10,
-     t_syncTime     =   0x20,
+     t_pause        =   0x20,
      t_what         =   0x40,
      t_brodcaster   =   0x80
 };

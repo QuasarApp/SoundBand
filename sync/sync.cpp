@@ -30,6 +30,7 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
     connect(&deepScaner, SIGNAL(scaned(QList<ETcpSocket*>*)), SLOT(deepScaned(QList<ETcpSocket*>*)));
     connect(player, SIGNAL(positionChanged(qint64)), SIGNAL(seekChanged(qint64)));
     connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), SLOT(endPlay(QMediaPlayer::State)));
+    connect(node, SIGNAL(NodeSynced(ETcpSocket*)), SLOT(clientSynced(ETcpSocket*)));
 
 }
 
@@ -284,7 +285,7 @@ bool Sync::createPackage(Type type, package &pac, milliseconds time){
 
     bool isbroadcaster = node->isBroadcaster();
 
-    if(type & TypePackage::t_sync && isbroadcaster){
+    if(type & TypePackage::t_sync && isbroadcaster && time > 0){
         pac.playdata.seek = player->position() + SYNC_TIME;
         pac.playdata.timeOn = ChronoTime::now(time) + SYNC_TIME;
 
@@ -415,43 +416,23 @@ void Sync::packageRender(ETcpSocket *socket){
         } else if (node->isBroadcaster()) {
  //            if requst from client
 
-
-            if(pkg.getType() & t_syncTime){
-                package answer;
-                TypePackage temp = t_syncTime;
-                milliseconds time = ChronoTime::now(socket->getTime());
-                if(!pkg.time){
-                    temp = t_sync;
-                    time = socket->getTime();
-                }
-                socket->setTime(pkg.time);
-                if(!createPackage(temp, answer, time)){
-                    throw CreatePackageExaption();
-                    socket->nextItem();
-                    continue;
-                }
-
-                socket->Write(answer.parseTo());
-                socket->nextItem();
-                continue;
-
-            }
-
             if(pkg.getType() & t_sync){
-                package answer;
-
-                if(!createPackage(t_syncTime, answer, ChronoTime::now(socket->getTime()))){
-                    throw CreatePackageExaption();
-                    socket->nextItem();
-                    continue;
+                if(socket->isSynced()){
+                    package answer;
+                    if(!createPackage(t_void, answer, socket->getTime())){
+                        throw CreatePackageExaption();
+                        socket->nextItem();
+                        continue;
+                    }
+                    socket->Write(answer.parseTo());
                 }
-                socket->Write(answer.parseTo());
+                socket->sync();
                 socket->nextItem();
                 continue;
             }
 
             package answer;
-            if(createPackage(pkg.getType() & ~t_sync & ~t_what & ~t_close & ~t_brodcaster, answer)){
+            if(createPackage(pkg.getType() & ~t_sync & ~t_pause & ~t_what & ~t_close & ~t_brodcaster, answer)){
                 socket->Write(answer.parseTo());
             }
 
@@ -593,6 +574,10 @@ bool Sync::prev(){
 
 QMediaPlayer::State Sync::playState()const{
     return player->state();
+}
+
+void Sync::clientSynced(ETcpSocket* socket){
+
 }
 
 Sync::~Sync(){

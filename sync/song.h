@@ -6,8 +6,6 @@
 #include "chronotime.h"
 #include <QMediaContent>
 
-namespace syncLib {
-
 /**
  * @brief The Syncer struct
  *
@@ -102,5 +100,4 @@ public:
     friend class MySql;
 };
 
-}
 #endif // SONG_H

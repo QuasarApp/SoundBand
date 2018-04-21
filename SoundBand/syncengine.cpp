@@ -4,7 +4,7 @@
 
 SyncEngine::SyncEngine()
 {
-    sync = new syncLib::Sync();
+    sync = new Sync();
     sqlApi = sync->getSqlApi();
 
     connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
@@ -44,7 +44,7 @@ bool SyncEngine::init(){
     return true;
 }
 
-const QList<syncLib::SongStorage>* SyncEngine::currentPlayList() const{
+const QList<SongStorage>* SyncEngine::currentPlayList() const{
 
     return sync->getPlayList();
 }
@@ -196,7 +196,7 @@ bool SyncEngine::addSong(const QString &songUrl){
 }
 
 bool SyncEngine::removeSong(int id){
-    syncLib::SongHeader header;
+    SongHeader header;
     header.id = id;
     if(!sqlApi->removeSong(header))
         return false;
@@ -223,7 +223,7 @@ bool SyncEngine::removePlayList(const QString &name){
 
 bool SyncEngine::addToPlayList(int id, const QString &playList){
 
-    syncLib::SongHeader header;
+    SongHeader header;
     header.id = id;
 
     if(!sqlApi->addToPlayList(header, playList)){
@@ -239,7 +239,7 @@ bool SyncEngine::addToPlayList(int id, const QString &playList){
 
 bool SyncEngine::removeFromPlayList(int id, const QString &playList){
 
-    syncLib::SongHeader header;
+    SongHeader header;
     header.id = id;
 
     if(!sqlApi->removeFromPlayList(header, playList)){

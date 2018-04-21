@@ -1,7 +1,5 @@
 #include "currentplaylistmodel.h"
 
-using namespace syncLib;
-
 CurrentPlayListModel::CurrentPlayListModel(QObject *parent) :
     QAbstractListModel(parent),
     syncEngine(nullptr),

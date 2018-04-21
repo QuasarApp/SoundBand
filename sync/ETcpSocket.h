@@ -4,7 +4,7 @@
 #include <QTcpServer>
 #include <QList>
 #include <QDataStream>
-#include "chronotime.h"
+#include "syncpackage.h"
 
 
 /**
@@ -37,8 +37,39 @@ private:
     QByteArray *array;
     qint32 size;
     milliseconds time;
+    milliseconds lastTime;
+    char precisionSync;
     QList<QByteArray*> ReadyStack;
+    bool fSynced;
+    QList<SyncPackage> * syncList;
     void init();
+
+    /**
+     * @brief _driverResponse
+     * @param pac
+     * @return true if all done
+     */
+    bool _driverResponse(const SyncPackage &from)const;
+
+    /**
+     * @brief _driverResponse
+     * @param pac
+     * @return true if all done
+     */
+    void _driverStart()const;
+
+    /**
+     * @brief _driver
+     * @return true is package of Driver
+     */
+    void _driver(QByteArray*);
+
+    /**
+     * @brief Write - sends a message to the network.
+     * @param isDriver - flag of driver info
+     * @return true if all done else false.
+     */
+    bool _Write(const QByteArray&, bool isDriver = false);
 
 private slots:
 
@@ -53,6 +84,17 @@ public:
     explicit ETcpSocket();
     explicit ETcpSocket(QTcpSocket*);
     explicit ETcpSocket(const QString& addres,int port);
+
+    /**
+     * @brief sync
+     */
+    void sync();
+
+    /**
+     * @brief isSynced
+     * @return true
+     */
+    bool isSynced()const;
 
     /**
      * @brief setCheckInterval - set new interval of chking ping
@@ -98,17 +140,18 @@ public:
      * @return size of Descript of Packege
      */
     int sizeDescriptPackege();
-    /**
-     * @brief Write - sends a message to the network.
-     * @return true if all done else false.
-     */
-    bool Write(const QByteArray&);
 
     /**
      * @brief isValid
      * @return true if socket active;
      */
     bool isValid();
+
+    /**
+     * @brief Write - sends a message to the network.
+     * @return true if all done else false.
+     */
+    bool Write(const QByteArray&);
 
     ~ETcpSocket();
 public slots:
@@ -173,6 +216,12 @@ signals:
      *  The socketState parameter is the new state.
      */
     void StateChanged(ETcpSocket*,QAbstractSocket::SocketState socketState);
+
+
+    /**
+     * @brief synced emited when host is synced
+     */
+    void synced();
 
 
 };

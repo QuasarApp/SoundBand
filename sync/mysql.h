@@ -6,8 +6,6 @@
 class QSqlDatabase;
 class QSqlQuery;
 
-namespace syncLib {
-
 class MySql
 {
 private:
@@ -178,5 +176,4 @@ public:
 
     ~MySql();
 };
-}
 #endif // MYSQL_H

@@ -5,8 +5,6 @@
 #include <QSettings>
 #include "playlist.h"
 
-namespace syncLib{
-
 MySql::MySql(const QString &databasename):
     db(nullptr),
     qyery(nullptr)
@@ -477,5 +475,5 @@ MySql::~MySql(){
     QSqlDatabase::removeDatabase(dataBaseName);
 
 }
-}
+
 

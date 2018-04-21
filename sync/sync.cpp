@@ -10,8 +10,6 @@
 #include <QDebug>
 #endif
 
-namespace syncLib{
-
 Sync::Sync(const QString &address, int port, const QString &datadir):
     node(nullptr),
     player(nullptr)
@@ -421,12 +419,13 @@ void Sync::packageRender(ETcpSocket *socket){
             if(pkg.getType() & t_syncTime){
                 package answer;
                 TypePackage temp = t_syncTime;
+                milliseconds time = ChronoTime::now(socket->getTime());
                 if(!pkg.time){
                     temp = t_sync;
-
+                    time = socket->getTime();
                 }
-
-                if(!createPackage(temp, answer, ChronoTime::now(socket->getTime()))){
+                socket->setTime(pkg.time);
+                if(!createPackage(temp, answer, time)){
                     throw CreatePackageExaption();
                     socket->nextItem();
                     continue;
@@ -605,6 +604,5 @@ Sync::~Sync(){
 
 }
 
-}
 
 

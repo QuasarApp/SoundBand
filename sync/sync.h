@@ -10,8 +10,6 @@
 #include "player.h"
 #include "playlist.h"
 
-namespace syncLib {
-
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class Node;
@@ -333,7 +331,6 @@ signals:
     void playStateChanged();
 
 };
-}
 
 
 #endif // SYNC_H

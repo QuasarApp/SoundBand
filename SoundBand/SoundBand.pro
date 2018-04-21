@@ -75,6 +75,5 @@ HEADERS += \
     currentplaylistmodel.h \
     ../sync/playlist.h \
     ../sync/syncpackage.h \
-    ../sync/abstractpackage.h \
     ../sync/basepackage.h
 

@@ -2,19 +2,19 @@
 #define SYNCPACKAGE_H
 
 #include "chronotime.h"
-#include "abstractpackage.h"
+#include <QByteArray>
 
 class ETcpSocket;
 
 enum TypeSyncPackage{
-     t_void             =   0x00,
+     t_voidSync         =   0x00,
      t_Header           =   0x01,
      t_Responce         =   0x02,
      t_Source           =   0x04,
      t_End              =   0x08
 };
 
-class SyncPackage: public AbstractPackage
+class SyncPackage
 {
 private:
 

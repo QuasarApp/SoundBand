@@ -40,7 +40,7 @@ void ETcpSocket::init(){
     connect(source, SIGNAL(readyRead()), this, SLOT(readReady_()));
 }
 
-bool ETcpSocket::_driverResponse(const SyncPackage& from)const {
+bool ETcpSocket::_driverResponse(const SyncPackage& from) {
 
     if(!from.isValid()){
         return false;
@@ -95,7 +95,7 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from)const {
             return false;
         }
 
-        time = syncList[from.getIndex()] - from.getPing() / 2;
+        time = syncList->at(from.getIndex()).getTime() - from.getPing() / 2;
 
         emit synced();
 
@@ -106,7 +106,7 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from)const {
     return true;
 }
 
-void ETcpSocket::_driverStart()const {
+void ETcpSocket::_driverStart() {
     syncList->clear();
 
     SyncPackage pac;
@@ -120,7 +120,7 @@ void ETcpSocket::_driverStart()const {
 
 void ETcpSocket::_driver(QByteArray *data){
     SyncPackage pac;
-    if(!pac.parseFrom(data)){
+    if(!pac.parseFrom(*data)){
         return;
     }
     _driverResponse(pac);
@@ -219,7 +219,7 @@ void ETcpSocket::sync(){
 
 }
 
-void ETcpSocket::isSynced(){
+bool ETcpSocket::isSynced()const{
     return fSynced;
 }
 

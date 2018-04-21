@@ -3,14 +3,14 @@
 
 SyncPackage::SyncPackage()
 {
-    type = TypeSyncPackage::t_void;
+    type = TypeSyncPackage::t_voidSync;
     firstByte = sourceBytes = 0;
 }
 
 bool SyncPackage::isValid() const{
 
     switch (type) {
-    case TypeSyncPackage::t_void:
+    case TypeSyncPackage::t_voidSync:
         return false;
 
     case TypeSyncPackage::t_Header:
@@ -23,7 +23,7 @@ bool SyncPackage::isValid() const{
 }
 
 void SyncPackage::clear(){
-    type = TypeSyncPackage::t_void;
+    type = TypeSyncPackage::t_voidSync;
     firstByte = 0;
     sourceBytes = 0;
 }
@@ -51,7 +51,7 @@ QByteArray SyncPackage::parseTo(){
 }
 
 bool SyncPackage::parseFrom(QByteArray &array){
-    type = TypeSyncPackage::t_void;
+    type = TypeSyncPackage::t_voidSync;
     QDataStream stream(&array, QIODevice::ReadOnly);
 
     unsigned char temp_type;
@@ -93,7 +93,7 @@ char SyncPackage::getPrecision()const {
     return firstByte;
 }
 
-char SyncPackage::isSended()const {
+bool SyncPackage::isSended()const {
     return type == TypeSyncPackage::t_Responce && firstByte;
 }
 

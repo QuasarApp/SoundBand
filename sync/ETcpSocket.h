@@ -49,14 +49,14 @@ private:
      * @param pac
      * @return true if all done
      */
-    bool _driverResponse(const SyncPackage &from)const;
+    bool _driverResponse(const SyncPackage &from);
 
     /**
      * @brief _driverResponse
      * @param pac
      * @return true if all done
      */
-    void _driverStart()const;
+    void _driverStart();
 
     /**
      * @brief _driver

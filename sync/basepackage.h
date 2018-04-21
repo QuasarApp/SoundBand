@@ -3,7 +3,7 @@
 
 #include "song.h"
 #include "config.h"
-#include "abstractpackage.h"
+#include <QByteArray>
 
 typedef unsigned char Type;
 
@@ -39,7 +39,7 @@ enum TypePackage{
  * 1 byle - type
  * data
  */
-class package : public AbstractPackage
+class package
 {
 
 private:

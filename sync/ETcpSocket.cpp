@@ -26,7 +26,6 @@ void ETcpSocket::init(){
     array = new QByteArray;
     time = 0;
     fSynced = false;
-    syncList = new QList<SyncPackage>();
 
     connect(source, SIGNAL(connected()), this, SLOT(connected_()));
     connect(source, SIGNAL(disconnected()), this, SLOT(disconnected_()));
@@ -51,7 +50,7 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
 
     switch (from.type) {
     case t_Header:
-        syncList->clear();
+        syncList.clear();
         precisionSync = from.getPrecision();
         lastTime = ChronoTime::now();
         pac.sourceBytes = ChronoTime::now();
@@ -61,12 +60,12 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
 
         _Write(pac.parseTo(), true);
 
-        syncList->push_back(pac);
+        syncList[0] = pac;
 
 
         break;
     case t_Source:
-        syncList->push_back(from);
+        syncList[from.getIndex()] = from;
         pac.type = t_Responce;
         pac.firstByte = from.getIndex();
         pac.sourceBytes = ChronoTime::now();
@@ -74,22 +73,17 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
         _Write(pac.parseTo(), true);
         break;
     case t_Responce:
-        syncList->back().ping = ChronoTime::now() - lastTime;
+        syncList[from.getIndex()].ping = ChronoTime::now() - lastTime;
         lastTime = ChronoTime::now();
 
-        if(syncList->size() == precisionSync){
+        if(syncList.size() == precisionSync){
             pac.type = t_End;
 
-            auto i = syncList->begin();
-            auto find = i;
-            while (i != syncList->end()){
-                if (find->getPing() > i->getPing()){
-                    find = i;
-                }
-            }
-            pac.firstByte = i->firstByte;
-            pac.sourceBytes = i->ping;
-            pac.nativeTime = i->nativeTime;
+            auto i = syncList.first();
+
+            pac.firstByte = i.firstByte;
+            pac.sourceBytes = i.ping;
+            pac.nativeTime = i.nativeTime;
 
             _Write(pac.parseTo(), true);
         }
@@ -100,17 +94,17 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
 
         _Write(pac.parseTo(), true);
 
-        syncList->push_back(pac);
+        syncList[pac.firstByte] = pac;
 
         break;
     case t_End:
         fSynced = true;
 
-        if(syncList->size() <= from.getIndex()){
+        if(syncList.size() <= from.getIndex()){
             return false;
         }
 
-        time = from.getNative() - syncList->at(from.getIndex()).getTime() - from.getPing() / 2;
+        time = from.getNative() - syncList[from.getIndex()].getTime() - from.getPing() / 2;
 
         emit synced();
 
@@ -122,13 +116,14 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
 }
 
 void ETcpSocket::_driverStart() {
-    syncList->clear();
+    syncList.clear();
 
     SyncPackage pac;
 
     precisionSync = SYNC_COUNT;
     pac.type = t_Header;
     pac.firstByte = precisionSync;
+    pac.sourceBytes = ChronoTime::now();
 
     _Write(pac.parseTo(), true);
 }
@@ -292,8 +287,7 @@ ETcpSocket::~ETcpSocket()
         delete i;
     }
 
-    syncList->clear();
-    delete syncList;
+    syncList.clear();
 
     disconnect(source,SIGNAL(connected()),this,SLOT(connected_()));
     disconnect(source,SIGNAL(disconnected()),this,SLOT(disconnected_()));

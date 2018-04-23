@@ -37,10 +37,6 @@ QByteArray SyncPackage::parseTo(){
 
         switch (type) {
 
-        case TypeSyncPackage::t_Header:
-            stream << firstByte;
-            break;
-
         case TypeSyncPackage::t_End:
             stream << firstByte;
             stream << sourceBytes;

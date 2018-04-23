@@ -25,6 +25,7 @@ ETcpSocket::ETcpSocket(const QString& address, int port){
 void ETcpSocket::init(){
     array = new QByteArray;
     time = 0;
+    fSynced = false;
     syncList = new QList<SyncPackage>();
 
     connect(source, SIGNAL(connected()), this, SLOT(connected_()));
@@ -126,7 +127,7 @@ void ETcpSocket::_driverStart() {
     SyncPackage pac;
 
     precisionSync = SYNC_COUNT;
-    pac.type = t_Source;
+    pac.type = t_Header;
     pac.firstByte = precisionSync;
 
     _Write(pac.parseTo(), true);

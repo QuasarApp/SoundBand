@@ -45,13 +45,13 @@ void CurrentPlayListModel::fetchMore(const QModelIndex & /* index */)
     int remainder = playList->size() - itemCount;
     int itemsToFetch = qMin(100, remainder);
 
-    if(itemsToFetch < 0){
+    if (itemsToFetch < 0) {
         beginRemoveRows(QModelIndex(), 0, 0 - itemsToFetch - 1 );
 
         itemCount += itemsToFetch;
 
         endRemoveRows();
-    }else{
+    } else if (itemsToFetch > 0) {
         beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
 
         itemCount += itemsToFetch;

@@ -41,7 +41,7 @@ private:
     char precisionSync;
     QList<QByteArray*> ReadyStack;
     bool fSynced;
-    QMap<char ,SyncPackage> syncList;
+    QList<SyncPackage> syncList;
     void init();
 
     /**

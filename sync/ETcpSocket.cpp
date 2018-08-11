@@ -60,7 +60,7 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
 
         _Write(pac.parseTo(), true);
 
-        syncList[0] = pac;
+        syncList.push_back(pac);
 
 
         break;
@@ -79,11 +79,19 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
         if(syncList.size() >= precisionSync){
             pac.type = t_End;
 
-            auto i = syncList.first();
+            auto index = 0;
+            auto ping = syncList.first().ping;
 
-            pac.firstByte = i.firstByte;
-            pac.sourceBytes = i.ping;
-            pac.nativeTime = i.nativeTime;
+            for ( auto i = 0; i < syncList.size(); i++) {
+                if (syncList[i].ping < ping) {
+                    ping = syncList[i].ping;
+                    index = i;
+                }
+            }
+
+            pac.firstByte = syncList[index].firstByte;
+            pac.sourceBytes = syncList[index].ping;
+            pac.nativeTime = syncList[index].nativeTime;
 
             _Write(pac.parseTo(), true);
         }
@@ -94,7 +102,7 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
 
         _Write(pac.parseTo(), true);
 
-        syncList[pac.firstByte] = pac;
+        syncList.push_back(pac);
 
         break;
     case t_End:

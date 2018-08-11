@@ -76,10 +76,8 @@ QVariant CurrentPlayListModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case nameRole:
         return playList->at(index.row()).name;
-        break;
     case idRole:
         return playList->at(index.row()).id;
-        break;
     default:
         break;
     }

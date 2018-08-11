@@ -1,5 +1,6 @@
 #include "syncpackage.h"
 #include <QDataStream>
+#include <QDebug>
 
 SyncPackage::SyncPackage()
 {
@@ -14,10 +15,10 @@ bool SyncPackage::isValid() const{
         return false;
 
     case TypeSyncPackage::t_Header:
-        return firstByte != 0;
+        return firstByte >= 0;
 
     default:
-        return firstByte != 0 && sourceBytes != 0;
+        return firstByte >= 0 && sourceBytes != 0;
     }
 
 }
@@ -49,6 +50,8 @@ QByteArray SyncPackage::parseTo(){
             stream << sourceBytes;
 
         }
+    } else {
+        qDebug() << "package synk is not valid!!!";
     }
     return temp;
 }

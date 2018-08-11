@@ -126,7 +126,7 @@ bool Sync::play(const Song &song, bool fbroadcast){
 
     SongStorage savedSong;
     if(!sql->find(static_cast<const SongHeader&>(song), savedSong) && sql->save(song) > -1 &&
-            !sql->find((SongHeader&)song, savedSong)){
+            !sql->find(static_cast<const SongHeader&>(song), savedSong)){
 
         return false;
     }
@@ -328,7 +328,6 @@ void Sync::packageRender(ETcpSocket *socket){
     while((array = socket->topStack())){
         package pkg;
         if(!pkg.parseFrom((*array))){
-            throw BadAnswerExaption();
             socket->nextItem();
             continue;
         }
@@ -373,7 +372,6 @@ void Sync::packageRender(ETcpSocket *socket){
 
                 package answer;
                 if(!createPackage(requestType | t_play, answer)){
-                    throw CreatePackageExaption();
                     socket->nextItem();
                     continue;
                 }
@@ -383,7 +381,6 @@ void Sync::packageRender(ETcpSocket *socket){
 
                 package answer;
                 if(!createPackage(t_sync, answer)){
-                    throw CreatePackageExaption();
                     socket->nextItem();
                     continue;
                 }
@@ -404,7 +401,6 @@ void Sync::packageRender(ETcpSocket *socket){
             if(pkg.getType() & t_what){
                 package answer;
                 if(!createPackage(t_void, answer)){
-                    throw CreatePackageExaption();
                     socket->nextItem();
                     continue;
                 }
@@ -444,7 +440,6 @@ void Sync::packageRender(ETcpSocket *socket){
 void Sync::rescan(bool deep){
     package pac;
     if(!createPackage(t_what, pac)){
-        throw CreatePackageExaption();
         return;
     }
     node->WriteAll(pac.parseTo());
@@ -458,7 +453,6 @@ void Sync::rescan(bool deep){
 void Sync::deepScaned(QList<ETcpSocket *> * list){
     package pac;
     if(!createPackage(t_what, pac)){
-        throw CreatePackageExaption();
         return;
     }
     QByteArray array = pac.parseTo();
@@ -480,8 +474,6 @@ void Sync::endPlay(QMediaPlayer::State state){
 
     case QMediaPlayer::PausedState:
         break;
-    default:
-        break;
     }
 
     emit playStateChanged();
@@ -496,17 +488,17 @@ bool Sync::setValume(unsigned int valume){
     if(valume > 100 || !player->isSynced())
         return false;
 
-    player->setVolume(valume);
+    player->setVolume(static_cast<int>(valume));
 
     return true;
 }
 
 unsigned int Sync::getValume() const{
-    return player->volume();
+    return static_cast<unsigned int>(player->volume());
 }
 
 unsigned int Sync::seek() const{
-    return player->position();
+    return static_cast<unsigned int>(player->position());
 }
 
 const QList<SongStorage>* Sync::getPlayList() const{

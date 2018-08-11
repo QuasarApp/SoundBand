@@ -83,7 +83,7 @@ private slots:
 public:
     explicit ETcpSocket();
     explicit ETcpSocket(QTcpSocket*);
-    explicit ETcpSocket(const QString& addres,int port);
+    explicit ETcpSocket(const QString& addres, unsigned short port);
 
     /**
      * @brief sync

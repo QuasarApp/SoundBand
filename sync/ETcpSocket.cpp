@@ -13,7 +13,7 @@ ETcpSocket::ETcpSocket(QTcpSocket*ptr)
     init();
 }
 
-ETcpSocket::ETcpSocket(const QString& address, int port){
+ETcpSocket::ETcpSocket(const QString& address, unsigned short port){
     source = new QTcpSocket();
     source->connectToHost(address, port);
     if(!source->waitForConnected(DEEP_SCANER_INTERVAL) || !source->open(QIODevice::ReadWrite)){
@@ -48,7 +48,7 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
 
     SyncPackage pac;
 
-    switch (from.type) {
+     switch (from.type) {
     case t_Header:
         syncList.clear();
         precisionSync = from.getPrecision();
@@ -76,7 +76,7 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
         syncList[from.getIndex()].ping = ChronoTime::now() - lastTime;
         lastTime = ChronoTime::now();
 
-        if(syncList.size() == precisionSync){
+        if(syncList.size() >= precisionSync){
             pac.type = t_End;
 
             auto i = syncList.first();
@@ -206,7 +206,7 @@ QString ETcpSocket::localName() const{
 QByteArray* ETcpSocket::topStack(){
     if(ReadyStack.size())
         return ReadyStack.front();
-    return NULL;
+    return nullptr;
 }
 
 milliseconds ETcpSocket::getTime()const{

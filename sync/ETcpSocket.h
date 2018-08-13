@@ -4,7 +4,7 @@
 #include <QTcpServer>
 #include <QList>
 #include <QDataStream>
-#include "chronotime.h"
+#include "syncpackage.h"
 
 
 /**
@@ -36,8 +36,40 @@ private:
     QTcpSocket *source;
     QByteArray *array;
     qint32 size;
+    milliseconds time;
+    milliseconds lastTime;
+    char precisionSync;
     QList<QByteArray*> ReadyStack;
+    bool fSynced;
+    QList<SyncPackage> syncList;
     void init();
+
+    /**
+     * @brief _driverResponse
+     * @param pac
+     * @return true if all done
+     */
+    bool _driverResponse(const SyncPackage &from);
+
+    /**
+     * @brief _driverResponse
+     * @param pac
+     * @return true if all done
+     */
+    void _driverStart();
+
+    /**
+     * @brief _driver
+     * @return true is package of Driver
+     */
+    void _driver(QByteArray*);
+
+    /**
+     * @brief Write - sends a message to the network.
+     * @param isDriver - flag of driver info
+     * @return true if all done else false.
+     */
+    bool _Write(const QByteArray&, bool isDriver = false);
 
 private slots:
 
@@ -51,7 +83,18 @@ private slots:
 public:
     explicit ETcpSocket();
     explicit ETcpSocket(QTcpSocket*);
-    explicit ETcpSocket(const QString& addres,int port);
+    explicit ETcpSocket(const QString& addres, unsigned short port);
+
+    /**
+     * @brief sync
+     */
+    void sync();
+
+    /**
+     * @brief isSynced
+     * @return true
+     */
+    bool isSynced()const;
 
     /**
      * @brief setCheckInterval - set new interval of chking ping
@@ -66,10 +109,15 @@ public:
     int getCheckInterval()const;
 
     /**
-     * @brief getPing
-     * @return ping of soccket;
+     * @brief setTime set new Time
      */
-    int getPing()const;
+    void setTime(milliseconds newTime);
+
+    /**
+     * @brief getTime
+     * @return time of soccket;
+     */
+    milliseconds getTime()const;
     /**
      * @brief getSource
      * @return Qt TCP socket
@@ -92,6 +140,13 @@ public:
      * @return size of Descript of Packege
      */
     int sizeDescriptPackege();
+
+    /**
+     * @brief isValid
+     * @return true if socket active;
+     */
+    bool isValid();
+
     /**
      * @brief Write - sends a message to the network.
      * @return true if all done else false.
@@ -161,6 +216,12 @@ signals:
      *  The socketState parameter is the new state.
      */
     void StateChanged(ETcpSocket*,QAbstractSocket::SocketState socketState);
+
+
+    /**
+     * @brief synced emited when host is synced
+     */
+    void synced();
 
 
 };

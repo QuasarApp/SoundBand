@@ -17,7 +17,7 @@ class CurrentPlayListModel : public QAbstractListModel
 
 private:
     SyncEngine * syncEngine;
-    const QList<syncLib::SongStorage> *playList;
+    const QList<SongStorage> *playList;
     int itemCount;
 
 private slots:

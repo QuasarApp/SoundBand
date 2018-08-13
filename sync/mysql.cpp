@@ -5,8 +5,6 @@
 #include <QSettings>
 #include "playlist.h"
 
-namespace syncLib{
-
 MySql::MySql(const QString &databasename):
     db(nullptr),
     qyery(nullptr)
@@ -119,43 +117,7 @@ void MySql::initDB(const QString &database){
     }
 }
 
-bool MySql::find(const QMediaContent &song, SongStorage &response){
-    QList<SongStorage> songs;
-
-    if(!updateAvailableSongs(songs)){
-        return false;
-    }
-
-    for(SongStorage &i: songs){
-        if(i == song){
-            response = i;
-            return true;
-        }
-    }
-
-    return false;
-
-}
-
-bool MySql::find(const QMediaContent &song, SongHeader &response){
-    QList<SongStorage> songs;
-
-    if(!updateAvailableSongs(songs)){
-        return false;
-    }
-
-    for(SongStorage &i: songs){
-        if(i == song){
-            response = (SongHeader&)i;
-            return true;
-        }
-    }
-
-    return false;
-
-}
-
-bool MySql::find(const SongHeader &song, QMediaContent &response){
+bool MySql::find(const SongHeader &song, SongStorage &response){
     QList<SongStorage> songs;
 
     if(!updateAvailableSongs(songs)){
@@ -164,7 +126,7 @@ bool MySql::find(const SongHeader &song, QMediaContent &response){
 
     for(SongStorage &i: songs){
         if((SongHeader&)i == song){
-            response = i.toMedia();
+            response = i;
             return true;
         }
     }
@@ -181,6 +143,9 @@ bool MySql::saveToStorage(QUrl &url, const Song &song) const{
     if(!song.isValid()){
         return false;
     }
+
+    QDir dir;
+    dir.mkpath(songDir);
 
     QFile file(songDir + "/" + song.name);
 
@@ -510,5 +475,5 @@ MySql::~MySql(){
     QSqlDatabase::removeDatabase(dataBaseName);
 
 }
-}
+
 

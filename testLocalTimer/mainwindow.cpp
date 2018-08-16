@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QLabel>
 #include <QDateTime>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,6 +14,19 @@ MainWindow::MainWindow(QWidget *parent) :
     timer.start();
 }
 
+void MainWindow::keyPressEvent(QKeyEvent * key) {
+
+    if (key->key() == Qt::Key_Space) {
+        if (timer.isActive()) {
+            timer.stop();
+        } else {
+            timer.start();
+        }
+    }
+
+
+}
+
 MainWindow::~MainWindow() {
     delete ui;
 }
@@ -21,15 +35,5 @@ void MainWindow::handleTick() {
 
     auto time = QDateTime::currentMSecsSinceEpoch();
 
-    ui->msec->setText(QString::number( time% 1000));
-
-    if (!(time % 1000)) {
-        if (color == Qt::white) {
-            color = Qt::green;
-        } else {
-            color = Qt::white;
-        }
-
-        ui->color->setStyleSheet(QString("background-color: '%0';").arg(color.name(QColor::HexRgb)));
-    }
+    ui->msec->setText(QString::number(time));
 }

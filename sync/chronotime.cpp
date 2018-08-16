@@ -2,6 +2,10 @@
 #include <QDateTime>
 #include <QDebug>
 
+/*
+ * information about chrono
+ * https://stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
+ */
 milliseconds ChronoTime::stdTime() {
     auto tim = std::chrono::system_clock::now();
     auto mc = std::chrono::time_point_cast<std::chrono::milliseconds>(tim);
@@ -20,11 +24,6 @@ ChronoTime::ChronoTime()
 {
 
 }
-
-/*
- * information about chrono
- * https://stackoverflow.com/questions/31255486/c-how-do-i-convert-a-stdchronotime-point-to-long-and-back
- */
 
 milliseconds ChronoTime::now(milliseconds calibration){
     return  qtTime() + calibration;

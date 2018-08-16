@@ -300,7 +300,7 @@ bool Sync::createPackage(Type type, package &pac, milliseconds time){
 
     bool isbroadcaster = node->isBroadcaster();
 
-    if(type & TypePackage::t_sync && isbroadcaster && time > 0){
+    if(type & TypePackage::t_sync && isbroadcaster){
         pac.playdata.seek = player->position() + SYNC_TIME;
         pac.playdata.timeOn = ChronoTime::now(time) + SYNC_TIME;
 

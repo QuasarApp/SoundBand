@@ -25,7 +25,7 @@
 #define RESYNC_TIME                 1000        // 1 sec on millisec
 #define MAX_RESYNC_COUNT            3
 #define SYNC_TIME                   5 * 1000    // 5 sec on millisec
-#define SYNC_COUNT                  100
+#define SYNC_COUNT                  20
 #define DEEP_SCANER_INTERVAL        1000        // 1 sec
 
 // sync

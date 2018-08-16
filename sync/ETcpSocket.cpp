@@ -115,7 +115,6 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
         auto ping = from.getPing();
 
         if (ping > 10) {
-            sync();
             return false;
         }
 

@@ -1,5 +1,20 @@
 #include "chronotime.h"
+#include <QDateTime>
 #include <QDebug>
+
+milliseconds ChronoTime::stdTime() {
+    auto tim = std::chrono::system_clock::now();
+    auto mc = std::chrono::time_point_cast<std::chrono::milliseconds>(tim);
+    auto epoh = mc.time_since_epoch();
+#ifdef QT_DEBUG
+    qDebug() << epoh.count();
+#endif
+    return epoh.count();
+}
+
+milliseconds ChronoTime::qtTime() {
+    return  QDateTime::currentMSecsSinceEpoch();
+}
 
 ChronoTime::ChronoTime()
 {
@@ -12,13 +27,7 @@ ChronoTime::ChronoTime()
  */
 
 milliseconds ChronoTime::now(milliseconds calibration){
-    auto tim = std::chrono::system_clock::now();
-    auto mc = std::chrono::time_point_cast<std::chrono::milliseconds>(tim);
-    auto epoh = mc.time_since_epoch();
-#ifdef QT_DEBUG
-    qDebug() << epoh.count();
-#endif
-    return epoh.count() + calibration;
+    return  qtTime() + calibration;
 }
 
 Clock ChronoTime::from(const milliseconds& mc){

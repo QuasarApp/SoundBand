@@ -115,11 +115,13 @@ bool ETcpSocket::_driverResponse(const SyncPackage& from) {
         auto ping = from.getPing();
 
         if (ping > 2) {
+            sync();
             return false;
         }
 
         time = from.getNative() - syncList[from.getIndex()].getTime() - from.getPing() / 2;
         fSynced = true;
+        qDebug() << "syncTime :" << time;
 
         emit synced();
 

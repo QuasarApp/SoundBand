@@ -11,6 +11,9 @@ typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class ChronoTime
 {
+private :
+    static milliseconds stdTime();
+    static milliseconds qtTime();
 public:
     ChronoTime();
     /**

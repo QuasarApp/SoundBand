@@ -13,7 +13,7 @@ ETcpSocket::ETcpSocket(QTcpSocket*ptr)
     init();
 }
 
-ETcpSocket::ETcpSocket(const QString& address, int port){
+ETcpSocket::ETcpSocket(const QString& address, unsigned short port){
     source = new QTcpSocket();
     source->connectToHost(address, port);
     if(!source->waitForConnected(DEEP_SCANER_INTERVAL) || !source->open(QIODevice::ReadWrite)){
@@ -24,14 +24,133 @@ ETcpSocket::ETcpSocket(const QString& address, int port){
 
 void ETcpSocket::init(){
     array = new QByteArray;
+    time = 0;
+    fSynced = false;
 
-    connect(source,SIGNAL(connected()),this,SLOT(connected_()));
-    connect(source,SIGNAL(disconnected()),this,SLOT(disconnected_()));
-    connect(source,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error_(QAbstractSocket::SocketError)));
-    connect(source,SIGNAL(hostFound()),this,SLOT(hostFound_()));
-    connect(source,SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),this,SLOT(proxyAuthenticationRequired_(const QNetworkProxy &, QAuthenticator *)));
-    connect(source,SIGNAL(stateChanged(QAbstractSocket::SocketState)),this,SLOT(stateChanged_(QAbstractSocket::SocketState)));
-    connect(source,SIGNAL(readyRead()),this,SLOT(readReady_()));
+    connect(source, SIGNAL(connected()), this, SLOT(connected_()));
+    connect(source, SIGNAL(disconnected()), this, SLOT(disconnected_()));
+    connect(source, SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(error_(QAbstractSocket::SocketError)));
+    connect(source, SIGNAL(hostFound()), this,SLOT(hostFound_()));
+    connect(source,
+            SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),
+            this, SLOT(proxyAuthenticationRequired_(const QNetworkProxy &, QAuthenticator *)));
+    connect(source, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
+            this ,SLOT(stateChanged_(QAbstractSocket::SocketState)));
+    connect(source, SIGNAL(readyRead()), this, SLOT(readReady_()));
+}
+
+bool ETcpSocket::_driverResponse(const SyncPackage& from) {
+
+    if(!from.isValid()){
+        return false;
+    }
+
+    SyncPackage pac;
+
+    switch (from.type) {
+    case t_Header:
+        syncList.clear();
+        precisionSync = from.getPrecision();
+        lastTime = ChronoTime::now();
+        pac.sourceBytes = ChronoTime::now();
+        pac.nativeTime = from.getTime();
+        pac.type = t_Source;
+        pac.firstByte = 0;
+
+        _Write(pac.parseTo(), true);
+
+        syncList[0] = pac;
+
+
+        break;
+    case t_Source:
+        syncList[from.getIndex()] = from;
+        pac.type = t_Responce;
+        pac.firstByte = from.getIndex();
+        pac.sourceBytes = ChronoTime::now();
+
+        _Write(pac.parseTo(), true);
+        break;
+    case t_Responce:
+        syncList[from.getIndex()].ping = ChronoTime::now() - lastTime;
+        lastTime = ChronoTime::now();
+
+        if(syncList.size() >= precisionSync){
+            pac.type = t_End;
+
+            auto ping = syncList.first().ping;
+            auto index = syncList.begin();
+            for (auto i = syncList.begin(); i != syncList.end(); i++) {
+                if (i.value().ping < ping) {
+                    ping = i.value().ping;
+                    index = i;
+                }
+            }
+
+            pac.firstByte = index->firstByte;
+            pac.sourceBytes = index->ping;
+            pac.nativeTime = index->nativeTime;
+
+            _Write(pac.parseTo(), true);
+            return true;
+        }
+
+        pac.type = t_Source;
+        pac.firstByte = from.getIndex() + 1;
+        pac.sourceBytes = ChronoTime::now();
+        pac.nativeTime = from.getTime();
+
+        _Write(pac.parseTo(), true);
+
+        syncList[pac.firstByte] = pac;
+
+        break;
+    case t_End: {
+
+        if(syncList.size() <= from.getIndex()){
+            return false;
+        }
+
+        auto ping = from.getPing();
+
+        if (ping > 2) {
+            return false;
+        }
+
+        time = from.getNative() - syncList[from.getIndex()].getTime() - from.getPing() / 2;
+        fSynced = true;
+
+        emit synced();
+
+        break;
+    }
+
+    default:
+        break;
+    }
+    return true;
+}
+
+void ETcpSocket::_driverStart() {
+    syncList.clear();
+
+    SyncPackage pac;
+
+    precisionSync = SYNC_COUNT;
+    pac.type = t_Header;
+    pac.firstByte = precisionSync;
+    pac.sourceBytes = ChronoTime::now();
+
+    _Write(pac.parseTo(), true);
+}
+
+void ETcpSocket::_driver(QByteArray *data){
+    SyncPackage pac;
+    if(!pac.parseFrom(*data)){
+        return;
+    }
+    _driverResponse(pac);
 }
 
 void ETcpSocket::error_(QAbstractSocket::SocketError i){
@@ -70,9 +189,16 @@ void ETcpSocket::readReady_(){
     qDebug()<<"messae size:" << size;
     qDebug()<<"message package size:" << array->size();
 #endif
-    if(size==array->size())
+    if(size == array->size())
     {
         array->remove(0, sizeof(qint32));
+        if(array->back()){
+            _driver(array);
+            delete array;
+            array = new QByteArray();
+            return;
+        }
+        array->remove(array->size() - 1, 1);
         ReadyStack.push_back(array);
         array=new QByteArray();
         emit Message(this);
@@ -97,12 +223,30 @@ QString ETcpSocket::localName() const{
 QByteArray* ETcpSocket::topStack(){
     if(ReadyStack.size())
         return ReadyStack.front();
-    return NULL;
+    return nullptr;
+}
+
+milliseconds ETcpSocket::getTime()const{
+    return time;
 }
 
 QTcpSocket* ETcpSocket::getSource()const{
     return source;
 }
+
+void ETcpSocket::sync(){
+    if(fSynced){
+        return;
+    }
+    _driverStart();
+
+}
+
+bool ETcpSocket::isSynced()const{
+    return fSynced;
+}
+
+
 
 void ETcpSocket::nextItem(bool free){
     if( ReadyStack.size()){
@@ -122,13 +266,18 @@ QString ETcpSocket::toStringTcp(){
     return source->peerAddress().toString();
 }
 
-bool ETcpSocket::Write(const QByteArray&data){
+bool ETcpSocket::Write(const QByteArray &data){
+    return _Write(data);
+}
+
+bool ETcpSocket::_Write(const QByteArray&data, bool isDriver){
     if(source->state()==QTcpSocket::ConnectedState){
        QByteArray array;
        QDataStream stream(&array, QIODevice::ReadWrite);
 
        stream << qint32(0);
        array.append(data);
+       array.append(qint8(isDriver));
        stream.device()->seek(0);
        stream<<qint32(array.size());
 
@@ -144,12 +293,19 @@ bool ETcpSocket::Write(const QByteArray&data){
     return false;
 }
 
+bool ETcpSocket::isValid(){
+    return source->isValid() && source->isOpen();
+}
+
 ETcpSocket::~ETcpSocket()
 {
     for(QByteArray*i:ReadyStack){
         i->clear();
         delete i;
     }
+
+    syncList.clear();
+
     disconnect(source,SIGNAL(connected()),this,SLOT(connected_()));
     disconnect(source,SIGNAL(disconnected()),this,SLOT(disconnected_()));
     disconnect(source,SIGNAL(error(QAbstractSocket::SocketError)),this,SLOT(error_(QAbstractSocket::SocketError)));

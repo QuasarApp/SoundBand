@@ -3,8 +3,6 @@
 #include <QMediaPlaylist>
 #include "song.h"
 
-using namespace syncLib;
-
 /**
  * @brief The PlayList class
  * palyList with songs info

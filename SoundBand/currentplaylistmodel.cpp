@@ -1,7 +1,5 @@
 #include "currentplaylistmodel.h"
 
-using namespace syncLib;
-
 CurrentPlayListModel::CurrentPlayListModel(QObject *parent) :
     QAbstractListModel(parent),
     syncEngine(nullptr),
@@ -47,13 +45,13 @@ void CurrentPlayListModel::fetchMore(const QModelIndex & /* index */)
     int remainder = playList->size() - itemCount;
     int itemsToFetch = qMin(100, remainder);
 
-    if(itemsToFetch < 0){
+    if (itemsToFetch < 0) {
         beginRemoveRows(QModelIndex(), 0, 0 - itemsToFetch - 1 );
 
         itemCount += itemsToFetch;
 
         endRemoveRows();
-    }else{
+    } else if (itemsToFetch > 0) {
         beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
 
         itemCount += itemsToFetch;
@@ -78,10 +76,8 @@ QVariant CurrentPlayListModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case nameRole:
         return playList->at(index.row()).name;
-        break;
     case idRole:
         return playList->at(index.row()).id;
-        break;
     default:
         break;
     }

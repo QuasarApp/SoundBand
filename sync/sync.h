@@ -10,8 +10,6 @@
 #include "player.h"
 #include "playlist.h"
 
-namespace syncLib {
-
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class Node;
@@ -30,10 +28,6 @@ private:
     PlayList *playList;
     QString lastUsedPlayList;
     QList<ETcpSocket*> servers;
-    bool fbroadcaster;
-    int resyncCount;
-    int lastSyncTime;
-    int ping;
     LocalScanner deepScaner;
     MySql *sql;
     int port;
@@ -50,15 +44,17 @@ private:
      * @param pac - the resulting value
      * @return true if everything's done
      */
-    bool createPackage(Type type , package& pac);
+    bool createPackage(Type type , package& pac, milliseconds time = 0);
 
 private slots:
+
+    void clientSynced(ETcpSocket*);
 
     /**
      * @brief setSingle set singl or temp playlist
      * @return true if all done
      */
-    bool setSingle(const QMediaContent& media);
+    bool setSingle(const SongStorage &media);
 
     /**
      * @brief updateSongs use method update avelable songs from sql database
@@ -121,14 +117,6 @@ public:
      * @param fbroadcast - server broadcasting sound.
      * @return true if all done else false.
      */
-    bool play(const QMediaContent &media,  bool fbroadcast = true);
-
-    /**
-     * @brief Play song in this device, if device has not supported playning media data this method throw MediaExcrption.
-     * @param header of song
-     * @param fbroadcast - server broadcasting sound.
-     * @return true if all done else false.
-     */
     bool play(const SongHeader &header,  bool fbroadcast = true);
 
     /**
@@ -179,7 +167,7 @@ public:
      * @brief sync with server
      * @param sync - data of sync
      */
-    bool sync(const Syncer& sync, milliseconds ping);
+    bool sync(const Syncer& sync);
 
     /**
      * @brief isReadyToSync
@@ -191,6 +179,11 @@ public:
      * @brief sync with clients
      */
     void sync();
+
+    /**
+     * @brief sync with clients
+     */
+    void sync(ETcpSocket *socket);
 
     /**
      * @brief addNode add new connect
@@ -345,7 +338,6 @@ signals:
     void playStateChanged();
 
 };
-}
 
 
 #endif // SYNC_H

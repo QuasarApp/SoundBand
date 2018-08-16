@@ -34,7 +34,9 @@ SOURCES += main.cpp \
     serverlistmodel.cpp \
     playlistsmodel.cpp \
     currentplaylistmodel.cpp \
-    ../sync/playlist.cpp
+    ../sync/playlist.cpp \
+    ../sync/syncpackage.cpp \
+    ../sync/basepackage.cpp
 
 
 RESOURCES += qml.qrc
@@ -71,5 +73,7 @@ HEADERS += \
     serverlistmodel.h \
     playlistsmodel.h \
     currentplaylistmodel.h \
-    ../sync/playlist.h
+    ../sync/playlist.h \
+    ../sync/syncpackage.h \
+    ../sync/basepackage.h
 

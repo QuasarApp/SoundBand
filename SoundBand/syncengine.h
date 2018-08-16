@@ -20,8 +20,8 @@ class SyncEngine : public QObject
 
 
 private:
-    syncLib::Sync *sync;
-    syncLib::MySql * sqlApi;
+    Sync *sync;
+    MySql * sqlApi;
     QString _lastError;
     QSettings settings;
 

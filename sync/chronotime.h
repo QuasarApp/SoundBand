@@ -11,13 +11,16 @@ typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
 class ChronoTime
 {
+private :
+    static milliseconds stdTime();
+    static milliseconds qtTime();
 public:
     ChronoTime();
     /**
      * @brief now - get now time on microsecunds
      * @return - count of microsecunds
      */
-    static milliseconds now(int calibration = 0);
+    static milliseconds now(milliseconds calibration = 0);
     /**
      * @brief from cast to chrono secunds
      * @param mcrs microseconds of uint_64

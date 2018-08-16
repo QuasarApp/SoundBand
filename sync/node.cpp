@@ -2,123 +2,10 @@
 #include "exaptions.h"
 #include "LocalScanner.h"
 
-namespace syncLib{
-
-package::package()
-{
-    clear();
-}
-
-package::package( QByteArray &array):
-    package::package(){
-    parseFrom(array);
-}
-
-const SongHeader& package::getHeader() const{
-    return header;
-}
-
-const Song& package::getSong() const{
-    return source;
-}
-
-const Syncer& package::getPlayData() const{
-    return playdata;
-}
-
-const Type& package::getType() const{
-    return type;
-}
-
-bool package::isValid() const{
-
-    bool ret = true;
-    if(type == TypePackage::t_void){
-        return false;
-
-    }
-
-    if(type & TypePackage::t_sync && type & t_brodcaster){
-        ret = ret && (playdata.seek > 0);
-
-    }
-
-    if(type & TypePackage::t_song_h && type & t_brodcaster){
-        ret = ret && header.size > 0;
-
-    }
-
-    if(type & TypePackage::t_song && type & t_brodcaster){
-        ret = ret && source.size > 0;
-
-    }
-
-    return ret;
-
-}
-
-void package::clear(){
-    type = TypePackage::t_void;
-    source.clear();
-    playdata.seek = 0;
-}
-
-QByteArray package::parseTo(){
-    QByteArray temp;
-    QDataStream stream(&temp, QIODevice::WriteOnly);
-    temp.clear();
-    if(isValid()){
-        stream <<  static_cast<unsigned char>(type);
-
-        if(type & TypePackage::t_sync && type & t_brodcaster){
-            stream << playdata.seek;
-
-        }
-
-        if(type & TypePackage::t_song_h && type & t_brodcaster){
-            stream << header;
-
-        }
-
-        if(type & TypePackage::t_song && type & t_brodcaster){
-            stream << source;
-
-        }
-
-    }
-    return temp;
-}
-
-bool package::parseFrom(QByteArray &array){
-    type = TypePackage::t_void;
-    QDataStream stream(&array, QIODevice::ReadOnly);
-
-    unsigned char temp_type;
-    stream >> temp_type;
-    type = static_cast<TypePackage> (temp_type);
-
-    if(type & TypePackage::t_sync){
-        stream >> playdata.seek;
-
-    }
-
-    if(type & TypePackage::t_song_h){
-        stream >> header;
-
-    }
-
-    if(type & TypePackage::t_song){
-        stream >> source;
-
-    }
-
-    return isValid();
-}
-
-package::~package(){}
 
 Node::Node(const QString &addres, int port):QTcpServer(){
     QString address = addres;
+    fBroadcaster = false;
     if(address == DEFAULT_ADRESS){
             address = LocalScanner::thisAddress().toString();
     }
@@ -132,7 +19,9 @@ Node::Node(const QString &addres, int port):QTcpServer(){
 #ifdef QT_DEBUG
     qDebug() << "node started on:" << serverAddress().toString() << "port:" << serverPort();
 #endif
+
     connect(this,SIGNAL(newConnection()),SLOT(newConnection_()));
+
 }
 
 void Node::acceptError_(ETcpSocket*c){
@@ -145,6 +34,14 @@ void Node::acceptError_(ETcpSocket*c){
     delete c;
 }
 
+bool Node::isBroadcaster()const{
+    return fBroadcaster;
+}
+
+void Node::setBroadcaster(bool newValue){
+    fBroadcaster = newValue;
+}
+
 QList<ETcpSocket*>* Node::getClients(){
     return &clients;
 }
@@ -152,9 +49,16 @@ QList<ETcpSocket*>* Node::getClients(){
 void Node::newConnection_(){
     ETcpSocket *newClient=new ETcpSocket(nextPendingConnection());
     clients.push_back(newClient);
-    connect(newClient,SIGNAL(Disconnected(ETcpSocket*)),this,SLOT(acceptError_(ETcpSocket*)));
-    connect(newClient,SIGNAL(Message(ETcpSocket*)),this,SLOT(readData(ETcpSocket*)));
+    connect(newClient, SIGNAL(Disconnected(ETcpSocket*)),
+            this, SLOT(acceptError_(ETcpSocket*)));
+    connect(newClient, SIGNAL(Message(ETcpSocket*)), this, SLOT(readData(ETcpSocket*)));
+    connect(newClient, SIGNAL(synced()), this, SLOT(synced()));
+
     emit ClientConnected(newClient);
+}
+
+void Node::synced(){
+    emit NodeSynced(static_cast<ETcpSocket*>(this->sender()));
 }
 
 void Node::readData(ETcpSocket *c){
@@ -211,6 +115,5 @@ Node::~Node(){
     this->close();
 }
 
-}
 
 

@@ -6,8 +6,6 @@
 #include "chronotime.h"
 #include <QMediaContent>
 
-namespace syncLib {
-
 /**
  * @brief The Syncer struct
  *
@@ -18,6 +16,11 @@ struct Syncer
      * @brief seek - wher is play media file
      */
     milliseconds seek;
+
+    /**
+     * @brief timeOn - when play this media file
+     */
+    milliseconds timeOn;
 };
 
 /**
@@ -97,5 +100,4 @@ public:
     friend class MySql;
 };
 
-}
 #endif // SONG_H

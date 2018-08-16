@@ -3,8 +3,6 @@
 #include <QRegularExpression>
 #include <QFile>
 
-namespace syncLib{
-
 static const QStringList ValidSongs = {".mp3", ".wav", ".ogg"};
 SongHeader::SongHeader()
 {
@@ -161,8 +159,8 @@ QMediaContent SongStorage::toMedia()const{
     return QMediaContent(url);
 }
 
-bool SongStorage::toSong(Song&)const{
-    Song song(*((SongHeader*)this));
+bool SongStorage::toSong(Song& song)const{
+    song = (*((SongHeader*)this));
 
     QFile f(url.toLocalFile());
 
@@ -230,4 +228,3 @@ QDataStream& operator >> (QDataStream& stream, Song& song){
     return stream;
 }
 
-}

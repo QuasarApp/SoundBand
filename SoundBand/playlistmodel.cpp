@@ -1,7 +1,5 @@
 #include "playlistmodel.h"
 
-using namespace syncLib;
-
 PlayListModel::PlayListModel(QObject *parent) :
     QAbstractListModel(parent),
     syncEngine(nullptr)
@@ -55,7 +53,7 @@ void PlayListModel::fetchMore(const QModelIndex & /* index */)
         itemCount += itemsToFetch;
 
         endRemoveRows();
-    }else{
+    }else if (itemsToFetch > 0){
         beginInsertRows(QModelIndex(), itemCount, itemCount + itemsToFetch - 1);
 
         itemCount += itemsToFetch;
@@ -94,7 +92,7 @@ QVariant PlayListModel::data(const QModelIndex &index, int role) const
 
 bool PlayListModel::select(int id){
 
-    for(QList<syncLib::SongStorage>::Iterator i = playList.begin(); i < playList.end(); i++){
+    for(QList<SongStorage>::Iterator i = playList.begin(); i < playList.end(); i++){
         if(i->id == id){
 
             if((i->isSelected = !i->isSelected)){
@@ -114,7 +112,7 @@ bool PlayListModel::select(int id){
 QList<int> PlayListModel::getSelected(){
     QList<int> result;
 
-    for(QList<syncLib::SongStorage>::Iterator i = playList.begin(); i < playList.end(); i++){
+    for(QList<SongStorage>::Iterator i = playList.begin(); i < playList.end(); i++){
         if(i->isSelected){
             result.push_back(i->id);
         }
@@ -124,7 +122,7 @@ QList<int> PlayListModel::getSelected(){
 
 bool PlayListModel::isSelected(int id){
 
-    for(QList<syncLib::SongStorage>::Iterator i = playList.begin(); i < playList.end(); i++){
+    for(QList<SongStorage>::Iterator i = playList.begin(); i < playList.end(); i++){
         if(i->id == id){
             return i->isSelected;
         }

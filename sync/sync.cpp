@@ -216,9 +216,7 @@ bool Sync::sync(const Syncer &sync){
 //        player->syncEnd();
 //    } );
 
-    while (ChronoTime::now() < sync.timeOn) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
+    while (ChronoTime::now() < sync.timeOn) {    }
     player->setPosition(sync.seek);
     player->syncEnd();
 

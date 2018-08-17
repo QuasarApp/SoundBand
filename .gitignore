@@ -12,6 +12,9 @@
 
 # Qt-es
 
+installer/packages/app/data
+installer/packages/app/data/*
+
 *.qmake.stash
 *.qmake.cache
 /.qmake.cache

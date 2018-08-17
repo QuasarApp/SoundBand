@@ -5,9 +5,11 @@ include($$PWD/installer/deploy/deployFiles.pri)
 message( DEPLOY_FILES_MASTER = $$DEPLOY_FILES)
 
 
-SUBDIRS += SoundBand \
-	tests
+SUBDIRS += Sync \
+        QuasarAppLib/QuasarApp.pro \
+        SoundBand
 
+SoundBand.depends = Sync QuasarAppLib/QuasarApp.pro
 
 CONFIG(release, debug|release): {
 

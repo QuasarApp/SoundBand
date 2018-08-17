@@ -1,6 +1,6 @@
 #include "syncengine.h"
 #include <QPicture>
-#include "../sync/exaptions.h"
+#include "exaptions.h"
 
 SyncEngine::SyncEngine()
 {

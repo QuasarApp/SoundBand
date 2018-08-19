@@ -12,5 +12,5 @@
     <Logo>iconInstaller.png</Logo>
     <InstallerWindowIcon>iconInstaller</InstallerWindowIcon>
     <InstallerApplicationIcon>iconInstaller</InstallerApplicationIcon>
-    <RunProgram>@TargetDir@/AppRun</RunProgram>
+    <RunProgram>@TargetDir@/AppRun.sh</RunProgram>
 </Installer>

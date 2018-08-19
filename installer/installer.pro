@@ -22,7 +22,7 @@ QML_DIR = $$QT_DIR/../qml
 
 WINDEPLY = $$QT_DIR/windeployqt.exe
 MACDEPLY = $$QT_DIR/macdeployqt
-LINUXDEPLOY = $$PWD/deploy/CQtDeployer/build/CQtDeployer
+LINUXDEPLOY = $$PWD/../CQtDeployer/build/CQtDeployer
 
 message( QML_DIR = $$QML_DIR)
 message( WINDEPLY = $$WINDEPLY)
@@ -49,7 +49,7 @@ win32 {
 
 unix {
     for(command, TARGET_LIST) {
-        installerApp.commands += $$LINUXDEPLOY -bin $$TARGET_PATH/$$command -qmldir=$$QML_DIR -qmake=$$QMAKE_QMAKE &&
+        installerApp.commands += $$LINUXDEPLOY -bin $$TARGET_PATH/$$command -qmlDir $$QML_DIR -qmake $$QMAKE_QMAKE &&
     }
     commands += "chmod +x $$LINUXDEPLOY"
 }

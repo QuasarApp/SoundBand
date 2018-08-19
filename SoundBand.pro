@@ -8,7 +8,8 @@ message( DEPLOY_FILES_MASTER = $$DEPLOY_FILES)
 SUBDIRS += Sync \
         QuasarAppLib/QuasarApp.pro \
         SoundBand \
-        CQtDeployer
+        CQtDeployer \
+        tests
 
 SoundBand.depends = Sync QuasarAppLib/QuasarApp.pro
 

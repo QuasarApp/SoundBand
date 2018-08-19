@@ -4,10 +4,11 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
+#include "sync_global.h"
 
-enum LogType{ERROR, WARNING, INFORMATION, NONE};
+enum SYNCSHARED_EXPORT LogType{ERROR, WARNING, INFORMATION, NONE};
 
-class Log
+class SYNCSHARED_EXPORT Log
 {
 public:
     explicit Log(const QString &fileName);

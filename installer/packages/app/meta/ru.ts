@@ -31,14 +31,19 @@
         <translation type="vanished">Внимание! Этот каталог уже создан, чтобы продолжить установку выберите другой каталог!</translation>
     </message>
     <message>
-        <location filename="installscript.js" line="66"/>
         <source>App</source>
-        <translation>Основные компоненнты</translation>
+        <translation type="vanished">Основные компоненнты</translation>
+    </message>
+    <message>
+        <location filename="installscript.js" line="66"/>
+        <source>SoundBand</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="installscript.js" line="67"/>
-        <source>Install App</source>
-        <translation>установка основного компонента</translation>
+        <source>Install SoundBand</source>
+        <oldsource>Install App</oldsource>
+        <translation type="unfinished">установка основного компонента</translation>
     </message>
 </context>
 </TS>

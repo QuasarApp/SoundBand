@@ -14,7 +14,7 @@ QT_DIR = $$dirname(QMAKE_QMAKE)
 LUPDATE = $$QT_DIR/lupdate
 LRELEASE = $$QT_DIR/lrelease
 
-OUT_FILE = installerApp
+OUT_FILE = SoundBandInstaller
 
 QT_DIR = $$dirname(QMAKE_QMAKE)
 QML_DIR = $$QT_DIR/../qml

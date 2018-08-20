@@ -63,8 +63,8 @@ Component.prototype.createOperations = function()
 }
 
 function generateTr() {
-    component.setValue("DisplayName", qsTr("App"));
-    component.setValue("Description", qsTr("Install App"));
+    component.setValue("DisplayName", qsTr("SoundBand"));
+    component.setValue("Description", qsTr("Install SoundBand"));
 
 }
 

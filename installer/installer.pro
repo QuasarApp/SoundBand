@@ -51,7 +51,6 @@ unix {
     for(command, TARGET_LIST) {
         installerApp.commands += $$LINUXDEPLOY -bin $$TARGET_PATH/$$command -qmlDir $$QML_DIR -qmake $$QMAKE_QMAKE &&
     }
-    commands += "chmod +x $$LINUXDEPLOY"
 }
 
 macx {
@@ -92,3 +91,8 @@ DISTFILES += \
     packages/SoundBand.Tests/meta/package.xml \
     packages/SoundBand.Tests/meta/ru.ts
 
+#unix:extraclean.commands = chmod +x $$PWD/scripts/clear.sh && $$PWD/scripts/clear.sh
+#win32:extraclean.commands = $$PWD/scripts/clear.bat;
+
+#distclean.depends = extraclean
+#QMAKE_EXTRA_TARGETS += distclean extraclean

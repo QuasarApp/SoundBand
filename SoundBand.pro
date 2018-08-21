@@ -13,11 +13,14 @@ SUBDIRS += Sync \
 
 SoundBand.depends = Sync QuasarAppLib/QuasarApp.pro
 
-CONFIG(release, debug|release): {
+!android:{
+    message(desktopVersion: enabled)
+    CONFIG(release, debug|release): {
 
-    SUBDIRS += installer
+        SUBDIRS += installer
 
-} else {
-    message( Selected Debug mode. The installer will not be created )
+    } else {
+        message( Selected Debug mode. The installer will not be created )
 
+    }
 }

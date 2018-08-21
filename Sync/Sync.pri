@@ -7,10 +7,9 @@
 
 !isEmpty(SYNC_LIB):error("Sync.pri already included")
 SYNC_LIB = 1
-include($$PWD/../installer/deploy/deployFiles.pri)
 
 #DEPENDS
 
-LIBS += -L"$$DESTDIR/" -lSync
+LIBS += -L"$$PWD/../installer/packages/SoundBand/data/" -lSync
 
 INCLUDEPATH += "$$PWD/"

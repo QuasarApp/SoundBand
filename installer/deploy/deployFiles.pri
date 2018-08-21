@@ -1,10 +1,8 @@
-TARGET_PATH = $$PWD/../packages/app/data
+TARGET_PATH = $$PWD/../packages/SoundBand/data
 equals( TEMPLATE, app) {
-    DESTDIR = $$PWD/../packages/app/data
+    DESTDIR = $$PWD/../packages/SoundBand/data
 }
 
 equals( TEMPLATE, lib) {
-    DESTDIR = $$PWD/../packages/app/data
+    DESTDIR = $$PWD/../packages/SoundBand/data
 }
-
-

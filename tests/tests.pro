@@ -13,5 +13,6 @@ SOURCES += \
 RESOURCES += \
     res.qrc
 
+DESTDIR = $$PWD/../installer/packages/SoundBand.Tests/data
 
 include($$PWD/../Sync/Sync.pri)

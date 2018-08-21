@@ -9,11 +9,13 @@
 *.so
 *.dll
 *.dylib
-
+*.qm
 # Qt-es
 
 installer/packages/app/data
 installer/packages/app/data/*
+installer/packages/SoundBand/data/*
+installer/packages/SoundBand.Tests/data/*
 installer/SoundBandInstaller
 installer/logs.log
 installer/songdata.dat

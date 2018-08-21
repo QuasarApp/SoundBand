@@ -30,7 +30,7 @@ message( MACDEPLY = $$MACDEPLY)
 message( LINUXDEPLOY = $$LINUXDEPLOY)
 
 win32 {
-    OUT_FILE = installerApp.exe
+    OUT_FILE = SoundBandInstaller.exe
     LUPDATE = $$QT_DIR/lupdate.exe
     LRELEASE = $$QT_DIR/lrelease.exe
 }
@@ -68,8 +68,10 @@ installerApp.CONFIG += target_predeps no_link combine
 
 message( installComands = "$$installerApp.commands")
 
-commands += "$$LUPDATE $$PWD/packages/app/meta/installscript.js -ts $$PWD/packages/app/meta/ru.ts"
-commands += "$$LRELEASE $$PWD/packages/app/meta/ru.ts"
+commands += "$$LUPDATE $$PWD/packages/SoundBand/meta/installscript.js -ts $$PWD/packages/SoundBand/meta/ru.ts"
+commands += "$$LRELEASE $$PWD/packages/SoundBand/meta/ru.ts"
+commands += "$$LUPDATE $$PWD/packages/SoundBand.Tests/meta/installscript.js -ts $$PWD/packages/SoundBand.Tests/meta/ru.ts"
+commands += "$$LRELEASE $$PWD/packages/SoundBand.Tests/meta/ru.ts"
 
 for(command, commands) {
     system($$command)|error("Failed to run: $$command")
@@ -83,7 +85,10 @@ DISTFILES += \
     config/config.xml \
     README.md \
     config/ru.ts \
-    packages/app/meta/installscript.js \
-    packages/app/meta/package.xml \
-    packages/app/meta/ru.ts
+    packages/SoundBand/meta/installscript.js \
+    packages/SoundBand/meta/package.xml \
+    packages/SoundBand/meta/ru.ts \
+    packages/SoundBand.Tests/meta/installscript.js \
+    packages/SoundBand.Tests/meta/package.xml \
+    packages/SoundBand.Tests/meta/ru.ts
 

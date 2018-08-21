@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>from script</DisplayName>
+    <Description>from script</Description>
+    <Version>1.0.0</Version>
+    <Default>false</Default>
+    <Script>installscript.js</Script>
+    <ReleaseDate>2018-08-25</ReleaseDate>
+    <SortingPriority>200</SortingPriority>
+    <ForcedInstallation>false</ForcedInstallation>
+    <Translations>
+        <Translation>ru.qm</Translation>
+    </Translations>
+</Package>

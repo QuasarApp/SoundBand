@@ -9,6 +9,7 @@
 #include <QMediaPlaylist>
 #include "player.h"
 #include "playlist.h"
+#include "sync_global.h"
 
 typedef std::chrono::time_point<std::chrono::high_resolution_clock> Clock;
 
@@ -19,7 +20,7 @@ class Node;
  * @brief The Sync class is main class of this library.
  * the 'sync' has supported synced playning media files on network and saving media data into local database.
  */
-class Sync : public QObject
+class SYNCSHARED_EXPORT Sync : public QObject
 {
     Q_OBJECT
 private:

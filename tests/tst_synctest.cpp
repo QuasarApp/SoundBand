@@ -1,8 +1,8 @@
 #include <QtTest>
-#include "../sync.h"
+#include "sync.h"
 #include <thread>
 #include <QMediaPlayer>
-#include "../Log.h"
+#include "Log.h"
 
 // add necessary includes here
 
@@ -42,7 +42,7 @@ void SyncTest::sycn_tests()
 {
 
 
-    syncLib::Sync *sync = new syncLib::Sync;
+    Sync *sync = new Sync;
 
     QVERIFY(sync != nullptr);
 
@@ -61,8 +61,8 @@ void SyncTest::sycn_tests()
 
     delete sync;
 
-    sync = new syncLib::Sync(LOCAL_HOST, 1994);
-    syncLib::Sync sync2(LOCAL_HOST, 1998,"test2.dat");
+    sync = new Sync(LOCAL_HOST, 1994);
+    Sync sync2(LOCAL_HOST, 1998,"test2.dat");
 
     QVERIFY(sync->play(1));
 
@@ -75,43 +75,13 @@ void SyncTest::sycn_tests()
 
 void SyncTest::player_tests()
 {
-    QFile f(":/song/test_song");
-
-    QVERIFY(f.open(QIODevice::ReadOnly));
-
-    Player pl(BUFFER_NAME);
-
-    QByteArray array = f.readAll();
-    f.close();
-    QVERIFY(pl.setMediaFromBytes(array));
-
-    f.setFileName(BUFFER_NAME);
-
-    QVERIFY(f.open(QIODevice::ReadOnly));
-
-    QByteArray array2 = f.readAll();
-    f.close();
-
-    QVERIFY(array.length() == array2.length());
-
-    QVERIFY(pl.setMediaFromBytes(array));
-
-    QVERIFY(f.open(QIODevice::ReadOnly));
-
-    array2 = f.readAll();
-
-    QVERIFY(array.length() == array2.length());
-
-
-
-
 }
 
 void SyncTest::database_tests()
 {
-    syncLib::MySql sql("test1");
-    syncLib::SongHeader header;
-    syncLib::Song song;
+    MySql sql("test1");
+    SongHeader header;
+    SongStorage song;
 
     QVERIFY(!sql.load(header, song));
 
@@ -122,7 +92,7 @@ void SyncTest::database_tests()
 
     QVERIFY(sql.load(header ,song));
 
-    header = static_cast<syncLib::SongHeader>(song);
+    header = static_cast<SongHeader>(song);
     QVERIFY(sql.load(header, song));
 
     QVERIFY(sql.addPlayList("play", "desc of play"));
@@ -138,7 +108,7 @@ void SyncTest::database_tests()
 
     QVERIFY(!sql.addToPlayList(header, "play"));
 
-    QList<syncLib::SongHeader> list;
+    PlayList list;
     sql.updateAvailableSongs(list);
 
     QVERIFY(list.size() == 1);
@@ -173,7 +143,7 @@ void SyncTest::database_tests()
 
 void SyncTest::network_tests(){
 
-    syncLib::Node node1("127.0.0.1", 1994);
+    Node node1("127.0.0.1", 1994);
 
     QVERIFY(node1.getClients()->size() == 0);
 

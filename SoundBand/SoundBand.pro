@@ -16,27 +16,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+TARGET = SoundBand
+
 SOURCES += main.cpp \
     syncengine.cpp \
-    ../sync/chronotime.cpp \
-    ../sync/ETcpSocket.cpp \
-    ../sync/LocalScanner.cpp \
-    ../sync/mysql.cpp \
-    ../sync/node.cpp \
-    ../sync/player.cpp \
-    ../sync/song.cpp \
-    ../sync/sync.cpp \
-    ../sync/Log.cpp\
-    ../sync/exaptions.cpp \
     imageprovider.cpp \
     app.cpp \
     playlistmodel.cpp \
     serverlistmodel.cpp \
     playlistsmodel.cpp \
-    currentplaylistmodel.cpp \
-    ../sync/playlist.cpp \
-    ../sync/syncpackage.cpp \
-    ../sync/basepackage.cpp
+    currentplaylistmodel.cpp
 
 
 RESOURCES += qml.qrc
@@ -56,24 +45,14 @@ DISTFILES +=
 
 HEADERS += \
     syncengine.h \
-    ../sync/chronotime.h \
-    ../sync/config.h \
-    ../sync/ETcpSocket.h \
-    ../sync/exaptions.h \
-    ../sync/LocalScanner.h \
-    ../sync/mysql.h \
-    ../sync/node.h \
-    ../sync/player.h \
-    ../sync/song.h \
-    ../sync/sync.h \
-    ../sync/Log.h \
     imageprovider.h \
     app.h \
     playlistmodel.h \
     serverlistmodel.h \
     playlistsmodel.h \
-    currentplaylistmodel.h \
-    ../sync/playlist.h \
-    ../sync/syncpackage.h \
-    ../sync/basepackage.h
+    currentplaylistmodel.h
 
+include($$PWD/../installer/deploy/deployFiles.pri)
+include($$PWD/../Sync/Sync.pri)
+
+QMAKE_LFLAGS += -Wl,-rpath,"'$$DESTDIR'"

@@ -1,6 +1,6 @@
 #ifndef SYNCENGINE_H
 #define SYNCENGINE_H
-#include "../sync/sync.h"
+#include "sync.h"
 #include <QObject>
 #include <QPixmap>
 #include <QSettings>

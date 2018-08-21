@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>SoundBand</Name>
+    <Version>1.0.0</Version>
+    <Title>SoundBand</Title>
+    <Publisher>QuasarApp</Publisher>
+    <TargetDir>@homeDir@/SoundBand</TargetDir>
+    <AllowNonAsciiCharacters>true</AllowNonAsciiCharacters>
+    <MaintenanceToolName>Uninstall</MaintenanceToolName>
+    <RemoveTargetDir>true</RemoveTargetDir>
+    <ControlScript>controlScript.js</ControlScript>
+    <Logo>iconInstaller.png</Logo>
+    <InstallerWindowIcon>iconInstaller</InstallerWindowIcon>
+    <InstallerApplicationIcon>iconInstaller</InstallerApplicationIcon>
+    <RunProgram>@TargetDir@/AppRun.sh</RunProgram>
+</Installer>

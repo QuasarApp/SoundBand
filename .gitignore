@@ -9,8 +9,16 @@
 *.so
 *.dll
 *.dylib
-
+*.qm
 # Qt-es
+
+installer/packages/app/data
+installer/packages/app/data/*
+installer/packages/SoundBand/data/*
+installer/packages/SoundBand.Tests/data/*
+installer/SoundBandInstaller
+installer/logs.log
+installer/songdata.dat
 
 *.qmake.stash
 *.qmake.cache
@@ -38,4 +46,4 @@ Makefile*
 
 # QtCtreator CMake
 CMakeLists.txt.user*
-
+installer/installerApp

@@ -4,6 +4,8 @@ CONFIG += ordered
 include($$PWD/installer/deploy/deployFiles.pri)
 message( DEPLOY_FILES_MASTER = $$DEPLOY_FILES)
 
+ENABLE_SNAP = 1 #only linux
+ENABLE_INSTALLER = 0 #only desctop
 
 SUBDIRS += Sync \
         QuasarAppLib/QuasarApp.pro \
@@ -13,14 +15,30 @@ SUBDIRS += Sync \
 
 SoundBand.depends = Sync QuasarAppLib/QuasarApp.pro
 
-!android:{
-    message(desktopVersion: enabled)
-    CONFIG(release, debug|release): {
+equals( ENABLE_INSTALLER, 1) {
+    !android:{
+        message(desktopVersion: enabled)
+        CONFIG(release, debug|release): {
 
-        SUBDIRS += installer
+            SUBDIRS += installer
 
-    } else {
-        message( Selected Debug mode. The installer will not be created )
+        } else {
+            message( Selected Debug mode. The installer will not be created )
 
+        }
+    }
+}
+
+equals( ENABLE_SNAP, 1) {
+    !android:{
+        message(desktopVersion: enabled)
+        CONFIG(release, debug|release): {
+
+            SUBDIRS += installer/packages/SoundBand/snap.pro
+
+        } else {
+            message( Selected Debug mode. The snap will not be created )
+
+        }
     }
 }

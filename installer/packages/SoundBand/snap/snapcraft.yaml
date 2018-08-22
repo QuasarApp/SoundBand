@@ -1,0 +1,28 @@
+name: soundband
+version: '1.0'
+summary: Mobile and desktop song sync audio player. working on wifi. 
+description: |
+  SoundBand is a cross-platform application for synchronous music playback on all your devices. supported platform:
+    Linux
+    Android
+    Windows
+
+
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+
+
+icon: data/icons/icon.png
+
+apps:
+  soundband:
+    command: desktop-launch $SNAP/AppRun.sh
+
+    plugs: [desktop, unity7, home, opengl, x11, wayland, gsettings, pulseaudio, alsa]
+
+parts:
+  soundband:
+    plugin: dump
+    source: data/
+
+    after: [desktop-qt5]

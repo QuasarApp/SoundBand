@@ -36,6 +36,10 @@ ui_*.h
 Makefile*
 *build-*
 
+*.snap
+installer/packages/SoundBand/parts
+installer/packages/SoundBand/prime
+installer/packages/SoundBand/stage
 # QtCreator
 
 *.autosave

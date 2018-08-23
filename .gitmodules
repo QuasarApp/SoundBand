@@ -1,6 +1,6 @@
 [submodule "QuasarAppLib"]
 	path = QuasarAppLib
-	url = git@github.com:QuasarApp/QuasarAppLib.git
+	url = https://github.com/QuasarApp/QuasarAppLib.git
 [submodule "CQtDeployer"]
 	path = CQtDeployer
-	url = git@github.com:QuasarApp/Console-QtDeployer.git
+	url = https://github.com/QuasarApp/Console-QtDeployer.git

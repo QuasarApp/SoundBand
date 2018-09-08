@@ -17,7 +17,7 @@ LRELEASE = $$QT_DIR/lrelease
 OUT_FILE = SoundBandInstaller
 
 QT_DIR = $$dirname(QMAKE_QMAKE)
-QML_DIR = $$QT_DIR/../qml
+QML_DIR = $$PWD/../SoundBand
 
 
 WINDEPLY = $$QT_DIR/windeployqt.exe
@@ -49,7 +49,7 @@ win32 {
 
 unix {
     for(command, TARGET_LIST) {
-        installerApp.commands += $$LINUXDEPLOY -bin $$TARGET_PATH/$$command -qmlDir $$QML_DIR -qmake $$QMAKE_QMAKE &&
+        installerApp.commands += $$LINUXDEPLOY -bin $$TARGET_PATH/$$command clear -qmlDir $$QML_DIR -qmake $$QMAKE_QMAKE &&
     }
 }
 

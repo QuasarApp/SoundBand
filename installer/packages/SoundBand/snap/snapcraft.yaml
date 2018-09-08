@@ -11,6 +11,7 @@ description: |
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
 
+base: core18
 
 icon: data/icons/icon.png
 
@@ -18,11 +19,55 @@ apps:
   soundband:
     command: desktop-launch $SNAP/AppRun.sh
 
-    plugs: [desktop, unity7, home, opengl, x11, wayland, gsettings, pulseaudio, alsa]
+    plugs: [desktop, unity7, home, opengl, x11, wayland, gsettings, network, pulseaudio, removable-media, network-bind]
 
 parts:
   soundband:
+    plugin: nil
+    stage-packages:
+      - libasn1-8-heimdal
+      - libgssapi3-heimdal
+      - libldap-2.4-2
+    after: [libsgl, libsaudio, desktop-glib-only, qtlib]
+    
+  qtlib:
     plugin: dump
     source: data/
+      
+  libsgl:
+    plugin: nil
+    stage-packages:
+      # Here for the plugins-- they're not linked in automatically.
+      - libx11-xcb1
+      - libglu1-mesa
+      - libxrender1
+      - libxi6
+      - libegl1-mesa
+      - fontconfig
+      - libgl1-mesa-dri
+      - libxkbcommon0
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libgdk-pixbuf2.0-0
+      - libgtk2.0-0
+      - xdg-user-dirs
+      - libxrandr2
+      - libwayland-cursor0
+      - libwayland-egl1
+      - libpq5
+      
+  libsaudio:
+    plugin: nil
+    stage-packages:
+      - gstreamer1.0-plugins-ugly
+      - gstreamer1.0-plugins-good
+      - gstreamer1.0-plugins-base
+      - libpulse0
+      - libpulse-mainloop-glib0
+      - libslang2
+      - libgpm2
+      - libasound2
 
-    after: [desktop-qt5]

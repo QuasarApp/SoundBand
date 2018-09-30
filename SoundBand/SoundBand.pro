@@ -52,7 +52,7 @@ HEADERS += \
     playlistsmodel.h \
     currentplaylistmodel.h
 
-include($$PWD/../installer/deploy/deployFiles.pri)
+include($$PWD/../deploy.pri)
 include($$PWD/../Sync/Sync.pri)
 
 QMAKE_LFLAGS += -Wl,-rpath,"'$$DESTDIR'"

@@ -51,3 +51,7 @@ installer/packages/SoundBand/stage
 # QtCtreator CMake
 CMakeLists.txt.user*
 installer/installerApp
+
+*.log
+
+*.dat

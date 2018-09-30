@@ -5,6 +5,9 @@ CONFIG += qt console warn_on depend_includepath testcase
 CONFIG -= app_bundle
 
 TEMPLATE = app
+TARGET = test
+
+SOUND_BAND_MODULE=test
 
 SOURCES += \
     tst_synctest.cpp
@@ -13,6 +16,5 @@ SOURCES += \
 RESOURCES += \
     res.qrc
 
-DESTDIR = $$PWD/../installer/packages/SoundBand.Tests/data
-
+include($$PWD/../deploy.pri)
 include($$PWD/../Sync/Sync.pri)

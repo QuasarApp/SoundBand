@@ -22,7 +22,7 @@ QML_DIR = $$PWD/../SoundBand
 
 WINDEPLY = $$QT_DIR/windeployqt.exe
 MACDEPLY = $$QT_DIR/macdeployqt
-LINUXDEPLOY = $$PWD/../CQtDeployer/build/CQtDeployer
+LINUXDEPLOY = $$PWD/../CQtDeployer/build/cqtdeployer
 
 message( QML_DIR = $$QML_DIR)
 message( WINDEPLY = $$WINDEPLY)

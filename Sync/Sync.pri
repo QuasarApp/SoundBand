@@ -9,7 +9,15 @@
 SYNC_LIB = 1
 
 #DEPENDS
+OLD_DEST_DIR=$$DESTDIR
+OLD_SOUND=$$SOUND_BAND_MODULE;
 
-LIBS += -L"$$PWD/../installer/packages/SoundBand/data/" -lSync
+SOUND_BAND_MODULE = sync
+include($$PWD/../deploy.pri)
+
+LIBS += -L"$$DESTDIR/" -lSync
+
+SOUND_BAND_MODULE = $$OLD_SOUND
+DESTDIR = $$OLD_DEST_DIR
 
 INCLUDEPATH += "$$PWD/"

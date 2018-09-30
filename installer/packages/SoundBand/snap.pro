@@ -14,7 +14,7 @@ snapApp.output = $$SNAPCRAFT
 LINUXDEPLOY = $$PWD/../../../CQtDeployer/build/CQtDeployer
 
 QT_DIR = $$dirname(QMAKE_QMAKE)
-QML_DIR = $$QT_DIR/../qml
+QML_DIR = $$PWD/../../../SoundBand
 
 unix {
     message($$DESTDIR);

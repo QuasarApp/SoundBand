@@ -8,7 +8,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Sync
 TEMPLATE = lib
 
-include($$PWD/../installer/deploy/deployFiles.pri)
+include($$PWD/../deploy.pri);
 
 DISTFILES += \
     sql/InitLacaleDataBase.sql

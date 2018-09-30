@@ -9,6 +9,7 @@ TARGET = Sync
 TEMPLATE = lib
 
 include($$PWD/../deploy.pri);
+include('$$PWD/../QuasarAppLib/QuasarLib.pri');
 
 DISTFILES += \
     sql/InitLacaleDataBase.sql

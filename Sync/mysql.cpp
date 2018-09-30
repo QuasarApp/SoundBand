@@ -45,10 +45,10 @@ void MySql::initDB(const QString &database){
     if(db) return;
     dataBaseName = database;
     QSettings settings;
-    songDir = settings.value(MAIN_FOLDER_KEY, QDir::homePath() + "/soundBand").toString();
+    songDir = settings.value(MAIN_FOLDER_KEY, MAIN_FOLDER).toString();
     db = new QSqlDatabase();
     *db = QSqlDatabase::addDatabase("QSQLITE", database);
-    QDir d(QString("./%0").arg(dataBaseName));
+    QDir d(MAIN_FOLDER + "/" + dataBaseName);
     db->setDatabaseName(d.absolutePath());
     if(db->open()){
         qyery = new QSqlQuery(*db);
@@ -60,19 +60,18 @@ void MySql::initDB(const QString &database){
                      "data TEXT NOT NULL "
                      ")");
         if(!qyery->exec(qyer)){
+
             sqlErrorLog(qyer);
-            throw InitDBError();
             delete db;
-            return;
+            throw InitDBError();
         }
 
 
         qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS isongs ON songs(name,size)");
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
-            throw InitDBError();
             delete db;
-            return;
+            throw InitDBError();
         }
 
         qyer = QString("CREATE TABLE IF NOT EXISTS playlists("
@@ -83,9 +82,8 @@ void MySql::initDB(const QString &database){
                      ")");
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
-            throw InitDBError();
             delete db;
-            return;
+            throw InitDBError();
         }
 
         qyer = QString("CREATE TABLE IF NOT EXISTS playlistsdata("
@@ -100,18 +98,16 @@ void MySql::initDB(const QString &database){
                      ")");
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
-            throw InitDBError();
             delete db;
-            return;
+            throw InitDBError();
         }
 
         qyer = QString("CREATE UNIQUE INDEX IF NOT EXISTS iplaylistsdata ON "
                        "playlistsdata(playlist,song)");
         if(!qyery->exec(qyer)){
             sqlErrorLog(qyer);
-            throw InitDBError();
             delete db;
-            return;
+            throw InitDBError();
         }
 
     }
@@ -125,7 +121,7 @@ bool MySql::find(const SongHeader &song, SongStorage &response){
     }
 
     for(SongStorage &i: songs){
-        if((SongHeader&)i == song){
+        if(static_cast<SongHeader&>(i) == song){
             response = i;
             return true;
         }

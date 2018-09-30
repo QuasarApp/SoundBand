@@ -7,8 +7,8 @@ message( DEPLOY_FILES_MASTER = $$DEPLOY_FILES)
 ENABLE_SNAP = 0 #only linux
 ENABLE_INSTALLER = 1 #only desctop
 
-SUBDIRS += Sync \
-        QuasarAppLib/QuasarApp.pro \
+SUBDIRS += QuasarAppLib/QuasarApp.pro \
+        Sync \
         SoundBand \
         CQtDeployer \
         tests

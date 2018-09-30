@@ -16,7 +16,7 @@ Sync::Sync(const QString &address, int port, const QString &datadir):
 {
     node = new Node(address , this->port = port);
 
-    player = new Player(BUFFER_NAME,nullptr,QMediaPlayer::LowLatency);
+    player = new Player(nullptr, QMediaPlayer::LowLatency);
     if(!player->isAvailable()){
         throw MediaException();
     }

@@ -11,7 +11,6 @@ class Player : public QMediaPlayer
 {
     Q_OBJECT
 private:
-    QString buffer;
     milliseconds playDelay;
     QMediaPlayer::State predState;
     int bufferVolume;
@@ -19,7 +18,7 @@ private:
 
 public:
 
-    Player(const QString& bufferFile, QObject *parent = Q_NULLPTR, Flags flags = Flags());
+    Player( QObject *parent = Q_NULLPTR, Flags flags = Flags());
 
     /**
      * @brief syncBegin - palyer waiting for sunced.

@@ -1,4 +1,5 @@
 #include "exaptions.h"
+#include <QDir>
 
 #ifdef  LOGER
     Log debug_log(LOG_FILE);

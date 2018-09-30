@@ -4,7 +4,7 @@
 // general otions
 #define CURRENT_PLAYLIST_KEY        "currentPlayList"
 #define MAIN_FOLDER_KEY             "songsfolder"
-#define MAIN_FOLDER                 "soundBand"
+#define MAIN_FOLDER                 QDir::homePath() + "/soundBand"
 
 
 // LIB VERSION
@@ -14,7 +14,6 @@
 
 // sqlite config
 #define DATABASE_NAME               "songdata.dat"
-#define BUFFER_NAME                 "buffer"
 #define ALL_SONGS_LIST              "all songs"
 
 // network config
@@ -37,5 +36,5 @@
 #endif
 
 #define LOGER                                   // define this macros if want use logs
-#define LOG_FILE                    "logs.log"
+#define LOG_FILE                    MAIN_FOLDER + "/logs.log"
 #endif // CONFIG_H

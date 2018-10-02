@@ -3,7 +3,6 @@
 #include "sync.h"
 #include <QObject>
 #include <QPixmap>
-#include <QSettings>
 
 
 /**
@@ -23,7 +22,6 @@ private:
     Sync *sync;
     MySql * sqlApi;
     QString _lastError;
-    QSettings settings;
 
 private slots:
     void seekChanged(qint64);
@@ -162,13 +160,13 @@ public slots:
     /**
      * @brief setValume - set a new valume of playin a song
      */
-    void setValume(int);
+    void setValume(unsigned int);
 
     /**
      * @brief getValume
      * @return valune ofsong
      */
-    int getValume()const;
+    unsigned int getValume()const;
 
     /**
      * @brief getServerList

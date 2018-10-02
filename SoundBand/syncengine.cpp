@@ -1,5 +1,7 @@
 #include "syncengine.h"
 #include <QPicture>
+#include <quasarapp.h>
+
 #include "exaptions.h"
 
 SyncEngine::SyncEngine()
@@ -38,8 +40,9 @@ int SyncEngine::currentSongId()const{
     return song->id;
 }
 
-bool SyncEngine::init(){
-    sync->updatePlayList(settings.value(CURRENT_PLAYLIST_KEY, ALL_SONGS_LIST).toString());
+bool SyncEngine::init() {
+
+    sync->updatePlayList(QuasarAppUtils::Settings::get()->getStrValue(CURRENT_PLAYLIST_KEY, ALL_SONGS_LIST));
     emit currentPlayListNameChanged();
     return true;
 }
@@ -59,6 +62,9 @@ void SyncEngine::allPlayLists(QStringList &playList)const{
 
 bool SyncEngine::songImageById(int id , QPixmap & image) {
 
+    Q_UNUSED(id);
+    Q_UNUSED(image);
+
     _lastError = tr("This option not supported.");
     emit error();
 
@@ -66,6 +72,9 @@ bool SyncEngine::songImageById(int id , QPixmap & image) {
 }
 
 bool SyncEngine::songImageByName(const QString& name, QPixmap &image) {
+
+    Q_UNUSED(name);
+    Q_UNUSED(image);
 
     _lastError = tr("This option not supported.");
     emit error();
@@ -142,7 +151,7 @@ int SyncEngine::repeat()const{
 }
 
 void SyncEngine::setRepeat(int flag){
-    sync->setRepeat((QMediaPlaylist::PlaybackMode)flag);
+    sync->setRepeat(static_cast<QMediaPlaylist::PlaybackMode>(flag));
 }
 
 bool SyncEngine::setPlayList(const QString& name){
@@ -152,7 +161,8 @@ bool SyncEngine::setPlayList(const QString& name){
         emit error();
         return false;
     }
-    settings.setValue(CURRENT_PLAYLIST_KEY, name);
+
+    QuasarAppUtils::Settings::get()->setValue(CURRENT_PLAYLIST_KEY, name);
 
     emit currentPlayListNameChanged();
     return true;
@@ -168,14 +178,14 @@ const QString& SyncEngine::lastError() const{
 }
 
 void SyncEngine::setPos(double newPos){
-    sync->jump(sync->getEndPoint() * newPos);
+    sync->jump(static_cast<qint64>(sync->getEndPoint() * newPos));
 }
 
-void SyncEngine::setValume(int valume){
+void SyncEngine::setValume(unsigned int valume){
     sync->setValume(valume);
 }
 
-int SyncEngine::getValume()const{
+unsigned int SyncEngine::getValume() const{
     return sync->getValume();
 }
 
@@ -184,7 +194,7 @@ double SyncEngine::pos()const{
     if(!sync->seek())
         return 0.0;
 
-    return (double)sync->seek() / sync->getEndPoint();
+    return static_cast<double>(sync->seek()) / sync->getEndPoint();
 }
 
 bool SyncEngine::addSong(const QString &songUrl){

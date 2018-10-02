@@ -54,5 +54,6 @@ HEADERS += \
 
 include($$PWD/../deploy.pri)
 include($$PWD/../Sync/Sync.pri)
+include('$$PWD/../QuasarAppLib/QuasarLib.pri');
 
 QMAKE_LFLAGS += -Wl,-rpath,"'$$DESTDIR'"

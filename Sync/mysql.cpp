@@ -2,8 +2,8 @@
 #include <QSqlQuery>
 #include <QtSql>
 #include "exaptions.h"
-#include <QSettings>
 #include "playlist.h"
+#include <quasarapp.h>
 
 MySql::MySql(const QString &databasename):
     db(nullptr),
@@ -44,8 +44,9 @@ bool MySql::exec(QSqlQuery *sq,const QString& sqlFile){
 void MySql::initDB(const QString &database){
     if(db) return;
     dataBaseName = database;
-    QSettings settings;
-    songDir = settings.value(MAIN_FOLDER_KEY, MAIN_FOLDER).toString();
+
+    songDir = QuasarAppUtils::Settings::get()->getStrValue(MAIN_FOLDER_KEY, MAIN_FOLDER);
+
     db = new QSqlDatabase();
     *db = QSqlDatabase::addDatabase("QSQLITE", database);
     QDir d(MAIN_FOLDER + "/" + dataBaseName);
@@ -132,7 +133,8 @@ bool MySql::find(const SongHeader &song, SongStorage &response){
 
 void MySql::setSoundDir(const QString &str){
     songDir = str;
-    QSettings().setValue(MAIN_FOLDER_KEY, songDir);
+
+    QuasarAppUtils::Settings::get()->setValue(MAIN_FOLDER_KEY, songDir);
 }
 
 bool MySql::saveToStorage(QUrl &url, const Song &song) const{

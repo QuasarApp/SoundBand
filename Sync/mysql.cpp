@@ -160,10 +160,11 @@ bool MySql::saveToStorage(QUrl &url, const Song &song) const{
 
 }
 
-void MySql::sqlErrorLog(const QString &qyery)const{
+void MySql::sqlErrorLog(const QString &qyery) const{
 #ifdef QT_DEBUG
             qDebug()<< qyery << ": fail:\n " <<this->qyery->lastError();
 #endif
+    Q_UNUSED(qyery);
 }
 
 int MySql::save(const SongStorage &song){

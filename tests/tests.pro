@@ -18,3 +18,4 @@ RESOURCES += \
 
 include($$PWD/../deploy.pri)
 include($$PWD/../Sync/Sync.pri)
+include('$$PWD/../QuasarAppLib/QuasarLib.pri');

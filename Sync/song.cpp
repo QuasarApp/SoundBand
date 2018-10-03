@@ -2,6 +2,7 @@
 #include <QStringList>
 #include <QRegularExpression>
 #include <QFile>
+#include <QFileInfo>
 
 static const QStringList ValidSongs = {".mp3", ".wav", ".ogg"};
 SongHeader::SongHeader()
@@ -13,9 +14,9 @@ SongHeader::SongHeader()
 }
 
 bool SongHeader::getName(QString & name, const QUrl &url) const {
-    if(url.isLocalFile() && url.isValid()){
+    if(url.isLocalFile() && url.isValid()) {
+        QFileInfo info(url.fileName());
         name = url.fileName();
-        name = name.right(name.lastIndexOf(QRegularExpression("[\\\/]")));
         return true;
     }
 
@@ -29,7 +30,7 @@ bool SongHeader::getSize(int & size, const QUrl &url) const {
         if(!f.exists()){
             return false;
         }
-        size = f.size();
+        size = static_cast<int>(f.size());
         return true;
     }
 
@@ -127,7 +128,7 @@ SongStorage::SongStorage(const QUrl& from)
     }
 
     QFile f(from.toLocalFile());
-    this->size = f.size();
+    this->size = static_cast<int>(f.size());
     f.close();
 
     this->id = -1;
@@ -155,12 +156,15 @@ SongStorage::~SongStorage(){
     url.clear();
 }
 
-QMediaContent SongStorage::toMedia()const{
+QMediaContent SongStorage::toMedia()const {
     return QMediaContent(url);
 }
 
-bool SongStorage::toSong(Song& song)const{
-    song = (*((SongHeader*)this));
+bool SongStorage::toSong(Song& song)const {
+//    song = (*((SongHeader*)this));
+//    static_cast<SongHeader>(song) = *this;
+
+    song = *this;
 
     QFile f(url.toLocalFile());
 

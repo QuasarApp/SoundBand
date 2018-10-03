@@ -2,13 +2,13 @@
 Version=1.0
 Name=SoundBand
 Comment=Mobile and desktop song sync audio player. working on wifi.
-Exec=sound-band
+Exec=soundband
 Icon=/snap/soundband/current/meta/gui/icon.png
 Terminal=false
 Type=Application
 Categories=utils;Application;
 X-GNOME-Bugzilla-Bugzilla=GNOME
-X-GNOME-Bugzilla-Product=sound-band
+X-GNOME-Bugzilla-Product=soundband
 X-GNOME-Bugzilla-Component=General
 X-GNOME-Bugzilla-Version=1.0
 StartupNotify=true

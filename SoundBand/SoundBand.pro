@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     playlistmodel.cpp \
     serverlistmodel.cpp \
     playlistsmodel.cpp \
-    currentplaylistmodel.cpp
+    currentplaylistmodel.cpp \
+    androidplayer.cpp
 
 
 RESOURCES += qml.qrc
@@ -48,7 +49,8 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+    android/gradlew.bat \
+    java/androidPlayer.java
 
 HEADERS += \
     syncengine.h \
@@ -57,7 +59,8 @@ HEADERS += \
     playlistmodel.h \
     serverlistmodel.h \
     playlistsmodel.h \
-    currentplaylistmodel.h
+    currentplaylistmodel.h \
+    androidplayer.h
 
 include($$PWD/../deploy.pri)
 include($$PWD/../Sync/Sync.pri)

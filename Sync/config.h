@@ -6,7 +6,6 @@
 #define MAIN_FOLDER_KEY             "songsfolder"
 #define MAIN_FOLDER                 QDir::homePath() + "/soundBand"
 
-
 // LIB VERSION
 #define MAJOR_VERSION               0
 #define MINOR_VERSION               1

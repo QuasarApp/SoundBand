@@ -1,4 +1,6 @@
 #include "app.h"
+#include <QFileInfo>
+#include <QDir>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "syncengine.h"
@@ -9,10 +11,16 @@
 #include "currentplaylistmodel.h"
 #include <QIcon>
 #include <QSystemTrayIcon>
+#include <exaptions.h>
 
 App::App(QObject* ptr):
     QObject(ptr)
 {
+
+    if (!initAppDir()) {
+        throw initNodeError();
+    }
+
     qmlEngine = new QQmlApplicationEngine();
     syncEngine = new SyncEngine();
     imageProvider = new ImageProvider(syncEngine);
@@ -40,7 +48,7 @@ void App::setIcon()
     trayIcon->setToolTip(tr("SoundBand"));
 }
 
-bool App::run(){
+bool App::run() {
 
     qmlEngine->addImageProvider(QLatin1String("collection"), imageProvider);
 
@@ -59,6 +67,19 @@ bool App::run(){
     setIcon();
 
     return syncEngine->init();
+}
+
+bool App::initAppDir() const {
+
+    QDir dir(QDir::rootPath());
+
+    if (!QFileInfo::exists(MAIN_FOLDER) &&
+        !dir.mkpath(MAIN_FOLDER)) {
+
+        return false;
+    }
+
+    return true;
 }
 
 App::~App(){

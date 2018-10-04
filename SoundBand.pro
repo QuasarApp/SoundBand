@@ -10,8 +10,11 @@ ENABLE_INSTALLER = 1 #only desctop
 SUBDIRS += QuasarAppLib/QuasarApp.pro \
         Sync \
         SoundBand \
-        CQtDeployer \
         tests
+
+unix:!android:{
+    SUBDIRS += CQtDeployer
+}
 
 SoundBand.depends = Sync QuasarAppLib/QuasarApp.pro
 

@@ -51,7 +51,7 @@ void MySql::initDB(const QString &database){
     *db = QSqlDatabase::addDatabase("QSQLITE", database);
     QDir d(MAIN_FOLDER + "/" + dataBaseName);
     db->setDatabaseName(d.absolutePath());
-    if(db->open()){
+    if(db->open()) {
         qyery = new QSqlQuery(*db);
 
         QString qyer = QString("CREATE TABLE IF NOT EXISTS songs("
@@ -111,6 +111,10 @@ void MySql::initDB(const QString &database){
             throw InitDBError();
         }
 
+    } else {
+        sqlErrorLog("erro on open database! error: " + db->lastError().text());
+        delete db;
+        throw InitDBError();
     }
 }
 

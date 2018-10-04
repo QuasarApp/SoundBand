@@ -38,6 +38,12 @@ public:
      * @return  false if app not running, true if all done
      */
     bool run();
+
+    /**
+     * @brief initAppDir
+     * @return true if all done else false
+     */
+    bool initAppDir() const;
     ~App();
 };
 

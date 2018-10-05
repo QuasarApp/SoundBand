@@ -50,7 +50,7 @@ DISTFILES += \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat \
-    java/androidPlayer.java
+    android/src/NotificationClient.java
 
 HEADERS += \
     syncengine.h \

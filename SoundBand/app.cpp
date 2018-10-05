@@ -60,7 +60,7 @@ bool App::run() {
     ctxt->setContextProperty("playListModel", playListModel);
 
 
-    qmlEngine->load(QUrl(QStringLiteral("qrc:/QML/main.qml")));
+    qmlEngine->load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (qmlEngine->rootObjects().isEmpty())
         return false;
 

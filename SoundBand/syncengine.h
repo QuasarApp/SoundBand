@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPixmap>
 
+class AndroidPlayer;
 
 /**
  * @brief The SyncEngine class - this class is interface between syncLine and qml application.
@@ -22,6 +23,9 @@ private:
     Sync *sync;
     MySql * sqlApi;
     QString _lastError;
+#ifdef Q_OS_ANDROID
+    AndroidPlayer * _androidPlayer;
+#endif
 
 private slots:
     void seekChanged(qint64);

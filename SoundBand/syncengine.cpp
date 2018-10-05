@@ -3,11 +3,16 @@
 #include <quasarapp.h>
 
 #include "exaptions.h"
+#include "androidplayer.h"
 
 SyncEngine::SyncEngine()
 {
     sync = new Sync();
     sqlApi = sync->getSqlApi();
+
+#ifdef Q_OS_ANDROID
+    _androidPlayer = new AndroidPlayer(this);
+#endif
 
     connect(sync, SIGNAL(networkStateChange()), this, SIGNAL(serversCountChanged()));
     connect(sync, SIGNAL(currentPlayListChanged()), this, SIGNAL(currentPlayListNameChanged()));
@@ -84,7 +89,15 @@ bool SyncEngine::songImageByName(const QString& name, QPixmap &image) {
 
 bool SyncEngine::play(int id){
     try{
-        return sync->play(id);
+        if (!sync->play(id)) {
+            return false;
+        }
+
+#ifdef Q_OS_ANDROID
+    _androidPlayer->setNotification("sound played!!");
+#endif
+        return true;
+
     }catch(BaseException e){
 
         _lastError = e.what();

@@ -6,7 +6,7 @@
 #include <QDateTime>
 #include "sync_global.h"
 
-enum SYNCSHARED_EXPORT LogType{ERROR, WARNING, INFORMATION, NONE};
+enum LogType{ERROR, WARNING, INFORMATION, NONE};
 
 class SYNCSHARED_EXPORT Log
 {

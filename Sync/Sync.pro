@@ -11,6 +11,9 @@ TEMPLATE = lib
 include($$PWD/../deploy.pri);
 include('$$PWD/../QuasarAppLib/QuasarLib.pri');
 
+DEFINES += SYNC_LIBRARY
+
+
 DISTFILES += \
     sql/InitLacaleDataBase.sql
 

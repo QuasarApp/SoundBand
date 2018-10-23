@@ -2,11 +2,12 @@
 #define MYSQL_H
 #include <QString>
 #include "playlist.h"
+#include "sync_global.h"
 
 class QSqlDatabase;
 class QSqlQuery;
 
-class MySql
+class SYNCSHARED_EXPORT MySql
 {
 private:
     QSqlDatabase *db;

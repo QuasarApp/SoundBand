@@ -5,7 +5,7 @@
 #include <QDataStream>
 #include "chronotime.h"
 #include <QMediaContent>
-
+#include "sync_global.h"
 /**
  * @brief The Syncer struct
  *
@@ -27,7 +27,7 @@ struct Syncer
  * @brief The SongHeader class sound header with media information
  * (id,size and name)
  */
-class SongHeader{
+class SYNCSHARED_EXPORT SongHeader{
 protected:
     bool getName(QString &name, const QUrl& url)const;
     bool getSize(int &size, const QUrl& url)const;
@@ -61,7 +61,7 @@ public:
  * @brief The Song class
  * into this calss added mediadata of playable media file.
  */
-class Song : public SongHeader {
+class SYNCSHARED_EXPORT Song : public SongHeader {
 private:
     QByteArray source;
 public:
@@ -82,7 +82,7 @@ public:
  * @brief The SongStorage class
  * header with url to song source
  */
-class SongStorage : public SongHeader {
+class SYNCSHARED_EXPORT SongStorage : public SongHeader {
 private:
     QUrl url;
 public:

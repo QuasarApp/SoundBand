@@ -5,11 +5,12 @@
 #include <QTimer>
 #include "basepackage.h"
 #include "syncpackage.h"
+#include "sync_global.h"
 
 /**
  * @brief The Node class is tcp server class
  */
-class Node:public QTcpServer{
+class SYNCSHARED_EXPORT Node:public QTcpServer{
     Q_OBJECT
 private:
     QTimer *timer;

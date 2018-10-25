@@ -1,5 +1,5 @@
 include($$PWD/../../deploy/targetList.pri)
-include($$PWD/../../deploy/deployFiles.pri)
+include($$PWD/../../../deploy.pri)
 
 
 TEMPLATE = aux

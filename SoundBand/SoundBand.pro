@@ -18,6 +18,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 TARGET = SoundBand
 
+CONFIG(release, debug|release): {
+    DESTDIR = $$PWD/build/release
+
+} else {
+    DESTDIR = $$PWD/build/debug
+}
+
 SOURCES += main.cpp \
     syncengine.cpp \
     imageprovider.cpp \
@@ -59,7 +66,6 @@ HEADERS += \
     playlistsmodel.h \
     currentplaylistmodel.h
 
-include($$PWD/../deploy.pri)
 include($$PWD/../Sync/Sync.pri)
 include('$$PWD/../QuasarAppLib/QuasarLib.pri');
 

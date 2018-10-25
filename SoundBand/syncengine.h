@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QPixmap>
 
-
 /**
  * @brief The SyncEngine class - this class is interface between syncLine and qml application.
  */

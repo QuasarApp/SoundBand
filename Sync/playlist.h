@@ -2,12 +2,13 @@
 #define PLAYLIST_H
 #include <QMediaPlaylist>
 #include "song.h"
+#include "sync_global.h"
 
 /**
  * @brief The PlayList class
  * palyList with songs info
  */
-class PlayList
+class SYNCSHARED_EXPORT PlayList
 {
 private:
     /**

@@ -5,7 +5,7 @@
 #include <QList>
 #include <QDataStream>
 #include "syncpackage.h"
-
+#include "sync_global.h"
 
 /**
  * @brief The ETcpSocket class
@@ -29,7 +29,7 @@
  */
 
 
-class ETcpSocket:public QObject
+class SYNCSHARED_EXPORT ETcpSocket:public QObject
 {
     Q_OBJECT
 private:

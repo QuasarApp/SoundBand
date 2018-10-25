@@ -7,7 +7,12 @@ CONFIG -= app_bundle
 TEMPLATE = app
 TARGET = test
 
-SOUND_BAND_MODULE=test
+CONFIG(release, debug|release): {
+    DESTDIR = $$PWD/build/release
+
+} else {
+    DESTDIR = $$PWD/build/debug
+}
 
 SOURCES += \
     tst_synctest.cpp
@@ -16,6 +21,5 @@ SOURCES += \
 RESOURCES += \
     res.qrc
 
-include($$PWD/../deploy.pri)
 include($$PWD/../Sync/Sync.pri)
 include('$$PWD/../QuasarAppLib/QuasarLib.pri');

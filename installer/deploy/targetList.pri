@@ -3,6 +3,8 @@
 # windows
 win32 {
     TARGET_LIST += SoundBand.exe
+    TARGET_LIST += Sync.dll
+    TARGET_LIST += QUasarApp.dll
 }
 
 # linux

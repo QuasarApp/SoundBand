@@ -1,6 +1,4 @@
 include($$PWD/deploy/targetList.pri)
-include($$PWD/deploy/deployFiles.pri)
-
 
 TEMPLATE = aux
 
@@ -20,50 +18,32 @@ QT_DIR = $$dirname(QMAKE_QMAKE)
 QML_DIR = $$PWD/../SoundBand
 
 
-WINDEPLY = $$QT_DIR/windeployqt.exe
-MACDEPLY = $$QT_DIR/macdeployqt
-LINUXDEPLOY = $$PWD/../CQtDeployer/build/cqtdeployer
+WINDEPLOY = $$QT_DIR/windeployqt.exe
+WINDEPLOY_RUN = $$PWD/deploy/deploy.bat
 
-message( QML_DIR = $$QML_DIR)
-message( WINDEPLY = $$WINDEPLY)
-message( MACDEPLY = $$MACDEPLY)
-message( LINUXDEPLOY = $$LINUXDEPLOY)
+LINUXDEPLOY = $$PWD/../CQtDeployer/build/cqtdeployer
 
 win32 {
     OUT_FILE = SoundBandInstaller.exe
     LUPDATE = $$QT_DIR/lupdate.exe
     LRELEASE = $$QT_DIR/lrelease.exe
+
 }
 
-message( QT_DIR = $$QT_DIR)
-message( LUPDATE = $$LUPDATE)
-message( LRELEASE = $$LRELEASE)
-message( DEPLOY_FILES = $$DEPLOY_FILES)
-
-# todo get inpot files
+#prepare start
 win32 {
-    for(command, TARGET_LIST) {
-        installerApp.commands += $$WINDEPLY --qmldir $$QML_DIR $$TARGET_PATH/$$command &&
-    }
+    installerApp.commands += $$WINDEPLOY_RUN $$WINDEPLOY $$QML_DIR $$shell_path($$PWD) &&
 }
+#prepare end
 
 unix {
     for(command, TARGET_LIST) {
-        installerApp.commands += $$LINUXDEPLOY -bin $$TARGET_PATH/$$command clear -qmlDir $$QML_DIR -qmake $$QMAKE_QMAKE &&
-    }
-}
-
-macx {
-    for(command, TARGET_LIST) {
-        installerApp.commands += $$MACDEPLY --qmldir $$QML_DIR $$TARGET_PATH/$$command &&
+        installerApp.commands += $$LINUXDEPLOY -bin $$DESTDIR/$$command clear -qmlDir $$QML_DIR -qmake $$QMAKE_QMAKE &&
     }
 }
 
 installerApp.commands += $$QT_DIR/../../../Tools/QtInstallerFramework/3.0/bin/binarycreator --offline-only -c $$PWD/config/config.xml -p $$PWD/packages $$PWD/$$OUT_FILE --verbose -f
 installerApp.CONFIG += target_predeps no_link combine
-
-
-
 
 message( installComands = "$$installerApp.commands")
 
@@ -89,10 +69,6 @@ DISTFILES += \
     packages/SoundBand/meta/ru.ts \
     packages/SoundBand.Tests/meta/installscript.js \
     packages/SoundBand.Tests/meta/package.xml \
-    packages/SoundBand.Tests/meta/ru.ts
+    packages/SoundBand.Tests/meta/ru.ts \
+    deploy/deploy.bat
 
-#unix:extraclean.commands = chmod +x $$PWD/scripts/clear.sh && $$PWD/scripts/clear.sh
-#win32:extraclean.commands = $$PWD/scripts/clear.bat;
-
-#distclean.depends = extraclean
-#QMAKE_EXTRA_TARGETS += distclean extraclean

@@ -9,15 +9,12 @@
 SYNC_LIB = 1
 
 #DEPENDS
-OLD_DEST_DIR=$$DESTDIR
-OLD_SOUND=$$SOUND_BAND_MODULE;
 
-SOUND_BAND_MODULE = sync
-include($$PWD/../deploy.pri)
+CONFIG(release, debug|release): {
+    LIBS += -L"$$PWD/build/release" -lSync
 
-LIBS += -L"$$DESTDIR/" -lSync
-
-SOUND_BAND_MODULE = $$OLD_SOUND
-DESTDIR = $$OLD_DEST_DIR
+} else {
+    LIBS += -L"$$PWD/build/debug" -lSync
+}
 
 INCLUDEPATH += "$$PWD/"

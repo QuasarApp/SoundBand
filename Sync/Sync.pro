@@ -8,11 +8,16 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Sync
 TEMPLATE = lib
 
-include($$PWD/../deploy.pri);
 include('$$PWD/../QuasarAppLib/QuasarLib.pri');
 
 DEFINES += SYNC_LIBRARY
 
+CONFIG(release, debug|release): {
+    DESTDIR = $$PWD/build/release
+
+} else {
+    DESTDIR = $$PWD/build/debug
+}
 
 DISTFILES += \
     sql/InitLacaleDataBase.sql

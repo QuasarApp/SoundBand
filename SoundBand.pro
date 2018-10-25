@@ -2,9 +2,8 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-message( DEPLOY_FILES_MASTER = $$DEPLOY_FILES)
 
-ENABLE_SNAP = 0 #only linux
+ENABLE_SNAP = 1 #only linux
 ENABLE_INSTALLER = 1 #only desctop
 
 SUBDIRS += QuasarAppLib/QuasarApp.pro \
@@ -33,7 +32,7 @@ equals( ENABLE_INSTALLER, 1) {
 }
 
 equals( ENABLE_SNAP, 1) {
-    !android:{
+    unix:!android:{
         message(desktopVersion: enabled)
         CONFIG(release, debug|release): {
 

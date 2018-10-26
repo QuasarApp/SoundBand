@@ -35,7 +35,7 @@ qrc_*.cpp
 ui_*.h
 Makefile*
 *build-*
-
+*build*
 *.snap
 installer/packages/SoundBand/parts
 installer/packages/SoundBand/prime

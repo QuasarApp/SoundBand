@@ -1,6 +1,3 @@
-include($$PWD/../../deploy/targetList.pri)
-include($$PWD/../../../deploy.pri)
-
 
 TEMPLATE = aux
 
@@ -11,7 +8,7 @@ DESTDIR = $$PWD
 INPUT = $$PWD/snap/snapcraft.yaml
 snapApp.input = INPUT
 snapApp.output = $$SNAPCRAFT
-LINUXDEPLOY = $$PWD/../../../CQtDeployer/build/CQtDeployer
+LINUXDEPLOY = $$PWD/../../../CQtDeployer/build/release/CQtDeployer
 
 QT_DIR = $$dirname(QMAKE_QMAKE)
 QML_DIR = $$PWD/../../../SoundBand

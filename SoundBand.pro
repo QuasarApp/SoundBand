@@ -2,8 +2,6 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-
-ENABLE_SNAP = 1 #only linux
 ENABLE_INSTALLER = 1 #only desctop
 
 SUBDIRS += QuasarAppLib/QuasarApp.pro \
@@ -31,16 +29,3 @@ equals( ENABLE_INSTALLER, 1) {
     }
 }
 
-equals( ENABLE_SNAP, 1) {
-    unix:!android:{
-        message(desktopVersion: enabled)
-        CONFIG(release, debug|release): {
-
-            SUBDIRS += installer/packages/SoundBand/snap.pro
-
-        } else {
-            message( Selected Debug mode. The snap will not be created )
-
-        }
-    }
-}

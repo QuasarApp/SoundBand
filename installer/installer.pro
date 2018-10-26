@@ -1,4 +1,3 @@
-include($$PWD/deploy/targetList.pri)
 
 TEMPLATE = aux
 
@@ -21,7 +20,13 @@ QML_DIR = $$PWD/../SoundBand
 WINDEPLOY = $$QT_DIR/windeployqt.exe
 WINDEPLOY_RUN = $$PWD/deploy/deploy.bat
 
-LINUXDEPLOY = $$PWD/../CQtDeployer/build/cqtdeployer
+
+
+LINUXDEPLOY = $$PWD/deploy/deploy.sh
+
+unix {
+    installerApp.commands += chmod +x $$LINUXDEPLOY &&
+}
 
 win32 {
     OUT_FILE = SoundBandInstaller.exe
@@ -34,18 +39,16 @@ win32 {
 win32 {
     installerApp.commands += $$WINDEPLOY_RUN $$WINDEPLOY $$QML_DIR $$shell_path($$PWD) &&
 }
-#prepare end
 
 unix {
-    for(command, TARGET_LIST) {
-        installerApp.commands += $$LINUXDEPLOY -bin $$DESTDIR/$$command clear -qmlDir $$QML_DIR -qmake $$QMAKE_QMAKE &&
-    }
+    installerApp.commands += $$LINUXDEPLOY $$QML_DIR $$QMAKE_QMAKE &&
+
 }
+#prepare end
 
 installerApp.commands += $$QT_DIR/../../../Tools/QtInstallerFramework/3.0/bin/binarycreator --offline-only -c $$PWD/config/config.xml -p $$PWD/packages $$PWD/$$OUT_FILE --verbose -f
 installerApp.CONFIG += target_predeps no_link combine
 
-message( installComands = "$$installerApp.commands")
 
 commands += "$$LUPDATE $$PWD/packages/SoundBand/meta/installscript.js -ts $$PWD/packages/SoundBand/meta/ru.ts"
 commands += "$$LRELEASE $$PWD/packages/SoundBand/meta/ru.ts"
@@ -70,5 +73,6 @@ DISTFILES += \
     packages/SoundBand.Tests/meta/installscript.js \
     packages/SoundBand.Tests/meta/package.xml \
     packages/SoundBand.Tests/meta/ru.ts \
-    deploy/deploy.bat
+    deploy/deploy.bat \
+    deploy/deploy.sh
 

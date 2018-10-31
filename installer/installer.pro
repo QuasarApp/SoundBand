@@ -19,9 +19,6 @@ QML_DIR = $$PWD/../SoundBand
 
 WINDEPLOY = $$QT_DIR/windeployqt.exe
 WINDEPLOY_RUN = $$PWD/deploy/deploy.bat
-
-
-
 LINUXDEPLOY = $$PWD/deploy/deploy.sh
 
 unix {

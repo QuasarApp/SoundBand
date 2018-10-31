@@ -2,9 +2,15 @@
 
 CURRENTDIR=$(dirname "$(readlink -f "$0")")
 
-deploy="$CURRENTDIR/../../CQtDeployer/build/release/cqtdeployer"
+CQtDeployer="$CURRENTDIR/../../CQtDeployer"
+
+deploy="$CQtDeployer/build/release/cqtdeployer.sh"
 qmldir=$1
 qmake=$2
+
+chmod +x $CQtDeployer/sharedBuild.sh
+
+$CQtDeployer/sharedBuild.sh $qmake
 
 rm -rdf "$CURRENTDIR/../packages/SoundBand/data"
 rm -rdf "$CURRENTDIR/../packages/SoundBand.Tests/data"
@@ -24,6 +30,6 @@ chmod +x $deploy
 
 cp -Rpf "$CURRENTDIR/../../CQtDeployer/QuasarAppLib/build/release/." "$CURRENTDIR/../../CQtDeployer/build/release"
 
-$deploy -qmake $qmake  clear -qmldir $qmldir -bin "$CURRENTDIR/../packages/SoundBand/data/SoundBand"
+$deploy -qmake "$qmake"  clear -qmlDir "$qmldir" -bin "$CURRENTDIR/../packages/SoundBand/data/SoundBand"
 
 
